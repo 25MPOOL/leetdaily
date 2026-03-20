@@ -34,6 +34,14 @@
 - Prefer `gh` for pull request, issue, review, and repository inspection when GitHub state matters.
 - Use `25MPOOL/leetdaily` as the canonical GitHub repo slug for `gh` commands, even if `git remote -v` still shows the old moved location.
 
+## Merge Strategy
+
+- Choose the merge method based on the quality of the branch history, not only the commit count.
+- If a PR has a single clean commit, prefer squash merge.
+- If a PR has multiple commits and each commit is meaningful, reviewable, and worth preserving, prefer a merge commit.
+- If a PR has multiple commits but the history includes fixup, WIP, noisy, or otherwise low-signal commits, prefer squash merge instead of preserving that history.
+- Before merging, quickly inspect the commit list and use the merge method that leaves the main branch history easiest to read later.
+
 ## If The Worktree Is Already Mixed
 
 - If the current worktree already contains changes from multiple plans, do not continue implementing more plans blindly.

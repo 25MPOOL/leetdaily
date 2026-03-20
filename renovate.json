@@ -1,0 +1,49 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "labels": [
+    "dependencies"
+  ],
+  "timezone": "Asia/Tokyo",
+  "rangeStrategy": "pin",
+  "dependencyDashboard": true,
+  "enabledManagers": [
+    "github-actions",
+    "gomod",
+    "terraform",
+    "dockerfile",
+    "custom.regex"
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/(^|/)aqua\\.ya?ml$/"
+      ],
+      "matchStrings": [
+        "ref:\\s(?<currentValue>v?[^\\s#]+)\\s# renovate: depName=(?<depName>[^\\s]+)",
+        "- name:\\s(?<depName>[^@\\s]+)@(?<currentValue>[^\\s]+)"
+      ],
+      "datasourceTemplate": "github-tags"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchManagers": [
+        "github-actions"
+      ],
+      "groupName": "github actions"
+    },
+    {
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "matchFileNames": [
+        "aqua.yaml"
+      ],
+      "groupName": "aqua packages"
+    }
+  ]
+}

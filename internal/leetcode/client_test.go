@@ -3,6 +3,7 @@ package leetcode
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -11,14 +12,19 @@ import (
 func TestClientFetchProblemsPaginatesAndNormalizes(t *testing.T) {
 	t.Parallel()
 
+	testErrCh := make(chan error, 1)
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
-			t.Fatalf("method = %s, want POST", r.Method)
+			reportTestServerError(testErrCh, fmt.Errorf("method = %s, want POST", r.Method))
+			http.Error(w, "unexpected method", http.StatusMethodNotAllowed)
+			return
 		}
 
 		var request graphqlRequest
 		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-			t.Fatalf("decode request error = %v", err)
+			reportTestServerError(testErrCh, fmt.Errorf("decode request error = %w", err))
+			http.Error(w, "bad request", http.StatusBadRequest)
+			return
 		}
 
 		skip := request.Variables.Skip
@@ -66,17 +72,24 @@ func TestClientFetchProblemsPaginatesAndNormalizes(t *testing.T) {
 				},
 			}
 		default:
-			t.Fatalf("unexpected skip = %d", skip)
+			reportTestServerError(testErrCh, fmt.Errorf("unexpected skip = %d", skip))
+			http.Error(w, "unexpected pagination", http.StatusBadRequest)
+			return
 		}
 
 		if err := json.NewEncoder(w).Encode(response); err != nil {
-			t.Fatalf("encode response error = %v", err)
+			reportTestServerError(testErrCh, fmt.Errorf("encode response error = %w", err))
 		}
 	}))
 	defer server.Close()
 
 	client := NewClientWithEndpoint(server.Client(), server.URL)
 	problems, err := client.FetchProblems(context.Background())
+	select {
+	case testErr := <-testErrCh:
+		t.Fatal(testErr)
+	default:
+	}
 	if err != nil {
 		t.Fatalf("FetchProblems() error = %v", err)
 	}
@@ -87,6 +100,13 @@ func TestClientFetchProblemsPaginatesAndNormalizes(t *testing.T) {
 
 	if problems[1].ProblemNumber != 2 || !problems[1].IsPaidOnly {
 		t.Fatalf("problems[1] = %#v, want paid problem #2", problems[1])
+	}
+}
+
+func reportTestServerError(testErrCh chan<- error, err error) {
+	select {
+	case testErrCh <- err:
+	default:
 	}
 }
 

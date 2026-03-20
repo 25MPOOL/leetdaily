@@ -113,34 +113,34 @@ func (r jobModeRunner) Run(ctx context.Context) error {
 }
 
 type multiNotifier struct {
-	notifiers []*discord.Notifier
+	notifiers map[string]*discord.Notifier
 	logger    *slog.Logger
 }
 
 func mustNotifier(client *discord.Client, guilds []config.Guild, logger *slog.Logger) *multiNotifier {
 	byChannel := map[string]*discord.Notifier{}
-	notifiers := make([]*discord.Notifier, 0, len(guilds))
+	byGuild := make(map[string]*discord.Notifier, len(guilds))
 	for _, guild := range guilds {
-		if _, ok := byChannel[guild.NotificationChannelID]; ok {
-			continue
+		notifier, ok := byChannel[guild.NotificationChannelID]
+		if !ok {
+			var err error
+			notifier, err = discord.NewNotifier(client, guild.NotificationChannelID)
+			if err != nil {
+				logger.Warn("skip invalid notifier channel", "channel_id", guild.NotificationChannelID, "error", err)
+				continue
+			}
+			byChannel[guild.NotificationChannelID] = notifier
 		}
-		notifier, err := discord.NewNotifier(client, guild.NotificationChannelID)
-		if err != nil {
-			logger.Warn("skip invalid notifier channel", "channel_id", guild.NotificationChannelID, "error", err)
-			continue
-		}
-		byChannel[guild.NotificationChannelID] = notifier
-		notifiers = append(notifiers, notifier)
+		byGuild[guild.GuildID] = notifier
 	}
-	return &multiNotifier{notifiers: notifiers, logger: logger}
+	return &multiNotifier{notifiers: byGuild, logger: logger}
 }
 
 func (m *multiNotifier) NotifyFailure(ctx context.Context, guildID string, err error) error {
-	var notifyErr error
-	for _, notifier := range m.notifiers {
-		if currentErr := notifier.NotifyFailure(ctx, guildID, err); currentErr != nil {
-			notifyErr = currentErr
-		}
+	notifier, ok := m.notifiers[guildID]
+	if !ok {
+		m.logger.Warn("skip missing notifier mapping", "guild_id", guildID)
+		return nil
 	}
-	return notifyErr
+	return notifier.NotifyFailure(ctx, guildID, err)
 }

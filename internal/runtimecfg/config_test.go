@@ -45,6 +45,10 @@ func TestLoadFromEnvDefaults(t *testing.T) {
 	if cfg.UsesGCS() {
 		t.Fatal("UsesGCS() = true, want false")
 	}
+
+	if cfg.DiscordBotToken != "" {
+		t.Fatalf("DiscordBotToken = %q, want empty", cfg.DiscordBotToken)
+	}
 }
 
 func TestLoadFromEnvCustomValues(t *testing.T) {
@@ -60,6 +64,8 @@ func TestLoadFromEnvCustomValues(t *testing.T) {
 			return "9090", true
 		case "LEETDAILY_DATA_DIR":
 			return "./var/data", true
+		case "DISCORD_BOT_TOKEN":
+			return "discord-token", true
 		default:
 			return "", false
 		}
@@ -92,6 +98,10 @@ func TestLoadFromEnvCustomValues(t *testing.T) {
 
 	if cfg.HTTPAddr() != ":9090" {
 		t.Fatalf("HTTPAddr() = %q, want %q", cfg.HTTPAddr(), ":9090")
+	}
+
+	if cfg.DiscordBotToken != "discord-token" {
+		t.Fatalf("DiscordBotToken = %q, want %q", cfg.DiscordBotToken, "discord-token")
 	}
 }
 

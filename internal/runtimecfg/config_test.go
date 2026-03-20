@@ -2,6 +2,7 @@ package runtimecfg
 
 import (
 	"log/slog"
+	"path/filepath"
 	"testing"
 )
 
@@ -75,12 +76,14 @@ func TestLoadFromEnvCustomValues(t *testing.T) {
 		t.Fatalf("HTTPPort = %d, want 9090", cfg.HTTPPort)
 	}
 
-	if cfg.DataDir != "var/data" {
-		t.Fatalf("DataDir = %q, want %q", cfg.DataDir, "var/data")
+	wantDataDir := filepath.Join("var", "data")
+	if cfg.DataDir != wantDataDir {
+		t.Fatalf("DataDir = %q, want %q", cfg.DataDir, wantDataDir)
 	}
 
-	if cfg.ConfigPath() != "var/data/config.json" {
-		t.Fatalf("ConfigPath() = %q, want %q", cfg.ConfigPath(), "var/data/config.json")
+	wantConfigPath := filepath.Join(wantDataDir, "config.json")
+	if cfg.ConfigPath() != wantConfigPath {
+		t.Fatalf("ConfigPath() = %q, want %q", cfg.ConfigPath(), wantConfigPath)
 	}
 
 	if cfg.HTTPAddr() != ":9090" {

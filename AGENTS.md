@@ -16,10 +16,23 @@
 ## Done Procedure
 
 - When a plan is implemented, run the validations listed in that plan.
+- If validation fails, fix the issues and re-run validation until it passes.
 - If validation passes, stage and commit the changes for that plan.
 - Push the branch to `origin`.
 - Create a pull request before moving on to the next plan.
 - Report the pull request URL/status to the user, then stop. Start the next plan only after that per-plan PR step is complete.
+
+## Review Follow-Up
+
+- After creating or updating a pull request, check its reviews, review comments, and issue comments before continuing.
+- Separate actionable comments from bot walkthroughs, summaries, and other non-blocking status messages.
+- For stacked pull requests, note that review bots may skip auto-review when the base branch is not the default branch.
+- If a stacked pull request was skipped by automation, treat that as informational and do not confuse it with an approval or a requested change.
+
+## GitHub Operations
+
+- Prefer `gh` for pull request, issue, review, and repository inspection when GitHub state matters.
+- Use `25MPOOL/leetdaily` as the canonical GitHub repo slug for `gh` commands, even if `git remote -v` still shows the old moved location.
 
 ## If The Worktree Is Already Mixed
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"strings"
 	"testing"
 
 	"github.com/nkoji21/leetdaily/internal/runtimecfg"
@@ -87,6 +88,26 @@ func TestAppRunPropagatesRunnerError(t *testing.T) {
 	}).Run(context.Background())
 	if !errors.Is(err, wantErr) {
 		t.Fatalf("Run() error = %v, want %v", err, wantErr)
+	}
+}
+
+func TestAppRunReturnsErrorForPlaceholderRunner(t *testing.T) {
+	t.Parallel()
+
+	cfg := runtimecfg.Config{
+		Mode:     runtimecfg.ModeHTTP,
+		LogLevel: slog.LevelInfo,
+		HTTPPort: 8080,
+		DataDir:  ".",
+	}
+
+	err := New(cfg, nil, Dependencies{}).Run(context.Background())
+	if err == nil {
+		t.Fatal("Run() returned nil error, want placeholder error")
+	}
+
+	if !strings.Contains(err.Error(), "http runtime is not implemented yet") {
+		t.Fatalf("Run() error = %q, want placeholder error for http runtime", err.Error())
 	}
 }
 

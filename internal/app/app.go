@@ -73,6 +73,6 @@ type placeholderRunner struct {
 }
 
 func (r placeholderRunner) Run(context.Context) error {
-	r.logger.Info("runtime skeleton is ready but implementation is deferred", "mode", r.mode)
-	return nil
+	r.logger.Warn("runtime skeleton is ready but implementation is deferred", "mode", r.mode)
+	return fmt.Errorf("%s runtime is not implemented yet", r.mode)
 }

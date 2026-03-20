@@ -28,8 +28,11 @@ type Thread struct {
 }
 
 type ForumTag struct {
-	ID   string `json:"id,omitempty"`
-	Name string `json:"name"`
+	ID        string  `json:"id,omitempty"`
+	Name      string  `json:"name"`
+	Moderated *bool   `json:"moderated,omitempty"`
+	EmojiID   *string `json:"emoji_id,omitempty"`
+	EmojiName *string `json:"emoji_name,omitempty"`
 }
 
 type channel struct {
@@ -69,7 +72,7 @@ func (c *Client) EnsureDifficultyTags(ctx context.Context, forumChannelID string
 
 	current := make(map[string]ForumTag, len(existing.AvailableTags))
 	for _, tag := range existing.AvailableTags {
-		current[strings.ToLower(strings.TrimSpace(tag.Name))] = tag
+		current[normalizeTagName(tag.Name)] = tag
 	}
 
 	desired := []problemcache.Difficulty{
@@ -79,7 +82,7 @@ func (c *Client) EnsureDifficultyTags(ctx context.Context, forumChannelID string
 	}
 	updated := append([]ForumTag{}, existing.AvailableTags...)
 	for _, difficulty := range desired {
-		key := strings.ToLower(string(difficulty))
+		key := normalizeTagName(string(difficulty))
 		if _, ok := current[key]; ok {
 			continue
 		}
@@ -98,12 +101,12 @@ func (c *Client) EnsureDifficultyTags(ctx context.Context, forumChannelID string
 
 	result := make(map[problemcache.Difficulty]string, len(desired))
 	for _, tag := range existing.AvailableTags {
-		switch strings.TrimSpace(tag.Name) {
-		case string(problemcache.DifficultyEasy):
+		switch normalizeTagName(tag.Name) {
+		case normalizeTagName(string(problemcache.DifficultyEasy)):
 			result[problemcache.DifficultyEasy] = tag.ID
-		case string(problemcache.DifficultyMedium):
+		case normalizeTagName(string(problemcache.DifficultyMedium)):
 			result[problemcache.DifficultyMedium] = tag.ID
-		case string(problemcache.DifficultyHard):
+		case normalizeTagName(string(problemcache.DifficultyHard)):
 			result[problemcache.DifficultyHard] = tag.ID
 		}
 	}
@@ -115,6 +118,10 @@ func (c *Client) EnsureDifficultyTags(ctx context.Context, forumChannelID string
 	}
 
 	return result, nil
+}
+
+func normalizeTagName(name string) string {
+	return strings.ToLower(strings.TrimSpace(name))
 }
 
 func (c *Client) CreateForumThread(ctx context.Context, forumChannelID, tagID, title, body string) (Thread, error) {

@@ -41,6 +41,10 @@ func TestLoadFromEnvDefaults(t *testing.T) {
 	if cfg.ProblemsPath() != "problems.json" {
 		t.Fatalf("ProblemsPath() = %q, want %q", cfg.ProblemsPath(), "problems.json")
 	}
+
+	if cfg.UsesGCS() {
+		t.Fatal("UsesGCS() = true, want false")
+	}
 }
 
 func TestLoadFromEnvCustomValues(t *testing.T) {
@@ -91,6 +95,48 @@ func TestLoadFromEnvCustomValues(t *testing.T) {
 	}
 }
 
+func TestLoadFromEnvGCSValues(t *testing.T) {
+	t.Parallel()
+
+	cfg, err := LoadFromEnv(func(key string) (string, bool) {
+		switch key {
+		case "GCS_BUCKET":
+			return "leetdaily-prod", true
+		case "CONFIG_OBJECT":
+			return "runtime/config.json", true
+		case "STATE_OBJECT":
+			return "runtime/state.json", true
+		case "PROBLEMS_OBJECT":
+			return "runtime/problems.json", true
+		default:
+			return "", false
+		}
+	})
+	if err != nil {
+		t.Fatalf("LoadFromEnv(gcs) returned error: %v", err)
+	}
+
+	if !cfg.UsesGCS() {
+		t.Fatal("UsesGCS() = false, want true")
+	}
+
+	if cfg.GCSBucket != "leetdaily-prod" {
+		t.Fatalf("GCSBucket = %q, want %q", cfg.GCSBucket, "leetdaily-prod")
+	}
+
+	if cfg.ConfigPath() != "runtime/config.json" {
+		t.Fatalf("ConfigPath() = %q, want %q", cfg.ConfigPath(), "runtime/config.json")
+	}
+
+	if cfg.StatePath() != "runtime/state.json" {
+		t.Fatalf("StatePath() = %q, want %q", cfg.StatePath(), "runtime/state.json")
+	}
+
+	if cfg.ProblemsPath() != "runtime/problems.json" {
+		t.Fatalf("ProblemsPath() = %q, want %q", cfg.ProblemsPath(), "runtime/problems.json")
+	}
+}
+
 func TestLoadFromEnvRejectsInvalidValues(t *testing.T) {
 	t.Parallel()
 
@@ -114,6 +160,12 @@ func TestLoadFromEnvRejectsInvalidValues(t *testing.T) {
 			name: "invalid port",
 			env: map[string]string{
 				"PORT": "99999",
+			},
+		},
+		{
+			name: "gcs object without bucket",
+			env: map[string]string{
+				"STATE_OBJECT": "runtime/state.json",
 			},
 		},
 	}

@@ -12,6 +12,11 @@ import (
 )
 
 var ErrNotFound = errors.New("storage: not found")
+var ErrConflict = errors.New("storage: conflict")
+
+type Version struct {
+	Token string
+}
 
 type Paths struct {
 	ConfigPath   string
@@ -21,10 +26,10 @@ type Paths struct {
 
 type Repository interface {
 	LoadConfig(context.Context) (config.Config, error)
-	LoadState(context.Context) (state.State, error)
-	SaveState(context.Context, state.State) error
-	LoadProblemCache(context.Context) (problemcache.Cache, error)
-	SaveProblemCache(context.Context, problemcache.Cache) error
+	LoadState(context.Context) (state.State, Version, error)
+	SaveState(context.Context, state.State, Version) (Version, error)
+	LoadProblemCache(context.Context) (problemcache.Cache, Version, error)
+	SaveProblemCache(context.Context, problemcache.Cache, Version) (Version, error)
 }
 
 func (p Paths) Validate() error {
@@ -45,4 +50,12 @@ func (p Paths) Validate() error {
 
 func IsNotFound(err error) bool {
 	return errors.Is(err, ErrNotFound)
+}
+
+func IsConflict(err error) bool {
+	return errors.Is(err, ErrConflict)
+}
+
+func (v Version) IsZero() bool {
+	return strings.TrimSpace(v.Token) == ""
 }

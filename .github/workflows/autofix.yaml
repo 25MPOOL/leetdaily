@@ -4,7 +4,7 @@ name: autofix.ci
 on:
   pull_request:
     paths:
-      - aqua.yaml
+      - aqua/**
 
 permissions:
   contents: write

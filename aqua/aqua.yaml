@@ -10,9 +10,4 @@
 registries:
 - type: standard
   ref: v4.486.0 # renovate: depName=aquaproj/aqua-registry
-packages:
-  - name: hashicorp/terraform@v1.14.7
-  - name: terraform-linters/tflint@v0.61.0
-  - name: rhysd/actionlint@v1.7.11
-  - name: suzuki-shunsuke/pinact@v3.9.0
-  - name: koalaman/shellcheck@v0.11.0
+import_dir: imports

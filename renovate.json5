@@ -1,0 +1,50 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  extends: [
+    "config:recommended",
+    "github>aquaproj/aqua-renovate-config:file#2.11.0(aqua/.*\\.ya?ml)",
+  ],
+
+  labels: ["dependencies", "renovate"],
+  timezone: "Asia/Tokyo",
+  rangeStrategy: "pin",
+  dependencyDashboard: true,
+
+  enabledManagers: [
+    "github-actions",
+    "gomod",
+    "terraform",
+    "dockerfile",
+    "custom.regex",
+  ],
+
+  packageRules: [
+    // Small updates still create PRs, but Renovate can merge them automatically
+    // after required checks pass.
+    {
+      matchUpdateTypes: ["patch", "pin", "digest"],
+      automerge: true,
+    },
+    {
+      matchManagers: ["github-actions"],
+      groupName: "github actions",
+    },
+    {
+      matchManagers: ["gomod"],
+      groupName: "go dependencies",
+    },
+    {
+      matchManagers: ["terraform"],
+      groupName: "terraform dependencies",
+    },
+    {
+      matchManagers: ["dockerfile"],
+      groupName: "docker dependencies",
+    },
+    {
+      matchManagers: ["custom.regex"],
+      matchFileNames: ["aqua/**/*.yaml", "aqua/**/*.yml", "aqua.yaml"],
+      groupName: "aqua packages",
+    },
+  ],
+}

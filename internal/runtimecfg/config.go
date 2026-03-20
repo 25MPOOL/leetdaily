@@ -19,10 +19,14 @@ const (
 )
 
 type Config struct {
-	Mode     Mode
-	LogLevel slog.Level
-	HTTPPort int
-	DataDir  string
+	Mode           Mode
+	LogLevel       slog.Level
+	HTTPPort       int
+	DataDir        string
+	GCSBucket      string
+	ConfigObject   string
+	StateObject    string
+	ProblemsObject string
 }
 
 func Load() (Config, error) {
@@ -37,10 +41,13 @@ func LoadFromEnv(lookup LookupEnv) (Config, error) {
 	}
 
 	cfg := Config{
-		Mode:     ModeHTTP,
-		LogLevel: slog.LevelInfo,
-		HTTPPort: 8080,
-		DataDir:  ".",
+		Mode:           ModeHTTP,
+		LogLevel:       slog.LevelInfo,
+		HTTPPort:       8080,
+		DataDir:        ".",
+		ConfigObject:   "config.json",
+		StateObject:    "state.json",
+		ProblemsObject: "problems.json",
 	}
 
 	if raw, ok := lookup("LEETDAILY_RUNTIME"); ok && strings.TrimSpace(raw) != "" {
@@ -67,6 +74,22 @@ func LoadFromEnv(lookup LookupEnv) (Config, error) {
 		cfg.DataDir = filepath.Clean(strings.TrimSpace(raw))
 	}
 
+	if raw, ok := lookup("GCS_BUCKET"); ok && strings.TrimSpace(raw) != "" {
+		cfg.GCSBucket = strings.TrimSpace(raw)
+	}
+
+	if raw, ok := lookup("CONFIG_OBJECT"); ok && strings.TrimSpace(raw) != "" {
+		cfg.ConfigObject = strings.TrimSpace(raw)
+	}
+
+	if raw, ok := lookup("STATE_OBJECT"); ok && strings.TrimSpace(raw) != "" {
+		cfg.StateObject = strings.TrimSpace(raw)
+	}
+
+	if raw, ok := lookup("PROBLEMS_OBJECT"); ok && strings.TrimSpace(raw) != "" {
+		cfg.ProblemsObject = strings.TrimSpace(raw)
+	}
+
 	if err := cfg.Validate(); err != nil {
 		return Config{}, err
 	}
@@ -89,6 +112,31 @@ func (c Config) Validate() error {
 		return fmt.Errorf("LEETDAILY_DATA_DIR must not be empty")
 	}
 
+	if c.UsesGCS() {
+		if strings.TrimSpace(c.ConfigObject) == "" {
+			return fmt.Errorf("CONFIG_OBJECT must not be empty when GCS_BUCKET is set")
+		}
+		if strings.TrimSpace(c.StateObject) == "" {
+			return fmt.Errorf("STATE_OBJECT must not be empty when GCS_BUCKET is set")
+		}
+		if strings.TrimSpace(c.ProblemsObject) == "" {
+			return fmt.Errorf("PROBLEMS_OBJECT must not be empty when GCS_BUCKET is set")
+		}
+		return nil
+	}
+
+	if strings.TrimSpace(c.GCSBucket) == "" {
+		if strings.TrimSpace(c.ConfigObject) != "config.json" {
+			return fmt.Errorf("CONFIG_OBJECT requires GCS_BUCKET")
+		}
+		if strings.TrimSpace(c.StateObject) != "state.json" {
+			return fmt.Errorf("STATE_OBJECT requires GCS_BUCKET")
+		}
+		if strings.TrimSpace(c.ProblemsObject) != "problems.json" {
+			return fmt.Errorf("PROBLEMS_OBJECT requires GCS_BUCKET")
+		}
+	}
+
 	return nil
 }
 
@@ -97,15 +145,31 @@ func (c Config) HTTPAddr() string {
 }
 
 func (c Config) ConfigPath() string {
+	if c.UsesGCS() {
+		return c.ConfigObject
+	}
+
 	return filepath.Join(c.DataDir, "config.json")
 }
 
 func (c Config) StatePath() string {
+	if c.UsesGCS() {
+		return c.StateObject
+	}
+
 	return filepath.Join(c.DataDir, "state.json")
 }
 
 func (c Config) ProblemsPath() string {
+	if c.UsesGCS() {
+		return c.ProblemsObject
+	}
+
 	return filepath.Join(c.DataDir, "problems.json")
+}
+
+func (c Config) UsesGCS() bool {
+	return strings.TrimSpace(c.GCSBucket) != ""
 }
 
 func parseLogLevel(raw string) (slog.Level, error) {

@@ -34,6 +34,11 @@ type Notifier interface {
 
 type Sleeper func(context.Context, time.Duration) error
 
+type Options struct {
+	Now   func() time.Time
+	Sleep Sleeper
+}
+
 type Runner struct {
 	repository Repository
 	fetcher    problemcache.Fetcher
@@ -44,6 +49,10 @@ type Runner struct {
 }
 
 func New(repository Repository, fetcher problemcache.Fetcher, poster ForumPoster, notifier Notifier) (*Runner, error) {
+	return NewWithOptions(repository, fetcher, poster, notifier, Options{})
+}
+
+func NewWithOptions(repository Repository, fetcher problemcache.Fetcher, poster ForumPoster, notifier Notifier, options Options) (*Runner, error) {
 	if repository == nil {
 		return nil, fmt.Errorf("job repository must not be nil")
 	}
@@ -62,18 +71,35 @@ func New(repository Repository, fetcher problemcache.Fetcher, poster ForumPoster
 		fetcher:    fetcher,
 		poster:     poster,
 		notifier:   notifier,
-		now:        time.Now,
-		sleep: func(ctx context.Context, d time.Duration) error {
-			timer := time.NewTimer(d)
-			defer timer.Stop()
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			case <-timer.C:
-				return nil
-			}
-		},
+		now:        coalesceNow(options.Now),
+		sleep:      coalesceSleep(options.Sleep),
 	}, nil
+}
+
+func coalesceNow(now func() time.Time) func() time.Time {
+	if now != nil {
+		return now
+	}
+
+	return time.Now
+}
+
+func coalesceSleep(sleep Sleeper) Sleeper {
+	if sleep != nil {
+		return sleep
+	}
+
+	return func(ctx context.Context, d time.Duration) error {
+		timer := time.NewTimer(d)
+		defer timer.Stop()
+
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-timer.C:
+			return nil
+		}
+	}
 }
 
 func (r *Runner) Run(ctx context.Context, targetDate state.Date) error {

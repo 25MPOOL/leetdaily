@@ -29,6 +29,20 @@ CI でも同じ検証を `make ci` 経由で実行します。
 - `GET /healthz`
 - `POST /run`
 
+## Local Development
+
+1. Install tools with `aqua i`.
+2. Run `go test ./...`.
+3. Build with `go build ./cmd/leetdaily`.
+4. Start the service with the required env vars:
+
+```bash
+DISCORD_BOT_TOKEN=dummy \
+LEETDAILY_RUNTIME=http \
+PORT=8080 \
+go run ./cmd/leetdaily
+```
+
 ## Container
 
 ```bash
@@ -38,3 +52,5 @@ docker run --rm -p 8080:8080 \
   -e DISCORD_BOT_TOKEN=dummy \
   leetdaily
 ```
+
+See [docs/runbook.md](docs/runbook.md) for deploy and operations guidance.

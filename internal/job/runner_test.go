@@ -30,7 +30,10 @@ func TestRunnerSkipsAlreadyPostedGuild(t *testing.T) {
 				},
 			},
 		},
-		cache: testCache(),
+		cache: problemcache.Cache{
+			UpdatedAt: timePointer(time.Date(2026, 3, 20, 4, 0, 0, 0, time.UTC)),
+			Problems:  []problemcache.Problem{},
+		},
 	}
 
 	runner := newRunnerForTest(t, repository, stubFetcher{}, &stubPoster{}, &stubNotifier{})
@@ -62,7 +65,10 @@ func TestRunnerRecoversStalePostingAndPosts(t *testing.T) {
 				},
 			},
 		},
-		cache: testCache(),
+		cache: problemcache.Cache{
+			UpdatedAt: timePointer(time.Date(2026, 3, 20, 4, 0, 0, 0, time.UTC)),
+			Problems:  []problemcache.Problem{},
+		},
 	}
 	poster := &stubPoster{
 		tags: map[problemcache.Difficulty]string{
@@ -210,6 +216,85 @@ func TestRunnerRefreshesProblemCacheWhenThresholdIsLow(t *testing.T) {
 
 	if repository.saveCacheCalls == 0 {
 		t.Fatal("saveCacheCalls = 0, want cache refresh save")
+	}
+}
+
+func TestRunnerSavesRecoveredStalePostingBeforeEarlyFailure(t *testing.T) {
+	t.Parallel()
+
+	targetDate := mustDate(t, "2026-03-20")
+	startedAt := time.Date(2026, 3, 20, 4, 0, 0, 0, time.UTC)
+	repository := &stubRepository{
+		config: testConfig(),
+		state: state.State{
+			GuildStates: map[string]state.GuildState{
+				"123456789012345678": {
+					NextProblemNumber: 1,
+					Job: state.JobState{
+						TargetDate:       &targetDate,
+						Status:           state.JobStatusPosting,
+						PostingStartedAt: &startedAt,
+					},
+				},
+			},
+		},
+		cache: problemcache.Cache{
+			UpdatedAt: timePointer(time.Date(2026, 3, 20, 4, 0, 0, 0, time.UTC)),
+			Problems:  []problemcache.Problem{},
+		},
+	}
+	notifier := &stubNotifier{}
+	runner := newRunnerForTest(t, repository, stubFetcher{err: context.DeadlineExceeded}, &stubPoster{}, notifier)
+	runner.now = func() time.Time { return time.Date(2026, 3, 20, 5, 0, 0, 0, time.UTC) }
+
+	if err := runner.Run(context.Background(), targetDate); err != nil {
+		t.Fatalf("Run() error = %v", err)
+	}
+
+	got := repository.state.GuildStates["123456789012345678"]
+	if got.Job.Status != state.JobStatusIdle {
+		t.Fatalf("Job.Status = %q, want %q", got.Job.Status, state.JobStatusIdle)
+	}
+	if repository.saveStateCalls == 0 {
+		t.Fatal("saveStateCalls = 0, want stale recovery save")
+	}
+	if notifier.calls != 1 {
+		t.Fatalf("notifier.calls = %d, want 1", notifier.calls)
+	}
+}
+
+func TestRunnerContinuesWithStaleCacheWhenRefillFallbackOccurs(t *testing.T) {
+	t.Parallel()
+
+	targetDate := mustDate(t, "2026-03-20")
+	cfg := testConfig()
+	cfg.ProblemCache.RefillThreshold = 5
+	repository := &stubRepository{
+		config: cfg,
+		state:  state.New(),
+		cache:  testCache(),
+	}
+	poster := &stubPoster{
+		tags: map[problemcache.Difficulty]string{
+			problemcache.DifficultyEasy:   "easy-1",
+			problemcache.DifficultyMedium: "medium-1",
+			problemcache.DifficultyHard:   "hard-1",
+		},
+		threadID: "thread-1",
+	}
+	notifier := &stubNotifier{}
+	runner := newRunnerForTest(t, repository, stubFetcher{err: context.DeadlineExceeded}, poster, notifier)
+
+	if err := runner.Run(context.Background(), targetDate); err != nil {
+		t.Fatalf("Run() error = %v", err)
+	}
+
+	got := repository.state.GuildStates["123456789012345678"]
+	if got.Job.Status != state.JobStatusPosted {
+		t.Fatalf("Job.Status = %q, want %q", got.Job.Status, state.JobStatusPosted)
+	}
+	if notifier.calls != 1 {
+		t.Fatalf("notifier.calls = %d, want 1", notifier.calls)
 	}
 }
 

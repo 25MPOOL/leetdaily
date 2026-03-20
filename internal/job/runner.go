@@ -109,15 +109,28 @@ func (r *Runner) Run(ctx context.Context, targetDate state.Date) error {
 
 		if recovered := recoverStalePosting(guildState, targetDate, r.now()); recovered.Job.Status != guildState.Job.Status {
 			guildState = recovered
+			currentState.GuildStates[guild.GuildID] = guildState
+			stateVersion, err = r.repository.SaveState(ctx, currentState, stateVersion)
+			if err != nil {
+				return fmt.Errorf("save stale recovery state for guild %s: %w", guild.GuildID, err)
+			}
 		}
 
 		refreshedCache, refreshed, refreshErr := problemcache.Refresh(ctx, r.now(), cache, guildState.NextProblemNumber, cfg.ProblemCache.RefillThreshold, r.fetcher)
 		if refreshErr != nil {
-			notifyErr := r.notifier.NotifyFailure(ctx, guild.GuildID, refreshErr)
-			if notifyErr != nil {
-				refreshErr = errors.Join(refreshErr, notifyErr)
+			if errors.Is(refreshErr, problemcache.ErrRefillUsedStaleCache) {
+				cache = refreshedCache
+				notifyErr := r.notifier.NotifyFailure(ctx, guild.GuildID, refreshErr)
+				if notifyErr != nil {
+					refreshErr = errors.Join(refreshErr, notifyErr)
+				}
+			} else {
+				notifyErr := r.notifier.NotifyFailure(ctx, guild.GuildID, refreshErr)
+				if notifyErr != nil {
+					refreshErr = errors.Join(refreshErr, notifyErr)
+				}
+				continue
 			}
-			continue
 		}
 		if refreshed {
 			cache = refreshedCache
@@ -207,7 +220,8 @@ func (r *Runner) processGuild(
 			LastError:     &lastErr,
 		}
 		currentState.GuildStates[guild.GuildID] = guildState
-		stateVersion, saveErr := r.repository.SaveState(ctx, currentState, stateVersion)
+		var saveErr error
+		stateVersion, saveErr = r.repository.SaveState(ctx, currentState, stateVersion)
 		if saveErr != nil {
 			return guildState, stateVersion, fmt.Errorf("save failed state for guild %s: %w", guild.GuildID, saveErr)
 		}

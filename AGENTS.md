@@ -34,6 +34,11 @@
 - Prefer `gh` for pull request, issue, review, and repository inspection when GitHub state matters.
 - Use `25MPOOL/leetdaily` as the canonical GitHub repo slug for `gh` commands, even if `git remote -v` still shows the old moved location.
 
+## Tooling Reproducibility
+
+- If a tool is needed to reproduce the development environment and it is available in `aqua packages`, add it to the repository-managed `aqua` configuration instead of relying on ad hoc local installation.
+- Prefer managing reproducibility-critical CLI tools through `aqua` so the required versions are tracked in the repository and can be installed consistently by other contributors and CI.
+
 ## Merge Strategy
 
 - Choose the merge method based on the quality of the branch history, not only the commit count.

@@ -3,7 +3,12 @@ BINARY := bin/leetdaily
 BOOTSTRAP_TERRAFORM_DIR := infra/bootstrap
 APP_TERRAFORM_DIR := infra/terraform
 
-.PHONY: actionlint build ci fmt fmtcheck pinact terraform-check terraform-fmtcheck terraform-validate test vet verify workflow-lint
+.PHONY: all actionlint build ci clean fmt fmtcheck pinact terraform-check terraform-fmtcheck terraform-validate test vet verify workflow-lint
+
+all: build
+
+clean:
+	rm -rf bin
 
 build:
 	@mkdir -p bin

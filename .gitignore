@@ -1,7 +1,14 @@
 bin/
 leetdaily
+.env
+.env.*
+!.env.example
+config.json
+problems.json
+state.json
 .terraform/
 *.tfstate
 *.tfstate.*
 infra/bootstrap/terraform.tfvars
 infra/terraform/terraform.tfvars
+.github/workflows/codex-pr-review.yaml

@@ -1,0 +1,14 @@
+---
+plan_workflow_name: terraform-plan.yaml
+
+tflint:
+  enabled: true
+  fix: false
+
+aqua:
+  update_checksum:
+    enabled: false
+
+target_groups:
+  - working_directory: infra/terraform/
+    target: infra/prod

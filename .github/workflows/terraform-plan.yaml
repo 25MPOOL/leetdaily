@@ -1,0 +1,59 @@
+name: terraform-plan
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/terraform-plan.yaml
+      - .github/workflows/terraform-apply.yaml
+      - aqua.yaml
+      - infra/bootstrap/**
+      - infra/terraform/**
+      - tfaction-root.yaml
+
+permissions:
+  contents: read
+  id-token: write
+  pull-requests: write
+
+env:
+  GH_COMMENT_SHA1: ${{ github.event.pull_request.head.sha }}
+  TFACTION_IS_APPLY: "false"
+  TFACTION_JOB_TYPE: terraform
+  TFACTION_TARGET: infra/prod
+  TFACTION_WORKING_DIR: infra/terraform
+  TFCMT_SHA: ${{ github.event.pull_request.head.sha }}
+  TF_CLI_ARGS_init: >-
+    -backend-config=bucket=${{ vars.TF_STATE_BUCKET }}
+    -backend-config=prefix=${{ vars.TF_STATE_PREFIX || 'prod/infra/terraform' }}
+  TF_VAR_container_image: ${{ vars.LEETDAILY_CONTAINER_IMAGE }}
+  TF_VAR_discord_token_secret_id: ${{ vars.LEETDAILY_DISCORD_TOKEN_SECRET_ID }}
+  TF_VAR_project_id: ${{ vars.GCP_PROJECT_ID }}
+  TF_VAR_region: ${{ vars.GCP_REGION || 'asia-northeast1' }}
+
+jobs:
+  terraform-plan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Install aqua-managed tools
+        uses: aquaproj/aqua-installer@11dd79b4e498d471a9385aa9fb7f62bb5f52a73c # v4.0.4
+        with:
+          aqua_version: v2.57.0
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@c200f3691d83b41bf9bbd8638997a462592937ed # v2.1.13
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_TERRAFORM_SERVICE_ACCOUNT }}
+
+      - name: Set up tfaction
+        uses: suzuki-shunsuke/tfaction/setup@4562d910bbacecf384c8aeda25332284fcf05f38 # v1.20.1
+        with:
+          github_token: ${{ github.token }}
+
+      - name: Terraform plan
+        uses: suzuki-shunsuke/tfaction/plan@4562d910bbacecf384c8aeda25332284fcf05f38 # v1.20.1
+        with:
+          github_token: ${{ github.token }}

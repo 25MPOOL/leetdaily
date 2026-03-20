@@ -1,0 +1,5 @@
+project_id                  = "your-gcp-project-id"
+github_owner                = "25MPOOL"
+github_repository           = "leetdaily"
+bucket_location             = "ASIA-NORTHEAST1"
+terraform_state_bucket_name = "your-gcp-project-id-leetdaily-tfstate"

@@ -1,0 +1,55 @@
+name: terraform-apply
+
+on:
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+  id-token: write
+
+env:
+  TFACTION_IS_APPLY: "true"
+  TFACTION_JOB_TYPE: terraform
+  TFACTION_TARGET: infra/prod
+  TFACTION_WORKING_DIR: infra/terraform
+  TF_CLI_ARGS_init: >-
+    -backend-config=bucket=${{ vars.TF_STATE_BUCKET }}
+    -backend-config=prefix=${{ vars.TF_STATE_PREFIX || 'prod/infra/terraform' }}
+  TF_VAR_container_image: ${{ vars.LEETDAILY_CONTAINER_IMAGE }}
+  TF_VAR_discord_token_secret_id: ${{ vars.LEETDAILY_DISCORD_TOKEN_SECRET_ID }}
+  TF_VAR_project_id: ${{ vars.GCP_PROJECT_ID }}
+  TF_VAR_region: ${{ vars.GCP_REGION || 'asia-northeast1' }}
+
+jobs:
+  terraform-apply:
+    runs-on: ubuntu-latest
+    environment: production
+    concurrency:
+      group: terraform-apply-infra-prod
+      cancel-in-progress: false
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Install aqua-managed tools
+        uses: aquaproj/aqua-installer@11dd79b4e498d471a9385aa9fb7f62bb5f52a73c # v4.0.4
+        with:
+          aqua_version: v2.57.0
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@c200f3691d83b41bf9bbd8638997a462592937ed # v2.1.13
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_TERRAFORM_SERVICE_ACCOUNT }}
+
+      - name: Set up tfaction
+        uses: suzuki-shunsuke/tfaction/setup@4562d910bbacecf384c8aeda25332284fcf05f38 # v1.20.1
+        with:
+          github_token: ${{ github.token }}
+
+      - name: Terraform apply
+        uses: suzuki-shunsuke/tfaction/apply@4562d910bbacecf384c8aeda25332284fcf05f38 # v1.20.1
+        with:
+          github_token: ${{ github.token }}

@@ -1,2 +1,7 @@
 bin/
 leetdaily
+.terraform/
+*.tfstate
+*.tfstate.*
+infra/bootstrap/terraform.tfvars
+infra/terraform/terraform.tfvars

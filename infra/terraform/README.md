@@ -12,8 +12,10 @@ This directory provisions the MVP production stack for LeetDaily:
 
 ```bash
 cp terraform.tfvars.example terraform.tfvars
-terraform init
-terraform fmt
+terraform init \
+  -backend-config="bucket=${TF_STATE_BUCKET}" \
+  -backend-config="prefix=${TF_STATE_PREFIX:-prod/infra/terraform}"
+terraform fmt -recursive
 terraform validate
 terraform plan
 terraform apply
@@ -23,3 +25,21 @@ After apply:
 
 1. Check `GET /healthz` on the Cloud Run service URI.
 2. Trigger `POST /run` manually with an authenticated request for a smoke test.
+
+## Bootstrap
+
+Before using this root module in CI or production, apply `infra/bootstrap` once to create:
+
+- the GCS backend bucket
+- the GitHub OIDC / Workload Identity Federation provider
+- the Terraform CI service account and IAM bindings
+
+`terraform-plan` / `terraform-apply` workflows expect these GitHub repository variables:
+
+- `GCP_PROJECT_ID`
+- `GCP_WORKLOAD_IDENTITY_PROVIDER`
+- `GCP_TERRAFORM_SERVICE_ACCOUNT`
+- `LEETDAILY_CONTAINER_IMAGE`
+- `LEETDAILY_DISCORD_TOKEN_SECRET_ID`
+- `TF_STATE_BUCKET`
+- `TF_STATE_PREFIX`

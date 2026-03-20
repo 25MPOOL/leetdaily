@@ -1,7 +1,15 @@
 # yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
-language: ja-JP
+language: "ja-JP"
 early_access: true
+
 reviews:
+  profile: "chill"
   high_level_summary: false
+  review_status: true
   auto_review:
-    base_branches: ['.*']
+    enabled: true
+    auto_incremental_review: true
+    drafts: false
+    # Review stacked PRs whose base branch is another feature branch.
+    base_branches:
+      - ".*"

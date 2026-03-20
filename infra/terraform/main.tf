@@ -1,12 +1,12 @@
 terraform {
-  required_version = ">= 1.6.0"
+  required_version = "1.14.7"
 
   backend "gcs" {}
 
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = "~> 6.46"
+      version = "6.50.0"
     }
   }
 }

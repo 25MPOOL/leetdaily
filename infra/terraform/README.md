@@ -31,15 +31,19 @@ After apply:
 Before using this root module in CI or production, apply `infra/bootstrap` once to create:
 
 - the GCS backend bucket
-- the GitHub OIDC / Workload Identity Federation provider
-- the Terraform CI service account and IAM bindings
+- dedicated GitHub OIDC / Workload Identity Federation providers for `terraform-plan` and `terraform-apply`
+- dedicated Terraform service accounts and IAM bindings for `terraform-plan` and `terraform-apply`
 
 `terraform-plan` / `terraform-apply` workflows expect these GitHub repository variables:
 
 - `GCP_PROJECT_ID`
-- `GCP_WORKLOAD_IDENTITY_PROVIDER`
-- `GCP_TERRAFORM_SERVICE_ACCOUNT`
+- `GCP_TERRAFORM_PLAN_WORKLOAD_IDENTITY_PROVIDER`
+- `GCP_TERRAFORM_PLAN_SERVICE_ACCOUNT`
+- `GCP_TERRAFORM_APPLY_WORKLOAD_IDENTITY_PROVIDER`
+- `GCP_TERRAFORM_APPLY_SERVICE_ACCOUNT`
 - `LEETDAILY_CONTAINER_IMAGE`
 - `LEETDAILY_DISCORD_TOKEN_SECRET_ID`
 - `TF_STATE_BUCKET`
 - `TF_STATE_PREFIX`
+
+If CI reports `terraform-plan-skipped`, the Terraform plan has not run yet. Treat that as bootstrap/configuration incomplete rather than a healthy steady state.

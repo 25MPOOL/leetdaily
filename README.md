@@ -32,6 +32,10 @@ go run ./cmd/leetdaily
 
 CI では `make ci` を実行し、Go の検証に加えて workflow lint と Terraform validate も通します。
 
+## Dependency Updates
+
+`renovate.json` を置いているので、Renovate App をこの repository にインストールすれば GitHub Actions / Go modules / Terraform / `aqua.yaml` の更新提案を自動化できます。
+
 ## Runtime Endpoints
 
 - `GET /healthz`
@@ -69,13 +73,18 @@ See [docs/runbook.md](docs/runbook.md) for deploy and operations guidance.
 - `infra/terraform` は GCS backend を使ってアプリ本体の infra を管理します
 - PR では `terraform-plan` workflow が `infra/terraform` の plan を実行します
 - apply は `terraform-apply` workflow を手動実行し、`production` environment の承認で gate する前提です
+- `terraform-plan-skipped` が pass の場合は、CI 自体は成功でも Terraform plan はまだ実行されていません
 
 必要な GitHub repository variables は以下です。
 
 - `GCP_PROJECT_ID`
-- `GCP_WORKLOAD_IDENTITY_PROVIDER`
-- `GCP_TERRAFORM_SERVICE_ACCOUNT`
+- `GCP_TERRAFORM_PLAN_WORKLOAD_IDENTITY_PROVIDER`
+- `GCP_TERRAFORM_PLAN_SERVICE_ACCOUNT`
+- `GCP_TERRAFORM_APPLY_WORKLOAD_IDENTITY_PROVIDER`
+- `GCP_TERRAFORM_APPLY_SERVICE_ACCOUNT`
 - `LEETDAILY_CONTAINER_IMAGE`
 - `LEETDAILY_DISCORD_TOKEN_SECRET_ID`
 - `TF_STATE_BUCKET`
 - `TF_STATE_PREFIX`
+
+`infra/bootstrap` 適用後は、上記 variables を設定して `terraform-plan` が skip ではなく実行されることを確認してください。

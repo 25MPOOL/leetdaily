@@ -31,6 +31,11 @@ variable "github_repository" {
   type        = string
 }
 
+variable "github_repository_id" {
+  description = "Immutable GitHub repository ID used for OIDC trust conditions"
+  type        = string
+}
+
 variable "terraform_state_bucket_name" {
   description = "Optional override for the Terraform backend bucket name"
   type        = string
@@ -43,14 +48,33 @@ variable "workload_identity_pool_id" {
   default     = "github-actions"
 }
 
-variable "workload_identity_provider_id" {
-  description = "Workload Identity Provider ID"
+variable "terraform_plan_workload_identity_provider_id" {
+  description = "Workload Identity Provider ID used by terraform-plan"
   type        = string
-  default     = "leetdaily"
+  default     = "leetdaily-terraform-plan"
 }
 
-variable "terraform_admin_roles" {
-  description = "Project-level roles granted to the Terraform CI service account"
+variable "terraform_apply_workload_identity_provider_id" {
+  description = "Workload Identity Provider ID used by terraform-apply"
+  type        = string
+  default     = "leetdaily-terraform-apply"
+}
+
+variable "terraform_plan_roles" {
+  description = "Project-level roles granted to the Terraform plan service account"
+  type        = list(string)
+  default = [
+    "roles/cloudscheduler.viewer",
+    "roles/iam.serviceAccountViewer",
+    "roles/run.viewer",
+    "roles/secretmanager.viewer",
+    "roles/storage.objectViewer",
+    "roles/viewer",
+  ]
+}
+
+variable "terraform_apply_roles" {
+  description = "Project-level roles granted to the Terraform apply service account"
   type        = list(string)
   default = [
     "roles/cloudscheduler.admin",

@@ -19,14 +19,15 @@ const (
 )
 
 type Config struct {
-	Mode           Mode
-	LogLevel       slog.Level
-	HTTPPort       int
-	DataDir        string
-	GCSBucket      string
-	ConfigObject   string
-	StateObject    string
-	ProblemsObject string
+	Mode            Mode
+	LogLevel        slog.Level
+	HTTPPort        int
+	DataDir         string
+	DiscordBotToken string
+	GCSBucket       string
+	ConfigObject    string
+	StateObject     string
+	ProblemsObject  string
 }
 
 func Load() (Config, error) {
@@ -72,6 +73,10 @@ func LoadFromEnv(lookup LookupEnv) (Config, error) {
 
 	if raw, ok := lookup("LEETDAILY_DATA_DIR"); ok && strings.TrimSpace(raw) != "" {
 		cfg.DataDir = filepath.Clean(strings.TrimSpace(raw))
+	}
+
+	if raw, ok := lookup("DISCORD_BOT_TOKEN"); ok && strings.TrimSpace(raw) != "" {
+		cfg.DiscordBotToken = strings.TrimSpace(raw)
 	}
 
 	if raw, ok := lookup("GCS_BUCKET"); ok && strings.TrimSpace(raw) != "" {

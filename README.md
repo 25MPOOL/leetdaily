@@ -53,4 +53,4 @@ docker run --rm -p 8080:8080 \
   leetdaily
 ```
 
-See [docs/runbook.md](/Users/naoki/ghq/github.com/nkoji21/leetdaily/docs/runbook.md) for deploy and operations guidance.
+See [docs/runbook.md](docs/runbook.md) for deploy and operations guidance.

@@ -197,7 +197,7 @@ func newIntegrationEnv(t *testing.T) *integrationEnv {
 func newFakeLeetCodeServer(t *testing.T) *httptest.Server {
 	t.Helper()
 
-	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_ = json.NewEncoder(w).Encode(map[string]any{
 			"data": map[string]any{
 				"problemsetQuestionList": map[string]any{
@@ -222,6 +222,9 @@ func newFakeLeetCodeServer(t *testing.T) *httptest.Server {
 			},
 		})
 	}))
+
+	t.Cleanup(server.Close)
+	return server
 }
 
 type fakeDiscord struct {

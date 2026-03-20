@@ -2,6 +2,7 @@ package problemcache
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 )
@@ -189,8 +190,8 @@ func TestRefreshBehaviors(t *testing.T) {
 		t.Parallel()
 
 		cache, refreshed, err := Refresh(context.Background(), now, current, 1, 5, stubFetcher{err: context.DeadlineExceeded})
-		if err != nil {
-			t.Fatalf("Refresh() error = %v, want nil", err)
+		if !errors.Is(err, ErrRefillUsedStaleCache) {
+			t.Fatalf("Refresh() error = %v, want ErrRefillUsedStaleCache", err)
 		}
 		if refreshed {
 			t.Fatal("Refresh() refreshed = true, want false")

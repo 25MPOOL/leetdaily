@@ -2,10 +2,13 @@ package problemcache
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"slices"
 	"time"
 )
+
+var ErrRefillUsedStaleCache = errors.New("problem cache refill failed; using stale cache")
 
 type Fetcher interface {
 	FetchProblems(context.Context) ([]Problem, error)
@@ -34,7 +37,7 @@ func Refresh(ctx context.Context, now time.Time, cache Cache, nextProblemNumber,
 	problems, err := fetcher.FetchProblems(ctx)
 	if err != nil {
 		if HasFreeProblemFrom(cache, nextProblemNumber) {
-			return cache, false, nil
+			return cache, false, fmt.Errorf("%w: %w", ErrRefillUsedStaleCache, err)
 		}
 		return Cache{}, false, fmt.Errorf("refill problem cache: %w", err)
 	}

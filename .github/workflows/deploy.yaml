@@ -78,9 +78,6 @@ jobs:
           LEETDAILY_CONTAINER_IMAGE: ${{ vars.LEETDAILY_CONTAINER_IMAGE }}
         run: |
           repository="${LEETDAILY_CONTAINER_IMAGE%:*}"
-          if [ "$repository" = "$LEETDAILY_CONTAINER_IMAGE" ]; then
-            repository="$LEETDAILY_CONTAINER_IMAGE"
-          fi
           registry="${repository%%/*}"
           image="${repository}:${GITHUB_SHA}"
 

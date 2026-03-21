@@ -1,0 +1,17 @@
+rules:
+  type:
+    level: error
+    options:
+      - feat
+      - fix
+      - docs
+      - style
+      - refactor
+      - test
+      - chore
+      - ci
+      - build
+      - perf
+      - revert
+  description-empty:
+    level: error

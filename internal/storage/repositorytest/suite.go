@@ -13,8 +13,9 @@ import (
 )
 
 type Harness struct {
-	Repository storage.Repository
-	SeedConfig func(testing.TB, config.Config)
+	Repository        storage.Repository
+	SeedConfig        func(testing.TB, config.Config)
+	SeedGuildSettings func(testing.TB, config.GuildSettings)
 }
 
 func RunRepositorySuite(t *testing.T, name string, newHarness func(*testing.T) Harness) {
@@ -54,6 +55,15 @@ func RunRepositorySuite(t *testing.T, name string, newHarness func(*testing.T) H
 
 		if loadedConfig.Timezone != "Asia/Tokyo" {
 			t.Fatalf("LoadConfig().Timezone = %q, want %q", loadedConfig.Timezone, "Asia/Tokyo")
+		}
+
+		loadedGuilds, _, err := repository.LoadGuildSettings(context.Background())
+		if err != nil {
+			t.Fatalf("LoadGuildSettings() error = %v", err)
+		}
+
+		if len(loadedGuilds.Guilds) != 1 {
+			t.Fatalf("len(LoadGuildSettings().Guilds) = %d, want 1", len(loadedGuilds.Guilds))
 		}
 
 		targetDate, err := state.ParseDate("2026-03-20")
@@ -142,6 +152,47 @@ func RunRepositorySuite(t *testing.T, name string, newHarness func(*testing.T) H
 
 		if loadedCacheVersion != cacheVersion {
 			t.Fatalf("LoadProblemCache() version = %#v, want %#v", loadedCacheVersion, cacheVersion)
+		}
+	})
+
+	t.Run(name+"/guild_settings_round_trip", func(t *testing.T) {
+		t.Parallel()
+
+		harness := newHarness(t)
+		repository := harness.Repository
+
+		want := config.GuildSettings{
+			Guilds: []config.Guild{
+				{
+					GuildID:               "123456789012345678",
+					Enabled:               true,
+					ForumChannelID:        "234567890123456789",
+					NotificationChannelID: "345678901234567890",
+					StartProblemNumber:    10,
+				},
+			},
+		}
+
+		version, err := repository.SaveGuildSettings(context.Background(), want, storage.Version{})
+		if err != nil {
+			t.Fatalf("SaveGuildSettings() error = %v", err)
+		}
+
+		got, loadedVersion, err := repository.LoadGuildSettings(context.Background())
+		if err != nil {
+			t.Fatalf("LoadGuildSettings() error = %v", err)
+		}
+
+		if len(got.Guilds) != 1 {
+			t.Fatalf("len(LoadGuildSettings().Guilds) = %d, want 1", len(got.Guilds))
+		}
+
+		if got.Guilds[0].StartProblemNumber != 10 {
+			t.Fatalf("LoadGuildSettings().Guilds[0].StartProblemNumber = %d, want 10", got.Guilds[0].StartProblemNumber)
+		}
+
+		if loadedVersion != version {
+			t.Fatalf("LoadGuildSettings() version = %#v, want %#v", loadedVersion, version)
 		}
 	})
 

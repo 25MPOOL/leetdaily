@@ -24,6 +24,10 @@ func TestRepositorySuite(t *testing.T) {
 				tb.Helper()
 				writeJSON(tb, paths.ConfigPath, cfg)
 			},
+			SeedGuildSettings: func(tb testing.TB, guilds config.GuildSettings) {
+				tb.Helper()
+				writeJSON(tb, paths.GuildsPath, guilds)
+			},
 		}
 	})
 }
@@ -63,6 +67,7 @@ func newTestRepository(t *testing.T) (*Repository, storage.Paths) {
 	root := t.TempDir()
 	paths := storage.Paths{
 		ConfigPath:   filepath.Join(root, "config.json"),
+		GuildsPath:   filepath.Join(root, "guilds.json"),
 		StatePath:    filepath.Join(root, "state.json"),
 		ProblemsPath: filepath.Join(root, "problems.json"),
 	}

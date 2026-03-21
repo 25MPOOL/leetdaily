@@ -42,6 +42,52 @@ func (r *Repository) LoadConfig(ctx context.Context) (config.Config, error) {
 	return cfg, nil
 }
 
+func (r *Repository) LoadGuildSettings(ctx context.Context) (config.GuildSettings, storage.Version, error) {
+	if err := checkContext(ctx); err != nil {
+		return config.GuildSettings{}, storage.Version{}, err
+	}
+
+	var guilds config.GuildSettings
+	version, err := readJSONFile(r.paths.GuildsPath, &guilds)
+	if err != nil {
+		if !errors.Is(err, storage.ErrNotFound) {
+			return config.GuildSettings{}, storage.Version{}, err
+		}
+
+		cfg, cfgErr := r.LoadConfig(ctx)
+		if cfgErr != nil {
+			return config.GuildSettings{}, storage.Version{}, err
+		}
+		return config.GuildSettings{Guilds: append([]config.Guild(nil), cfg.Guilds...)}, storage.Version{}, nil
+	}
+
+	if guilds.Guilds == nil {
+		guilds.Guilds = []config.Guild{}
+	}
+
+	if err := guilds.Validate(); err != nil {
+		return config.GuildSettings{}, storage.Version{}, fmt.Errorf("validate guild settings %q: %w", r.paths.GuildsPath, err)
+	}
+
+	return guilds, version, nil
+}
+
+func (r *Repository) SaveGuildSettings(ctx context.Context, guilds config.GuildSettings, version storage.Version) (storage.Version, error) {
+	if err := checkContext(ctx); err != nil {
+		return storage.Version{}, err
+	}
+
+	if guilds.Guilds == nil {
+		guilds.Guilds = []config.Guild{}
+	}
+
+	if err := guilds.Validate(); err != nil {
+		return storage.Version{}, fmt.Errorf("validate guild settings before save: %w", err)
+	}
+
+	return writeJSONWithVersion(r.paths.GuildsPath, guilds, version)
+}
+
 func (r *Repository) LoadState(ctx context.Context) (state.State, storage.Version, error) {
 	if err := checkContext(ctx); err != nil {
 		return state.State{}, storage.Version{}, err

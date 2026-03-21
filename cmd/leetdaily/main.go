@@ -12,12 +12,14 @@ import (
 	"github.com/nkoji21/leetdaily/internal/app"
 	"github.com/nkoji21/leetdaily/internal/config"
 	"github.com/nkoji21/leetdaily/internal/discord"
+	"github.com/nkoji21/leetdaily/internal/discordapp"
 	"github.com/nkoji21/leetdaily/internal/httpruntime"
 	"github.com/nkoji21/leetdaily/internal/job"
 	"github.com/nkoji21/leetdaily/internal/leetcode"
 	"github.com/nkoji21/leetdaily/internal/logging"
 	"github.com/nkoji21/leetdaily/internal/runtimecfg"
 	"github.com/nkoji21/leetdaily/internal/state"
+	"github.com/nkoji21/leetdaily/internal/storage"
 	"github.com/nkoji21/leetdaily/internal/storage/provider"
 )
 
@@ -81,13 +83,22 @@ func buildDependencies(ctx context.Context, cfg runtimecfg.Config, logger *slog.
 		repository,
 		leetcodeClient,
 		discordClient,
-		mustNotifier(discordClient, configValue.Guilds, logger),
+		newNotifier(repository, discordClient, logger),
 	)
 	if err != nil {
 		return app.Dependencies{}, fmt.Errorf("build job runner: %w", err)
 	}
 
-	httpRunner, err := httpruntime.New(cfg.HTTPAddr(), location, jobRunner)
+	httpOptions := httpruntime.Options{}
+	if cfg.DiscordAppKey != "" {
+		interactionHandler, err := discordapp.NewHandler(cfg.DiscordAppKey, repository)
+		if err != nil {
+			return app.Dependencies{}, fmt.Errorf("build Discord interaction handler: %w", err)
+		}
+		httpOptions.DiscordInteractions = interactionHandler
+	}
+
+	httpRunner, err := httpruntime.NewWithOptions(cfg.HTTPAddr(), location, jobRunner, httpOptions)
 	if err != nil {
 		return app.Dependencies{}, fmt.Errorf("build HTTP runtime: %w", err)
 	}
@@ -112,35 +123,53 @@ func (r jobModeRunner) Run(ctx context.Context) error {
 	return r.runner.Run(ctx, targetDate)
 }
 
-type multiNotifier struct {
-	notifiers map[string]*discord.Notifier
-	logger    *slog.Logger
+type repositoryNotifier struct {
+	repository storage.Repository
+	client     *discord.Client
+	logger     *slog.Logger
 }
 
-func mustNotifier(client *discord.Client, guilds []config.Guild, logger *slog.Logger) *multiNotifier {
-	byChannel := map[string]*discord.Notifier{}
-	byGuild := make(map[string]*discord.Notifier, len(guilds))
-	for _, guild := range guilds {
-		notifier, ok := byChannel[guild.NotificationChannelID]
-		if !ok {
-			var err error
-			notifier, err = discord.NewNotifier(client, guild.NotificationChannelID)
-			if err != nil {
-				logger.Warn("skip invalid notifier channel", "channel_id", guild.NotificationChannelID, "error", err)
-				continue
-			}
-			byChannel[guild.NotificationChannelID] = notifier
-		}
-		byGuild[guild.GuildID] = notifier
+func newNotifier(repository storage.Repository, client *discord.Client, logger *slog.Logger) *repositoryNotifier {
+	return &repositoryNotifier{
+		repository: repository,
+		client:     client,
+		logger:     logger,
 	}
-	return &multiNotifier{notifiers: byGuild, logger: logger}
 }
 
-func (m *multiNotifier) NotifyFailure(ctx context.Context, guildID string, err error) error {
-	notifier, ok := m.notifiers[guildID]
+func (n *repositoryNotifier) NotifyFailure(ctx context.Context, guildID string, err error) error {
+	guilds, notifyErr := loadGuildSettings(ctx, n.repository)
+	if notifyErr != nil {
+		n.logger.Warn("skip failure notification because guild settings could not be loaded", "guild_id", guildID, "error", notifyErr)
+		return nil
+	}
+
+	var guild config.Guild
+	ok := false
+	for _, candidate := range guilds.Guilds {
+		if candidate.GuildID == guildID {
+			guild = candidate
+			ok = true
+			break
+		}
+	}
 	if !ok {
-		m.logger.Warn("skip missing notifier mapping", "guild_id", guildID)
+		n.logger.Warn("skip missing notifier mapping", "guild_id", guildID)
+		return nil
+	}
+
+	notifier, notifyErr := discord.NewNotifier(n.client, guild.NotificationChannelID)
+	if notifyErr != nil {
+		n.logger.Warn("skip invalid notifier channel", "guild_id", guildID, "channel_id", guild.NotificationChannelID, "error", notifyErr)
 		return nil
 	}
 	return notifier.NotifyFailure(ctx, guildID, err)
+}
+
+func loadGuildSettings(ctx context.Context, repository storage.Repository) (config.GuildSettings, error) {
+	guilds, _, err := repository.LoadGuildSettings(ctx)
+	if err != nil {
+		return config.GuildSettings{}, err
+	}
+	return guilds, nil
 }

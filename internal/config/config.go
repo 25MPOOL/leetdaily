@@ -14,6 +14,10 @@ type Config struct {
 	Guilds       []Guild            `json:"guilds"`
 }
 
+type GuildSettings struct {
+	Guilds []Guild `json:"guilds"`
+}
+
 type RetryConfig struct {
 	IntervalMinutes int `json:"interval_minutes"`
 	MaxAttempts     int `json:"max_attempts"`
@@ -52,8 +56,29 @@ func (c Config) Validate() error {
 		return fmt.Errorf("problem_cache.refill_threshold must be greater than 0: %d", c.ProblemCache.RefillThreshold)
 	}
 
-	seenGuilds := make(map[string]struct{}, len(c.Guilds))
-	for i, guild := range c.Guilds {
+	if err := (GuildSettings{Guilds: c.Guilds}).Validate(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c Config) EnabledGuilds() []Guild {
+	return GuildSettings{Guilds: c.Guilds}.EnabledGuilds()
+}
+
+func (c Config) Location() (*time.Location, error) {
+	location, err := time.LoadLocation(c.Timezone)
+	if err != nil {
+		return nil, fmt.Errorf("load timezone %q: %w", c.Timezone, err)
+	}
+
+	return location, nil
+}
+
+func (g GuildSettings) Validate() error {
+	seenGuilds := make(map[string]struct{}, len(g.Guilds))
+	for i, guild := range g.Guilds {
 		if err := guild.Validate(); err != nil {
 			return fmt.Errorf("guilds[%d]: %w", i, err)
 		}
@@ -67,9 +92,9 @@ func (c Config) Validate() error {
 	return nil
 }
 
-func (c Config) EnabledGuilds() []Guild {
-	enabled := make([]Guild, 0, len(c.Guilds))
-	for _, guild := range c.Guilds {
+func (g GuildSettings) EnabledGuilds() []Guild {
+	enabled := make([]Guild, 0, len(g.Guilds))
+	for _, guild := range g.Guilds {
 		if guild.Enabled {
 			enabled = append(enabled, guild)
 		}
@@ -78,13 +103,15 @@ func (c Config) EnabledGuilds() []Guild {
 	return enabled
 }
 
-func (c Config) Location() (*time.Location, error) {
-	location, err := time.LoadLocation(c.Timezone)
-	if err != nil {
-		return nil, fmt.Errorf("load timezone %q: %w", c.Timezone, err)
+func (g *GuildSettings) Upsert(guild Guild) {
+	for i := range g.Guilds {
+		if g.Guilds[i].GuildID == guild.GuildID {
+			g.Guilds[i] = guild
+			return
+		}
 	}
 
-	return location, nil
+	g.Guilds = append(g.Guilds, guild)
 }
 
 func (g Guild) Validate() error {

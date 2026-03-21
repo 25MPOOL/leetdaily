@@ -12,3 +12,4 @@ Planning PR: `chore/00-plan-work-breakdown`
 8. `08-http-runtime-and-container.md`
 9. `09-terraform-cloud-run-stack.md`
 10. `10-integration-tests-and-runbook.md`
+11. `11-discord-setup-command.md`

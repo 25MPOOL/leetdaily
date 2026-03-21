@@ -24,6 +24,7 @@ func TestRepositorySuite(t *testing.T) {
 		client := newFakeClient()
 		repository, err := New(client, "leetdaily-test", storage.Paths{
 			ConfigPath:   "config.json",
+			GuildsPath:   "guilds.json",
 			StatePath:    "state.json",
 			ProblemsPath: "problems.json",
 		})
@@ -45,6 +46,18 @@ func TestRepositorySuite(t *testing.T) {
 					tb.Fatalf("WriteObject(config) error = %v", err)
 				}
 			},
+			SeedGuildSettings: func(tb testing.TB, guilds config.GuildSettings) {
+				tb.Helper()
+
+				data, err := json.MarshalIndent(guilds, "", "  ")
+				if err != nil {
+					tb.Fatalf("json.MarshalIndent() error = %v", err)
+				}
+
+				if _, err := client.WriteObject(context.Background(), "leetdaily-test", "guilds.json", append(data, '\n'), WriteObjectOptions{DoesNotExist: true}); err != nil {
+					tb.Fatalf("WriteObject(guilds) error = %v", err)
+				}
+			},
 		}
 	})
 }
@@ -64,6 +77,7 @@ func TestWriteUsesGenerationPreconditions(t *testing.T) {
 	client := newFakeClient()
 	repository, err := New(client, "leetdaily-test", storage.Paths{
 		ConfigPath:   "config.json",
+		GuildsPath:   "guilds.json",
 		StatePath:    "state.json",
 		ProblemsPath: "problems.json",
 	})

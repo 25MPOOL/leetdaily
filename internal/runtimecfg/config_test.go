@@ -34,6 +34,10 @@ func TestLoadFromEnvDefaults(t *testing.T) {
 		t.Fatalf("ConfigPath() = %q, want %q", cfg.ConfigPath(), "config.json")
 	}
 
+	if cfg.GuildsPath() != "guilds.json" {
+		t.Fatalf("GuildsPath() = %q, want %q", cfg.GuildsPath(), "guilds.json")
+	}
+
 	if cfg.StatePath() != "state.json" {
 		t.Fatalf("StatePath() = %q, want %q", cfg.StatePath(), "state.json")
 	}
@@ -66,6 +70,8 @@ func TestLoadFromEnvCustomValues(t *testing.T) {
 			return "./var/data", true
 		case "DISCORD_BOT_TOKEN":
 			return "discord-token", true
+		case "DISCORD_APPLICATION_PUBLIC_KEY":
+			return "discord-public-key", true
 		default:
 			return "", false
 		}
@@ -96,12 +102,21 @@ func TestLoadFromEnvCustomValues(t *testing.T) {
 		t.Fatalf("ConfigPath() = %q, want %q", cfg.ConfigPath(), wantConfigPath)
 	}
 
+	wantGuildsPath := filepath.Join(wantDataDir, "guilds.json")
+	if cfg.GuildsPath() != wantGuildsPath {
+		t.Fatalf("GuildsPath() = %q, want %q", cfg.GuildsPath(), wantGuildsPath)
+	}
+
 	if cfg.HTTPAddr() != ":9090" {
 		t.Fatalf("HTTPAddr() = %q, want %q", cfg.HTTPAddr(), ":9090")
 	}
 
 	if cfg.DiscordBotToken != "discord-token" {
 		t.Fatalf("DiscordBotToken = %q, want %q", cfg.DiscordBotToken, "discord-token")
+	}
+
+	if cfg.DiscordAppKey != "discord-public-key" {
+		t.Fatalf("DiscordAppKey = %q, want %q", cfg.DiscordAppKey, "discord-public-key")
 	}
 }
 
@@ -116,6 +131,8 @@ func TestLoadFromEnvGCSValues(t *testing.T) {
 			return "runtime/config.json", true
 		case "STATE_OBJECT":
 			return "runtime/state.json", true
+		case "GUILDS_OBJECT":
+			return "runtime/guilds.json", true
 		case "PROBLEMS_OBJECT":
 			return "runtime/problems.json", true
 		default:
@@ -140,6 +157,10 @@ func TestLoadFromEnvGCSValues(t *testing.T) {
 
 	if cfg.StatePath() != "runtime/state.json" {
 		t.Fatalf("StatePath() = %q, want %q", cfg.StatePath(), "runtime/state.json")
+	}
+
+	if cfg.GuildsPath() != "runtime/guilds.json" {
+		t.Fatalf("GuildsPath() = %q, want %q", cfg.GuildsPath(), "runtime/guilds.json")
 	}
 
 	if cfg.ProblemsPath() != "runtime/problems.json" {
@@ -176,6 +197,12 @@ func TestLoadFromEnvRejectsInvalidValues(t *testing.T) {
 			name: "gcs object without bucket",
 			env: map[string]string{
 				"STATE_OBJECT": "runtime/state.json",
+			},
+		},
+		{
+			name: "guilds object without bucket",
+			env: map[string]string{
+				"GUILDS_OBJECT": "runtime/guilds.json",
 			},
 		},
 	}

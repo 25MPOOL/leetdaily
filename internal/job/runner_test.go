@@ -312,6 +312,7 @@ func newRunnerForTest(t *testing.T, repository *stubRepository, fetcher stubFetc
 
 type stubRepository struct {
 	config         config.Config
+	guilds         config.GuildSettings
 	state          state.State
 	stateVersion   storage.Version
 	cache          problemcache.Cache
@@ -322,6 +323,13 @@ type stubRepository struct {
 
 func (s *stubRepository) LoadConfig(context.Context) (config.Config, error) {
 	return s.config, nil
+}
+
+func (s *stubRepository) LoadGuildSettings(context.Context) (config.GuildSettings, storage.Version, error) {
+	if len(s.guilds.Guilds) == 0 {
+		return config.GuildSettings{Guilds: append([]config.Guild(nil), s.config.Guilds...)}, storage.Version{}, nil
+	}
+	return s.guilds, storage.Version{}, nil
 }
 
 func (s *stubRepository) LoadState(context.Context) (state.State, storage.Version, error) {

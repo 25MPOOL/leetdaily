@@ -33,7 +33,7 @@ go run ./cmd/leetdaily
 
 `make terraform-check` は `infra/bootstrap` と `infra/terraform` の両方で `terraform fmt -check -recursive` と `terraform validate` を実行します。
 
-CI では `make ci` を実行し、Go の検証に加えて workflow lint と Terraform validate も通します。
+CI では通常変更に `make ci` を実行し、Go の検証に加えて workflow lint と Terraform validate も通します。`renovate.json` / `renovate.json5` だけを変更した pull request では、専用 workflow で Renovate 設定の軽量バリデーションだけを実行します。
 
 ## Dependency Updates
 

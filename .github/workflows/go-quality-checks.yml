@@ -1,4 +1,4 @@
-name: ci
+name: Go quality checks
 
 on:
   pull_request:
@@ -20,7 +20,8 @@ permissions:
   contents: read
 
 jobs:
-  quality:
+  go-quality-checks:
+    name: Check formatting, vet, and tests
     runs-on: ubuntu-latest
 
     steps:
@@ -38,5 +39,5 @@ jobs:
         with:
           aqua_version: v2.57.0
 
-      - name: Run quality gates
+      - name: Run gofmt, go vet, and go test via make ci
         run: make ci

@@ -3,7 +3,7 @@ BINARY := bin/leetdaily
 BOOTSTRAP_TERRAFORM_DIR := infra/bootstrap
 APP_TERRAFORM_DIR := infra/terraform
 
-.PHONY: all actionlint build ci clean fmt fmtcheck pinact terraform-check terraform-fmtcheck terraform-validate test vet verify workflow-lint
+.PHONY: all actionlint build ci clean fmt fmtcheck hooks-install pinact terraform-check terraform-fmtcheck terraform-validate test vet verify workflow-lint
 
 all: build
 
@@ -15,6 +15,9 @@ build:
 	$(GO) build -o $(BINARY) ./cmd/leetdaily
 
 ci: verify build workflow-lint terraform-check
+
+hooks-install:
+	lefthook install
 
 fmt:
 	gofmt -w .

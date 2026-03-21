@@ -6,6 +6,8 @@ on:
       - renovate.json
       - renovate.json5
   push:
+    branches:
+      - main
 
 permissions:
   contents: read

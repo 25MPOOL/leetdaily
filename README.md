@@ -76,8 +76,9 @@ Lefthook manages the repository Git hooks. The checked-in defaults are:
 - `pre-commit`: staged Go files run `gofmt -w`; staged `infra/bootstrap/**/*.tf` and `infra/terraform/**/*.tf` changes run `terraform fmt -check -recursive`; staged workflow changes run `make workflow-lint`
 - `pre-push`: pushed Go changes run `make fmtcheck`, `make vet`, and `make test` in parallel; pushed workflow changes run `make workflow-lint`; pushed Terraform changes run `make terraform-check`
 - `commit-msg`: `commitlint-rs` enforces Conventional Commits with `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `ci`, `build`, `perf`, and `revert`
+- `post-checkout` / `post-merge`: when `go.mod` or `go.sum` changed, run `go mod download`; failures warn and keep the hook non-blocking
 
-`pre-commit` stays focused on staged-file feedback. `pre-push` runs the heavier validation jobs in parallel and only when the pushed files require them. `commit-msg` enforces Conventional Commits for local commits.
+`pre-commit` stays focused on staged-file feedback. `pre-push` runs the heavier validation jobs in parallel and only when the pushed files require them. `commit-msg` enforces Conventional Commits for local commits. `post-checkout` and `post-merge` keep the module cache in sync after dependency changes.
 
 With `mise` activated, the default one-shot job mode looks like this:
 

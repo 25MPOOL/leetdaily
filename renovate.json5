@@ -8,7 +8,7 @@
   labels: ["dependencies", "renovate"],
   timezone: "Asia/Tokyo",
   rangeStrategy: "pin",
-  dependencyDashboard: true,
+  dependencyDashboard: false,
 
   enabledManagers: [
     "github-actions",

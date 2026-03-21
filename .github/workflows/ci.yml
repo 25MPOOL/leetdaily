@@ -3,11 +3,18 @@ name: ci
 on:
   pull_request:
     paths-ignore:
+      - .renovaterc
+      - .renovaterc.json
       - renovate.json
       - renovate.json5
   push:
     branches:
       - main
+    paths-ignore:
+      - .renovaterc
+      - .renovaterc.json
+      - renovate.json
+      - renovate.json5
 
 permissions:
   contents: read

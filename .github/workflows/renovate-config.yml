@@ -3,10 +3,14 @@ name: renovate-config
 on:
   pull_request:
     paths:
+      - .renovaterc
+      - .renovaterc.json
       - renovate.json
       - renovate.json5
   push:
     paths:
+      - .renovaterc
+      - .renovaterc.json
       - renovate.json
       - renovate.json5
 

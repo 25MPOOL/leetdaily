@@ -23,7 +23,7 @@ import {
 
 import {
   to = google_storage_bucket.leetdaily_data
-  id = coalesce(var.bucket_name, "${var.project_id}-${var.service_name}-data")
+  id = "${var.project_id}/${coalesce(var.bucket_name, "${var.project_id}-${var.service_name}-data")}"
 }
 
 import {

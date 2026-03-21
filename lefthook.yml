@@ -1,7 +1,23 @@
 pre-commit:
-  commands:
-    fmtcheck:
-      run: make fmtcheck
+  jobs:
+    - name: gofmt
+      glob: "**/*.go"
+      run: gofmt -w {staged_files}
+      stage_fixed: true
+
+    - name: terraform-bootstrap-fmt
+      root: infra/bootstrap
+      glob: "**/*.tf"
+      run: terraform fmt -check -recursive
+
+    - name: terraform-app-fmt
+      root: infra/terraform
+      glob: "**/*.tf"
+      run: terraform fmt -check -recursive
+
+    - name: workflow-lint
+      glob: ".github/workflows/*.{yml,yaml}"
+      run: make workflow-lint
 
 pre-push:
   commands:

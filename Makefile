@@ -3,7 +3,7 @@ BINARY := bin/leetdaily
 BOOTSTRAP_TERRAFORM_DIR := infra/bootstrap
 APP_TERRAFORM_DIR := infra/terraform
 
-.PHONY: all actionlint build ci clean fmt fmtcheck hooks-install pinact terraform-check terraform-fmtcheck terraform-validate test vet verify workflow-lint
+.PHONY: all actionlint build ci clean fmt fmtcheck hooks-install pinact renovate-config-check terraform-check terraform-fmtcheck terraform-validate test vet verify workflow-lint
 
 all: build
 
@@ -43,6 +43,16 @@ actionlint:
 
 pinact:
 	pinact run --check
+
+renovate-config-check:
+	@tmpdir="$$(mktemp -d)"; \
+	validator="$$(aqua which ci-renovate-config-validator)"; \
+	trap 'rm -rf "$$tmpdir"' EXIT; \
+	printf '%s\n' renovate.json renovate.json5 .renovaterc .renovaterc.json .github/renovate.json .github/renovate.json5 .gitlab/renovate.json .gitlab/renovate.json5 > "$$tmpdir/pr_all_filenames.txt"; \
+	while IFS= read -r file; do \
+		if [ -f "$$file" ]; then mkdir -p "$$tmpdir/$$(dirname "$$file")" && cp "$$file" "$$tmpdir/$$file"; fi; \
+	done < "$$tmpdir/pr_all_filenames.txt"; \
+	cd "$$tmpdir" && CI_INFO_TEMP_DIR="$$tmpdir" "$$validator"
 
 workflow-lint: actionlint pinact
 

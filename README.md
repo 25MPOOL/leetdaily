@@ -33,7 +33,7 @@ go run ./cmd/leetdaily
 
 `make terraform-check` は `infra/bootstrap` と `infra/terraform` の両方で `terraform fmt -check -recursive` と `terraform validate` を実行します。
 
-CI では `make ci` を実行し、Go の検証に加えて workflow lint と Terraform validate も通します。
+CI では通常変更に `make ci` を実行し、Go の検証に加えて workflow lint と Terraform validate も通します。`renovate.json` / `renovate.json5` だけを変更した pull request では、専用 workflow で Renovate 設定の軽量バリデーションだけを実行します。
 
 ## Dependency Updates
 
@@ -53,7 +53,8 @@ CI では `make ci` を実行し、Go の検証に加えて workflow lint と Te
 5. Activate `mise` in your shell, or prefix commands with `mise x --`.
 6. Run `go test ./...`.
 7. Build with `go build ./cmd/leetdaily`.
-8. Start the service with the required env vars:
+8. Prepare `config.json` for global settings and `guilds.json` for per-server settings.
+9. Start the service with the required env vars:
 
 ```bash
 eval "$(mise activate zsh)"

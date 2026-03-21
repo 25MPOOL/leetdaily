@@ -7,12 +7,16 @@ pre-commit:
 
     - name: terraform-bootstrap-fmt
       root: infra/bootstrap
-      glob: "**/*.tf"
+      glob:
+        - "infra/bootstrap/*.tf"
+        - "infra/bootstrap/**/*.tf"
       run: terraform fmt -check -recursive
 
     - name: terraform-app-fmt
       root: infra/terraform
-      glob: "**/*.tf"
+      glob:
+        - "infra/terraform/*.tf"
+        - "infra/terraform/**/*.tf"
       run: terraform fmt -check -recursive
 
     - name: workflow-lint

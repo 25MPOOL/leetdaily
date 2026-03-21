@@ -62,3 +62,27 @@ commit-msg:
   commands:
     commitlint:
       run: aqua exec -- commitlint -g .commitlintrc.yml -e {1}
+
+post-merge:
+  commands:
+    go-mod-download:
+      files: git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD
+      glob:
+        - "go.mod"
+        - "go.sum"
+      run: |
+        if ! go mod download; then
+          echo "warning: go mod download failed after go.mod/go.sum changed; run 'go mod download' manually"
+        fi
+
+post-checkout:
+  commands:
+    go-mod-download:
+      files: git diff-tree -r --name-only --no-commit-id {1} {2}
+      glob:
+        - "go.mod"
+        - "go.sum"
+      run: |
+        if ! go mod download; then
+          echo "warning: go mod download failed after go.mod/go.sum changed; run 'go mod download' manually"
+        fi

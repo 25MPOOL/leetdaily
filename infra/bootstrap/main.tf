@@ -42,7 +42,7 @@ locals {
       provider_id         = var.terraform_apply_workload_identity_provider_id
       display_name        = "GitHub Actions ${local.repository} terraform-apply"
       description         = "OIDC provider for terraform-apply in ${local.repository}"
-      attribute_condition = "assertion.repository_id == '${var.github_repository_id}' && assertion.event_name == 'workflow_dispatch' && assertion.ref == 'refs/heads/main'"
+      attribute_condition = "assertion.repository_id == '${var.github_repository_id}' && assertion.ref == 'refs/heads/main' && (assertion.event_name == 'workflow_dispatch' || assertion.event_name == 'push')"
     }
   }
 }

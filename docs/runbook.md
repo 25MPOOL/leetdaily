@@ -22,9 +22,13 @@
 
 ## Deploy
 
-1. Build and push the container image.
-2. Update `infra/terraform/terraform.tfvars`.
-3. Run:
+Pushes to `main` trigger the production deploy workflow:
+
+1. Build and push a container image tagged with the merge commit SHA.
+2. Run Terraform apply with that image reference.
+3. Verify the Cloud Run service revision update.
+
+For manual recovery or bootstrap, run:
 
 ```bash
 cd infra/terraform
@@ -33,8 +37,10 @@ terraform plan
 terraform apply
 ```
 
-4. Verify `GET /healthz` returns `200 OK`.
-5. Send an authenticated `POST /run` smoke test.
+Then:
+
+1. Verify `GET /healthz` returns `200 OK`.
+2. Send an authenticated `POST /run` smoke test.
 
 ## Secret rotation
 

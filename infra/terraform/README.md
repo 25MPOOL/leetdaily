@@ -46,4 +46,6 @@ Before using this root module in CI or production, apply `infra/bootstrap` once 
 - `TF_STATE_BUCKET`
 - `TF_STATE_PREFIX`
 
+`LEETDAILY_CONTAINER_IMAGE` should point at the Artifact Registry repository/image path used for deploys. The automated deploy workflow retags that repository with the pushed `main` commit SHA before running Terraform apply.
+
 If CI reports `terraform-plan-skipped`, the Terraform plan has not run yet. Treat that as bootstrap/configuration incomplete rather than a healthy steady state.

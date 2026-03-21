@@ -30,5 +30,8 @@ jobs:
         with:
           aqua_version: v2.57.0
 
+      - name: Install Renovate config validator
+        run: aqua install
+
       - name: Validate Renovate config
         run: make renovate-config-check

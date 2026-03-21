@@ -2,11 +2,11 @@
 
 This directory provisions the MVP production stack for LeetDaily:
 
-- Cloud Run service
+- Cloud Run job
 - runtime and scheduler service accounts
-- GCS bucket for `config/state/problems`
+- GCS bucket for `config/guilds/state/problems`
 - Secret Manager access for the Discord bot token
-- Cloud Scheduler job that calls `POST /run` at `05:00` JST
+- Cloud Scheduler job that executes the Cloud Run job at `05:00` JST
 
 ## Usage
 
@@ -23,8 +23,8 @@ terraform apply
 
 After apply:
 
-1. Check `GET /healthz` on the Cloud Run service URI.
-2. Trigger `POST /run` manually with an authenticated request for a smoke test.
+1. Confirm the Cloud Scheduler target URI matches the Cloud Run job `:run` API.
+2. Trigger one manual Cloud Run job execution for a smoke test.
 
 ## Bootstrap
 

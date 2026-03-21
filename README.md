@@ -32,7 +32,7 @@ go run ./cmd/leetdaily
 
 `make workflow-lint` は `actionlint` と `pinact run --check` を使って GitHub Actions workflow を検証します。
 
-`make terraform-check` は `infra/bootstrap` と `infra/terraform` の両方で `terraform fmt -check -recursive` と `terraform validate` を実行します。
+`make terraform-check` は `infra/bootstrap` と `infra/terraform` の両方で `terraform fmt -check -recursive` と `terraform validate` を実行し、`infra/bootstrap` では naming 契約の `terraform test` も実行します。
 
 CI では通常変更に `make ci` を実行し、Go の検証に加えて workflow lint と Terraform validate も通します。`renovate.json` / `renovate.json5` だけを変更した pull request では、専用 workflow で Renovate 設定の軽量バリデーションだけを実行します。
 
@@ -142,12 +142,9 @@ See [docs/runbook.md](docs/runbook.md) for deploy and operations guidance.
 
 - `GCP_PROJECT_ID`
 - `GCP_TERRAFORM_PLAN_WORKLOAD_IDENTITY_PROVIDER`
-- `GCP_TERRAFORM_PLAN_SERVICE_ACCOUNT`
 - `GCP_TERRAFORM_APPLY_WORKLOAD_IDENTITY_PROVIDER`
-- `GCP_TERRAFORM_APPLY_SERVICE_ACCOUNT`
 - `LEETDAILY_CONTAINER_IMAGE`
 - `LEETDAILY_DISCORD_TOKEN_SECRET_ID`
 - `TF_STATE_BUCKET`
-- `TF_STATE_PREFIX`
 
 `infra/bootstrap` 適用後は、上記 variables を設定して `terraform-plan` が skip ではなく実行されることを確認してください。

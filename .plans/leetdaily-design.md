@@ -2,7 +2,7 @@
 
 ## 概要
 
-LeetDaily は、Discord のフォーラムチャンネルに対して、毎朝 5:00 JST に LeetCode の問題を 1 問ずつ自動投稿する Discord Bot である。
+LeetDaily は、単一の Discord サーバー向けに、毎朝 5:00 JST に LeetCode の問題を 1 問ずつ自動投稿する Discord Bot である。
 
 ### 目的
 - LeetCode を毎日解く習慣を作る
@@ -15,15 +15,14 @@ LeetDaily は、Discord のフォーラムチャンネルに対して、毎朝 5
 ## 前提条件
 
 ### 基本仕様
-- 同じ Bot を複数サーバーに導入できる
-- 各サーバーは 1 フォーラム固定
-- サーバーごとに進捗は独立
+- サーバーは 1 つ固定で運用する
+- フォーラムチャンネルと通知チャンネルは手動設定する
 - 毎朝 5:00 JST ごろに 1 件投稿する
 - 問題は LeetCode の problem number 順
 - 投稿対象は無料問題のみ
 - Premium 問題はスキップする
 - 土日含め毎日投稿する
-- 開始問題番号はサーバーごとに任意設定可能
+- 開始問題番号は手動設定する
 
 ### 投稿フォーマット
 - タイトル: `<問題番号>. <問題名>`
@@ -57,10 +56,11 @@ LeetDaily は、Discord のフォーラムチャンネルに対して、毎朝 5
 ```text
 Cloud Scheduler
     ↓
-Cloud Run
+Cloud Run Job
     ↓
 LeetDaily (Go)
     ├─ config.json
+    ├─ guilds.json
     ├─ state.json
     ├─ problems.json
     ├─ LeetCode GraphQL
@@ -68,7 +68,8 @@ LeetDaily (Go)
 ```
 
 ### 実行モデル
-毎朝 5:00 JST に Cloud Scheduler が Cloud Run を 1 回起動し、その実行の中で全 guild の投稿処理を完了させる。
+毎朝 5:00 JST に Cloud Scheduler が Cloud Run Job を 1 回実行し、その中で単一サーバー向けの投稿処理を完了させる。
+`/setup` のような Discord interaction は使わず、guild と channel の設定は `guilds.json` もしくは GCS の設定オブジェクトを直接編集して管理する。
 
 ---
 
@@ -118,7 +119,6 @@ https://leetcode.com/problems/{slug}
 人が編集する設定ファイル。
 
 ### 役割
-- guild ごとの固定設定
 - timezone
 - retry 設定
 - problem cache 補充しきい値
@@ -134,7 +134,25 @@ https://leetcode.com/problems/{slug}
   },
   "problem_cache": {
     "refill_threshold": 30
-  },
+  }
+}
+```
+
+---
+
+## 2. guilds.json
+
+人が編集する Discord 固定設定ファイル。
+
+### 役割
+- 単一サーバーの guild 設定
+- forum / notification channel 設定
+- 開始 problem number の管理
+
+### 例
+
+```json
+{
   "guilds": [
     {
       "guild_id": "123456789012345678",
@@ -142,13 +160,6 @@ https://leetcode.com/problems/{slug}
       "forum_channel_id": "234567890123456789",
       "notification_channel_id": "345678901234567890",
       "start_problem_number": 1
-    },
-    {
-      "guild_id": "456789012345678901",
-      "enabled": true,
-      "forum_channel_id": "567890123456789012",
-      "notification_channel_id": "678901234567890123",
-      "start_problem_number": 51
     }
   ]
 }
@@ -156,7 +167,7 @@ https://leetcode.com/problems/{slug}
 
 ---
 
-## 2. state.json
+## 3. state.json
 
 Bot が更新する状態ファイル。
 
@@ -184,20 +195,6 @@ Bot が更新する状態ファイル。
         "last_error": null,
         "posting_started_at": null
       }
-    },
-    "456789012345678901": {
-      "next_problem_number": 51,
-      "last_posted_problem_number": null,
-      "last_posted_at": null,
-      "last_posted_thread_id": null,
-      "job": {
-        "target_date": null,
-        "status": "idle",
-        "problem_number": null,
-        "retry_count": 0,
-        "last_error": null,
-        "posting_started_at": null
-      }
     }
   }
 }
@@ -205,7 +202,7 @@ Bot が更新する状態ファイル。
 
 ---
 
-## 3. problems.json
+## 4. problems.json
 
 LeetCode 問題キャッシュ。
 

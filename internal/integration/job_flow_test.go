@@ -136,6 +136,7 @@ func newIntegrationEnv(t *testing.T) *integrationEnv {
 	root := t.TempDir()
 	repository, err := filesystem.New(storage.Paths{
 		ConfigPath:   filepath.Join(root, "config.json"),
+		GuildsPath:   filepath.Join(root, "guilds.json"),
 		StatePath:    filepath.Join(root, "state.json"),
 		ProblemsPath: filepath.Join(root, "problems.json"),
 	})
@@ -162,6 +163,7 @@ func newIntegrationEnv(t *testing.T) *integrationEnv {
 		Guilds: []config.Guild{guild},
 	}
 	writeJSON(t, filepath.Join(root, "config.json"), cfg)
+	writeJSON(t, filepath.Join(root, "guilds.json"), config.GuildSettings{Guilds: []config.Guild{guild}})
 
 	leetcodeServer := newFakeLeetCodeServer(t)
 	discordServer, fakeDiscord := newFakeDiscordServer(t)

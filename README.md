@@ -43,12 +43,14 @@ CI では通常変更に `make ci` を実行し、Go の検証に加えて workf
 
 - `GET /healthz`
 - `POST /run`
+- `POST /discord/interactions`
 
 ## Local Development
 
 1. Install repo-managed CLIs with `aqua i`.
 2. Trust the checked-in `mise.toml` with `mise trust`.
 3. Install the Go runtime from `mise.toml` with `mise install`.
+<<<<<<< HEAD
 4. Install the shared Git hooks with `make hooks-install`.
 5. Activate `mise` in your shell, or prefix commands with `mise x --`.
 6. Run `go test ./...`.
@@ -83,6 +85,63 @@ LEETDAILY_RUNTIME=http \
 PORT=8080 \
 go run ./cmd/leetdaily
 ```
+
+`config.json` now keeps only global runtime behavior such as timezone, retry policy, and cache threshold. Guild-specific Discord settings are stored in `guilds.json` and can be managed through the Discord `/setup` command.
+
+Example `guilds.json`:
+
+```json
+{
+  "guilds": [
+    {
+      "guild_id": "123456789012345678",
+      "enabled": true,
+      "forum_channel_id": "234567890123456789",
+      "notification_channel_id": "345678901234567890",
+      "start_problem_number": 1
+    }
+  ]
+}
+```
+
+To enable `/setup`, configure your Discord application to send interactions to `/discord/interactions` and provide `DISCORD_APPLICATION_PUBLIC_KEY`.
+
+For local testing, set `DISCORD_APPLICATION_PUBLIC_KEY` to the real Discord application public key, or omit it when you do not need `/setup`.
+
+Register the slash command once against your application, for example:
+
+```bash
+curl -X POST "https://discord.com/api/v10/applications/$DISCORD_APPLICATION_ID/commands" \
+  -H "Authorization: Bot $DISCORD_BOT_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "setup",
+    "description": "Configure LeetDaily for this server",
+    "options": [
+      {
+        "name": "forum",
+        "description": "Forum channel used for daily posts",
+        "type": 7,
+        "required": true
+      },
+      {
+        "name": "notify",
+        "description": "Text channel used for failure notifications",
+        "type": 7,
+        "required": true
+      },
+      {
+        "name": "start",
+        "description": "First LeetCode problem number to post",
+        "type": 4,
+        "required": true,
+        "min_value": 1
+      }
+    ]
+  }'
+```
+
+After the command is registered, a server admin can run `/setup forum:<forum-channel> notify:<text-channel> start:<number>`.
 
 ## Container
 

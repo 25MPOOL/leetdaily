@@ -20,12 +20,15 @@ type Version struct {
 
 type Paths struct {
 	ConfigPath   string
+	GuildsPath   string
 	StatePath    string
 	ProblemsPath string
 }
 
 type Repository interface {
 	LoadConfig(context.Context) (config.Config, error)
+	LoadGuildSettings(context.Context) (config.GuildSettings, Version, error)
+	SaveGuildSettings(context.Context, config.GuildSettings, Version) (Version, error)
 	LoadState(context.Context) (state.State, Version, error)
 	SaveState(context.Context, state.State, Version) (Version, error)
 	LoadProblemCache(context.Context) (problemcache.Cache, Version, error)
@@ -35,6 +38,10 @@ type Repository interface {
 func (p Paths) Validate() error {
 	if strings.TrimSpace(p.ConfigPath) == "" {
 		return fmt.Errorf("config path must not be empty")
+	}
+
+	if strings.TrimSpace(p.GuildsPath) == "" {
+		return fmt.Errorf("guilds path must not be empty")
 	}
 
 	if strings.TrimSpace(p.StatePath) == "" {

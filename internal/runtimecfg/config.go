@@ -24,8 +24,10 @@ type Config struct {
 	HTTPPort        int
 	DataDir         string
 	DiscordBotToken string
+	DiscordAppKey   string
 	GCSBucket       string
 	ConfigObject    string
+	GuildsObject    string
 	StateObject     string
 	ProblemsObject  string
 }
@@ -47,6 +49,7 @@ func LoadFromEnv(lookup LookupEnv) (Config, error) {
 		HTTPPort:       8080,
 		DataDir:        ".",
 		ConfigObject:   "config.json",
+		GuildsObject:   "guilds.json",
 		StateObject:    "state.json",
 		ProblemsObject: "problems.json",
 	}
@@ -79,12 +82,20 @@ func LoadFromEnv(lookup LookupEnv) (Config, error) {
 		cfg.DiscordBotToken = strings.TrimSpace(raw)
 	}
 
+	if raw, ok := lookup("DISCORD_APPLICATION_PUBLIC_KEY"); ok && strings.TrimSpace(raw) != "" {
+		cfg.DiscordAppKey = strings.TrimSpace(raw)
+	}
+
 	if raw, ok := lookup("GCS_BUCKET"); ok && strings.TrimSpace(raw) != "" {
 		cfg.GCSBucket = strings.TrimSpace(raw)
 	}
 
 	if raw, ok := lookup("CONFIG_OBJECT"); ok && strings.TrimSpace(raw) != "" {
 		cfg.ConfigObject = strings.TrimSpace(raw)
+	}
+
+	if raw, ok := lookup("GUILDS_OBJECT"); ok && strings.TrimSpace(raw) != "" {
+		cfg.GuildsObject = strings.TrimSpace(raw)
 	}
 
 	if raw, ok := lookup("STATE_OBJECT"); ok && strings.TrimSpace(raw) != "" {
@@ -121,6 +132,9 @@ func (c Config) Validate() error {
 		if strings.TrimSpace(c.ConfigObject) == "" {
 			return fmt.Errorf("CONFIG_OBJECT must not be empty when GCS_BUCKET is set")
 		}
+		if strings.TrimSpace(c.GuildsObject) == "" {
+			return fmt.Errorf("GUILDS_OBJECT must not be empty when GCS_BUCKET is set")
+		}
 		if strings.TrimSpace(c.StateObject) == "" {
 			return fmt.Errorf("STATE_OBJECT must not be empty when GCS_BUCKET is set")
 		}
@@ -133,6 +147,9 @@ func (c Config) Validate() error {
 	if strings.TrimSpace(c.GCSBucket) == "" {
 		if strings.TrimSpace(c.ConfigObject) != "config.json" {
 			return fmt.Errorf("CONFIG_OBJECT requires GCS_BUCKET")
+		}
+		if strings.TrimSpace(c.GuildsObject) != "guilds.json" {
+			return fmt.Errorf("GUILDS_OBJECT requires GCS_BUCKET")
 		}
 		if strings.TrimSpace(c.StateObject) != "state.json" {
 			return fmt.Errorf("STATE_OBJECT requires GCS_BUCKET")
@@ -163,6 +180,14 @@ func (c Config) StatePath() string {
 	}
 
 	return filepath.Join(c.DataDir, "state.json")
+}
+
+func (c Config) GuildsPath() string {
+	if c.UsesGCS() {
+		return c.GuildsObject
+	}
+
+	return filepath.Join(c.DataDir, "guilds.json")
 }
 
 func (c Config) ProblemsPath() string {

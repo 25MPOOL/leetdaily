@@ -20,7 +20,15 @@ type Server struct {
 	location   *time.Location
 }
 
+type Options struct {
+	DiscordInteractions http.Handler
+}
+
 func New(addr string, location *time.Location, job DailyJob) (*Server, error) {
+	return NewWithOptions(addr, location, job, Options{})
+}
+
+func NewWithOptions(addr string, location *time.Location, job DailyJob, options Options) (*Server, error) {
 	if job == nil {
 		return nil, fmt.Errorf("HTTP runtime job must not be nil")
 	}
@@ -37,6 +45,9 @@ func New(addr string, location *time.Location, job DailyJob) (*Server, error) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", server.handleHealthz)
 	mux.HandleFunc("POST /run", server.handleRun)
+	if options.DiscordInteractions != nil {
+		mux.Handle("POST /discord/interactions", options.DiscordInteractions)
+	}
 
 	server.httpServer = &http.Server{
 		Addr:    addr,

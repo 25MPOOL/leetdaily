@@ -17,6 +17,7 @@ const stalePostingAfter = 30 * time.Minute
 
 type Repository interface {
 	LoadConfig(context.Context) (config.Config, error)
+	LoadGuildSettings(context.Context) (config.GuildSettings, storage.Version, error)
 	LoadState(context.Context) (state.State, storage.Version, error)
 	SaveState(context.Context, state.State, storage.Version) (storage.Version, error)
 	LoadProblemCache(context.Context) (problemcache.Cache, storage.Version, error)
@@ -107,6 +108,10 @@ func (r *Runner) Run(ctx context.Context, targetDate state.Date) error {
 	if err != nil {
 		return fmt.Errorf("load config: %w", err)
 	}
+	guildSettings, _, err := r.repository.LoadGuildSettings(ctx)
+	if err != nil {
+		return fmt.Errorf("load guild settings: %w", err)
+	}
 
 	currentState, stateVersion, err := r.repository.LoadState(ctx)
 	if err != nil {
@@ -126,7 +131,7 @@ func (r *Runner) Run(ctx context.Context, targetDate state.Date) error {
 		}
 	}
 
-	for _, guild := range cfg.EnabledGuilds() {
+	for _, guild := range guildSettings.EnabledGuilds() {
 		guildState, _ := currentState.EnsureGuild(guild.GuildID, guild.StartProblemNumber)
 
 		if shouldSkip(guildState, targetDate, r.now()) {

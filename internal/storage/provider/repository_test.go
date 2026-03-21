@@ -45,6 +45,7 @@ func TestNewRepositoryWithGCSClientReturnsGCSBackend(t *testing.T) {
 		DataDir:        ".",
 		GCSBucket:      "leetdaily-prod",
 		ConfigObject:   "config.json",
+		GuildsObject:   "guilds.json",
 		StateObject:    "state.json",
 		ProblemsObject: "problems.json",
 	}, noopGCSClient{})

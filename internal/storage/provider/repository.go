@@ -22,6 +22,7 @@ func NewRepository(ctx context.Context, cfg runtimecfg.Config) (storage.Reposito
 
 	return filesystem.New(storage.Paths{
 		ConfigPath:   cfg.ConfigPath(),
+		GuildsPath:   cfg.GuildsPath(),
 		StatePath:    cfg.StatePath(),
 		ProblemsPath: cfg.ProblemsPath(),
 	})
@@ -34,6 +35,7 @@ func NewRepositoryWithGCSClient(cfg runtimecfg.Config, client gcsrepo.ObjectClie
 
 	return gcsrepo.New(client, cfg.GCSBucket, storage.Paths{
 		ConfigPath:   cfg.ConfigPath(),
+		GuildsPath:   cfg.GuildsPath(),
 		StatePath:    cfg.StatePath(),
 		ProblemsPath: cfg.ProblemsPath(),
 	})

@@ -24,6 +24,42 @@ pre-commit:
       run: make workflow-lint
 
 pre-push:
-  commands:
-    verify:
-      run: make verify
+  jobs:
+    - group:
+        parallel: true
+        jobs:
+          - name: go-fmtcheck
+            glob:
+              - "go.mod"
+              - "go.sum"
+              - "*.go"
+              - "**/*.go"
+            run: make fmtcheck
+
+          - name: go-vet
+            glob:
+              - "go.mod"
+              - "go.sum"
+              - "*.go"
+              - "**/*.go"
+            run: make vet
+
+          - name: go-test
+            glob:
+              - "go.mod"
+              - "go.sum"
+              - "*.go"
+              - "**/*.go"
+            run: make test
+
+          - name: workflow-lint
+            glob: ".github/workflows/*.{yml,yaml}"
+            run: make workflow-lint
+
+          - name: terraform-check
+            glob:
+              - "infra/bootstrap/*.tf"
+              - "infra/bootstrap/**/*.tf"
+              - "infra/terraform/*.tf"
+              - "infra/terraform/**/*.tf"
+            run: make terraform-check

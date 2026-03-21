@@ -74,9 +74,9 @@ mise x -- make hooks-install
 Lefthook manages the repository Git hooks. The checked-in defaults are:
 
 - `pre-commit`: staged Go files run `gofmt -w`; staged `infra/bootstrap/**/*.tf` and `infra/terraform/**/*.tf` changes run `terraform fmt -check -recursive`; staged workflow changes run `make workflow-lint`
-- `pre-push`: `make verify`
+- `pre-push`: pushed Go source or module changes run `make fmtcheck`, `make vet`, and `make test` in parallel; pushed workflow changes run `make workflow-lint`; pushed Terraform changes run `make terraform-check`
 
-`make workflow-lint` and `make terraform-check` remain explicit local commands or CI checks for full-repo validation, while `pre-commit` only runs them when relevant files are staged.
+`pre-commit` stays focused on staged-file feedback. `pre-push` runs the heavier validation jobs in parallel and only when the pushed files require them.
 
 With `mise` activated, the default one-shot job mode looks like this:
 

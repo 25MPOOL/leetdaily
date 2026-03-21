@@ -158,7 +158,7 @@ func (h *Handler) handleSetup(ctx context.Context, request interaction) interact
 		return ephemeralMessage(fmt.Sprintf("failed to save setup: %v", err))
 	}
 
-	return ephemeralMessage(fmt.Sprintf(
+	return publicMessage(fmt.Sprintf(
 		"setup saved: forum <#%s>, notifications <#%s>, start problem %d",
 		guild.ForumChannelID,
 		guild.NotificationChannelID,
@@ -332,6 +332,15 @@ func ephemeralMessage(content string) interactionResponse {
 		Data: &interactionMessageData{
 			Content: content,
 			Flags:   messageFlagEphemeral,
+		},
+	}
+}
+
+func publicMessage(content string) interactionResponse {
+	return interactionResponse{
+		Type: responseTypeChannelMessageWithSource,
+		Data: &interactionMessageData{
+			Content: content,
 		},
 	}
 }

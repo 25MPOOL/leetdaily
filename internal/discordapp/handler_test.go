@@ -6,6 +6,7 @@ import (
 	"crypto/ed25519"
 	"crypto/rand"
 	"encoding/hex"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -62,6 +63,22 @@ func TestHandlerSavesSetup(t *testing.T) {
 	if recorder.Code != http.StatusOK {
 		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
 	}
+	var response struct {
+		Type int `json:"type"`
+		Data struct {
+			Content string `json:"content"`
+			Flags   *int   `json:"flags"`
+		} `json:"data"`
+	}
+	if err := json.Unmarshal(recorder.Body.Bytes(), &response); err != nil {
+		t.Fatalf("json.Unmarshal() error = %v", err)
+	}
+	if response.Data.Flags != nil {
+		t.Fatalf("response flags = %d, want nil", *response.Data.Flags)
+	}
+	if !strings.Contains(response.Data.Content, "setup saved:") {
+		t.Fatalf("response content = %q, want setup confirmation", response.Data.Content)
+	}
 
 	repository := handler.repo.(*stubRepository)
 	if len(repository.guilds.Guilds) != 1 {
@@ -89,7 +106,19 @@ func TestHandlerRejectsMissingPermission(t *testing.T) {
 	if recorder.Code != http.StatusOK {
 		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
 	}
-	if !strings.Contains(recorder.Body.String(), "Manage Server") {
+	var response struct {
+		Data struct {
+			Content string `json:"content"`
+			Flags   int    `json:"flags"`
+		} `json:"data"`
+	}
+	if err := json.Unmarshal(recorder.Body.Bytes(), &response); err != nil {
+		t.Fatalf("json.Unmarshal() error = %v", err)
+	}
+	if response.Data.Flags != messageFlagEphemeral {
+		t.Fatalf("response flags = %d, want %d", response.Data.Flags, messageFlagEphemeral)
+	}
+	if !strings.Contains(response.Data.Content, "Manage Server") {
 		t.Fatalf("response = %s, want permission error", recorder.Body.String())
 	}
 }

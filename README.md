@@ -2,7 +2,8 @@
 
 LeetDaily は、LeetCode の無料問題を毎日 Discord フォーラムへ投稿する Go サービスです。
 
-現時点では、job orchestration と HTTP runtime の土台まで実装済みで、Cloud Run 配備前提の構成を順次追加しています。
+このリポジトリは単一の Discord サーバーで運用する前提に寄せており、Discord のチャンネル ID などは手動で設定します。
+`/setup` のような対話的な初期設定は使わず、常駐の Discord interaction endpoint も持ちません。
 
 ## Requirements
 
@@ -41,22 +42,22 @@ CI では通常変更に `make ci` を実行し、Go の検証に加えて workf
 
 ## Runtime Endpoints
 
+HTTP mode is optional and mainly useful for local smoke tests.
+
 - `GET /healthz`
 - `POST /run`
-- `POST /discord/interactions`
 
 ## Local Development
 
 1. Install repo-managed CLIs with `aqua i`.
 2. Trust the checked-in `mise.toml` with `mise trust`.
 3. Install the Go runtime from `mise.toml` with `mise install`.
-<<<<<<< HEAD
 4. Install the shared Git hooks with `make hooks-install`.
 5. Activate `mise` in your shell, or prefix commands with `mise x --`.
 6. Run `go test ./...`.
 7. Build with `go build ./cmd/leetdaily`.
-8. Prepare `config.json` for global settings and `guilds.json` for per-server settings.
-9. Start the service with the required env vars:
+8. Prepare `config.json` for global settings and `guilds.json` for the single server's Discord settings.
+9. Start the daily job with the required env vars:
 
 ```bash
 eval "$(mise activate zsh)"
@@ -77,7 +78,15 @@ Lefthook manages the repository Git hooks. The checked-in defaults are:
 
 Workflow lint and Terraform validation stay as explicit local commands or CI checks because they need extra tooling and are slower than the normal commit and push feedback loop.
 
-With `mise` activated, you can start the service like this:
+With `mise` activated, the default one-shot job mode looks like this:
+
+```bash
+DISCORD_BOT_TOKEN=dummy \
+LEETDAILY_RUNTIME=job \
+go run ./cmd/leetdaily
+```
+
+If you want the optional HTTP runtime for local smoke tests, use:
 
 ```bash
 DISCORD_BOT_TOKEN=dummy \
@@ -86,9 +95,9 @@ PORT=8080 \
 go run ./cmd/leetdaily
 ```
 
-`config.json` now keeps only global runtime behavior such as timezone, retry policy, and cache threshold. Guild-specific Discord settings are stored in `guilds.json` and can be managed through the Discord `/setup` command.
+`config.json` keeps global runtime behavior such as timezone, retry policy, and cache threshold. Discord channel settings live in `guilds.json` and are edited manually.
 
-Example `guilds.json`:
+Example `guilds.json` for the single-server setup:
 
 ```json
 {
@@ -104,52 +113,16 @@ Example `guilds.json`:
 }
 ```
 
-To enable `/setup`, configure your Discord application to send interactions to `/discord/interactions` and provide `DISCORD_APPLICATION_PUBLIC_KEY`.
-
-For local testing, set `DISCORD_APPLICATION_PUBLIC_KEY` to the real Discord application public key, or omit it when you do not need `/setup`.
-
-Register the slash command once against your application, for example:
-
-```bash
-curl -X POST "https://discord.com/api/v10/applications/$DISCORD_APPLICATION_ID/commands" \
-  -H "Authorization: Bot $DISCORD_BOT_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "setup",
-    "description": "Configure LeetDaily for this server",
-    "options": [
-      {
-        "name": "forum",
-        "description": "Forum channel used for daily posts",
-        "type": 7,
-        "required": true
-      },
-      {
-        "name": "notify",
-        "description": "Text channel used for failure notifications",
-        "type": 7,
-        "required": true
-      },
-      {
-        "name": "start",
-        "description": "First LeetCode problem number to post",
-        "type": 4,
-        "required": true,
-        "min_value": 1
-      }
-    ]
-  }'
-```
-
-After the command is registered, a server admin can run `/setup forum:<forum-channel> notify:<text-channel> start:<number>`.
+The manual configuration keeps the runtime simpler and avoids carrying a Discord interaction endpoint just for first-run setup.
+Production uses a Cloud Run job triggered by Cloud Scheduler, so the bot does not need a continuously running HTTP service.
 
 ## Container
 
 ```bash
 docker build -t leetdaily .
-docker run --rm -p 8080:8080 \
-  -e PORT=8080 \
+docker run --rm \
   -e DISCORD_BOT_TOKEN=dummy \
+  -e LEETDAILY_RUNTIME=job \
   leetdaily
 ```
 

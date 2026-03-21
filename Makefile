@@ -49,9 +49,9 @@ renovate-config-check:
 	validator="$$(aqua which ci-renovate-config-validator)"; \
 	trap 'rm -rf "$$tmpdir"' EXIT; \
 	printf '%s\n' renovate.json renovate.json5 .renovaterc .renovaterc.json .github/renovate.json .github/renovate.json5 .gitlab/renovate.json .gitlab/renovate.json5 > "$$tmpdir/pr_all_filenames.txt"; \
-	for file in renovate.json renovate.json5 .renovaterc .renovaterc.json; do \
-		if [ -f "$$file" ]; then cp "$$file" "$$tmpdir/"; fi; \
-	done; \
+	while IFS= read -r file; do \
+		if [ -f "$$file" ]; then mkdir -p "$$tmpdir/$$(dirname "$$file")" && cp "$$file" "$$tmpdir/$$file"; fi; \
+	done < "$$tmpdir/pr_all_filenames.txt"; \
 	cd "$$tmpdir" && CI_INFO_TEMP_DIR="$$tmpdir" "$$validator"
 
 workflow-lint: actionlint pinact

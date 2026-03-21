@@ -31,6 +31,11 @@ import {
   id = "projects/${var.project_id}/serviceAccounts/${var.service_name}-scheduler@${var.project_id}.iam.gserviceaccount.com"
 }
 
+import {
+  to = google_cloud_scheduler_job.daily_run
+  id = "projects/${var.project_id}/locations/${var.region}/jobs/${var.service_name}-daily-run"
+}
+
 locals {
   service_name          = var.service_name
   bucket_name           = coalesce(var.bucket_name, "${var.project_id}-${var.service_name}-data")

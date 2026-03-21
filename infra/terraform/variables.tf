@@ -55,16 +55,16 @@ variable "state_object" {
   default     = "state.json"
 }
 
+variable "guilds_object" {
+  description = "Object path for guilds.json"
+  type        = string
+  default     = "guilds.json"
+}
+
 variable "problems_object" {
   description = "Object path for problems.json"
   type        = string
   default     = "problems.json"
-}
-
-variable "container_port" {
-  description = "Container port exposed by the app"
-  type        = number
-  default     = 8080
 }
 
 variable "cloud_run_timeout_seconds" {
@@ -83,10 +83,4 @@ variable "cloud_run_memory" {
   description = "Cloud Run memory limit"
   type        = string
   default     = "512Mi"
-}
-
-variable "cloud_run_max_instances" {
-  description = "Cloud Run max instances"
-  type        = number
-  default     = 1
 }

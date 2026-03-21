@@ -14,8 +14,8 @@ func TestLoadFromEnvDefaults(t *testing.T) {
 		t.Fatalf("LoadFromEnv(nil) returned error: %v", err)
 	}
 
-	if cfg.Mode != ModeHTTP {
-		t.Fatalf("Mode = %q, want %q", cfg.Mode, ModeHTTP)
+	if cfg.Mode != ModeJob {
+		t.Fatalf("Mode = %q, want %q", cfg.Mode, ModeJob)
 	}
 
 	if cfg.LogLevel != slog.LevelInfo {
@@ -70,8 +70,6 @@ func TestLoadFromEnvCustomValues(t *testing.T) {
 			return "./var/data", true
 		case "DISCORD_BOT_TOKEN":
 			return "discord-token", true
-		case "DISCORD_APPLICATION_PUBLIC_KEY":
-			return "discord-public-key", true
 		default:
 			return "", false
 		}
@@ -113,10 +111,6 @@ func TestLoadFromEnvCustomValues(t *testing.T) {
 
 	if cfg.DiscordBotToken != "discord-token" {
 		t.Fatalf("DiscordBotToken = %q, want %q", cfg.DiscordBotToken, "discord-token")
-	}
-
-	if cfg.DiscordAppKey != "discord-public-key" {
-		t.Fatalf("DiscordAppKey = %q, want %q", cfg.DiscordAppKey, "discord-public-key")
 	}
 }
 

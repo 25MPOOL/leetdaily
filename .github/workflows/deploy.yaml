@@ -2,8 +2,9 @@ name: deploy
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - "v*"
+  workflow_dispatch:
 
 permissions:
   actions: read
@@ -119,7 +120,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     concurrency:
-      group: deploy-main
+      group: deploy-production
       cancel-in-progress: false
     env:
       TF_VAR_container_image: ${{ needs.build-image.outputs.image }}

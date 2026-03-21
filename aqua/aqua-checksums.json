@@ -1,6 +1,36 @@
 {
   "checksums": [
     {
+      "id": "github_content/github.com/suzuki-shunsuke/ci-renovate-config-validator/v0.1.0-0/ci-renovate-config-validator",
+      "checksum": "731979BDDE1B8A3EF91D38F0680CA79DD2F8BAB01962E9E8E7812CA92EDE56E0",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/KeisukeYamashita/commitlint-rs/v0.2.2/commitlint-v0.2.2-aarch64-apple-darwin.tar.gz",
+      "checksum": "F306A88E6BC2F17303BDAEEF7B9BDFCEE51D8D774C1B71C921ECF8B09243F12D",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/KeisukeYamashita/commitlint-rs/v0.2.2/commitlint-v0.2.2-aarch64-pc-windows-msvc.tar.gz",
+      "checksum": "3FB2773CF4B3B1A159A615D27F14177CF869637E41058171389C3DD56EA19EA4",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/KeisukeYamashita/commitlint-rs/v0.2.2/commitlint-v0.2.2-x86_64-apple-darwin.tar.gz",
+      "checksum": "370E822561F233FB89B3EC29203DD702683F9E3477786A73A8AA7B814877D60A",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/KeisukeYamashita/commitlint-rs/v0.2.2/commitlint-v0.2.2-x86_64-pc-windows-msvc.tar.gz",
+      "checksum": "7C4FAA0A91081696E046C7CBCB59C3B0185529CC204B0953CAA5873B3F3C035A",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/KeisukeYamashita/commitlint-rs/v0.2.2/commitlint-v0.2.2-x86_64-unknown-linux-gnu.tar.gz",
+      "checksum": "EC58D433277AFAC4E27C1C1E71F70ED38ACF9CB098C90B7D6B8999EF8BC9F155",
+      "algorithm": "sha256"
+    },
+    {
       "id": "github_release/github.com/evilmartians/lefthook/v1.13.6/lefthook_1.13.6_Linux_aarch64.gz",
       "checksum": "43F46F76E84B8F379FE399E1BAAEAD5613568598E9448B38FC00F9309336F2CA",
       "algorithm": "sha256"
@@ -28,11 +58,6 @@
     {
       "id": "github_release/github.com/evilmartians/lefthook/v1.13.6/lefthook_1.13.6_Windows_x86_64.gz",
       "checksum": "F08BF0CBE0B1C35C79F8E0BAD59B283F7AA7F01E622AA02BBB7404C265694F39",
-      "algorithm": "sha256"
-    },
-    {
-      "id": "github_content/github.com/suzuki-shunsuke/ci-renovate-config-validator/v0.1.0-0/ci-renovate-config-validator",
-      "checksum": "731979BDDE1B8A3EF91D38F0680CA79DD2F8BAB01962E9E8E7812CA92EDE56E0",
       "algorithm": "sha256"
     },
     {

@@ -1,2 +1,3 @@
 packages:
   - name: evilmartians/lefthook@v1.13.6
+  - name: KeisukeYamashita/commitlint-rs@v0.2.2

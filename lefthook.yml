@@ -57,3 +57,8 @@ pre-push:
               - "infra/terraform/*.tf"
               - "infra/terraform/**/*.tf"
             run: make terraform-check
+
+commit-msg:
+  commands:
+    commitlint:
+      run: aqua exec -- commitlint -g .commitlintrc.yml -e {1}

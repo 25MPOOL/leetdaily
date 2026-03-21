@@ -1,0 +1,160 @@
+name: deploy
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+  id-token: write
+
+env:
+  TFACTION_IS_APPLY: "true"
+  TFACTION_JOB_TYPE: terraform
+  TFACTION_TARGET: infra/prod
+  TFACTION_WORKING_DIR: infra/terraform
+  TF_CLI_ARGS_init: >-
+    -backend-config=bucket=${{ vars.TF_STATE_BUCKET }}
+    -backend-config=prefix=${{ vars.TF_STATE_PREFIX || 'prod/infra/terraform' }}
+  TF_VAR_discord_token_secret_id: ${{ vars.LEETDAILY_DISCORD_TOKEN_SECRET_ID }}
+  TF_VAR_project_id: ${{ vars.GCP_PROJECT_ID }}
+  TF_VAR_region: ${{ vars.GCP_REGION || 'asia-northeast1' }}
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    outputs:
+      configured: ${{ steps.check.outputs.configured }}
+    steps:
+      - name: Check required repository variables
+        id: check
+        env:
+          GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+          GCP_TERRAFORM_APPLY_WORKLOAD_IDENTITY_PROVIDER: ${{ vars.GCP_TERRAFORM_APPLY_WORKLOAD_IDENTITY_PROVIDER }}
+          GCP_TERRAFORM_APPLY_SERVICE_ACCOUNT: ${{ vars.GCP_TERRAFORM_APPLY_SERVICE_ACCOUNT }}
+          LEETDAILY_CONTAINER_IMAGE: ${{ vars.LEETDAILY_CONTAINER_IMAGE }}
+          LEETDAILY_DISCORD_TOKEN_SECRET_ID: ${{ vars.LEETDAILY_DISCORD_TOKEN_SECRET_ID }}
+          TF_STATE_BUCKET: ${{ vars.TF_STATE_BUCKET }}
+        run: |
+          missing=""
+          for key in \
+            GCP_PROJECT_ID \
+            GCP_TERRAFORM_APPLY_WORKLOAD_IDENTITY_PROVIDER \
+            GCP_TERRAFORM_APPLY_SERVICE_ACCOUNT \
+            LEETDAILY_CONTAINER_IMAGE \
+            LEETDAILY_DISCORD_TOKEN_SECRET_ID \
+            TF_STATE_BUCKET
+          do
+            eval "value=\${$key}"
+            if [ -z "$value" ]; then
+              missing="$missing $key"
+            fi
+          done
+
+          if [ -n "$missing" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::error title=deploy skipped::Missing repository variables:$missing"
+            exit 0
+          fi
+
+          echo "configured=true" >> "$GITHUB_OUTPUT"
+
+  build-image:
+    needs: preflight
+    if: needs.preflight.outputs.configured == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.image.outputs.image }}
+      registry: ${{ steps.image.outputs.registry }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Derive image coordinates
+        id: image
+        env:
+          LEETDAILY_CONTAINER_IMAGE: ${{ vars.LEETDAILY_CONTAINER_IMAGE }}
+        run: |
+          repository="${LEETDAILY_CONTAINER_IMAGE%:*}"
+          registry="${repository%%/*}"
+          image="${repository}:${GITHUB_SHA}"
+
+          echo "image=$image" >> "$GITHUB_OUTPUT"
+          echo "registry=$registry" >> "$GITHUB_OUTPUT"
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          token_format: access_token
+          workload_identity_provider: ${{ vars.GCP_TERRAFORM_APPLY_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_TERRAFORM_APPLY_SERVICE_ACCOUNT }}
+
+      - name: Log in to Artifact Registry
+        uses: docker/login-action@b45d80f862d83dbcd57f89517bcf500b2ab88fb2 # v4.0.0
+        with:
+          registry: ${{ steps.image.outputs.registry }}
+          username: oauth2accesstoken
+          password: ${{ steps.auth.outputs.access_token }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4.0.0
+
+      - name: Build and push image
+        uses: docker/build-push-action@d08e5c354a6adb9ed34480a06d141179aa583294 # v7.0.0
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.image.outputs.image }}
+
+  terraform-apply:
+    needs:
+      - preflight
+      - build-image
+    if: needs.preflight.outputs.configured == 'true'
+    runs-on: ubuntu-latest
+    environment: production
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    env:
+      TF_VAR_container_image: ${{ needs.build-image.outputs.image }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Install aqua-managed tools
+        uses: aquaproj/aqua-installer@11dd79b4e498d471a9385aa9fb7f62bb5f52a73c # v4.0.4
+        with:
+          aqua_version: v2.57.0
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: ${{ vars.GCP_TERRAFORM_APPLY_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_TERRAFORM_APPLY_SERVICE_ACCOUNT }}
+
+      - name: Set up tfaction
+        uses: suzuki-shunsuke/tfaction/setup@4562d910bbacecf384c8aeda25332284fcf05f38 # v1.20.1
+        with:
+          github_token: ${{ github.token }}
+
+      - name: Terraform apply
+        uses: suzuki-shunsuke/tfaction/apply@4562d910bbacecf384c8aeda25332284fcf05f38 # v1.20.1
+        with:
+          github_token: ${{ github.token }}
+
+  deploy-skipped:
+    needs: preflight
+    if: needs.preflight.outputs.configured != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Skip deploy until bootstrap variables are configured
+        run: |
+          echo "deploy is skipped until the required repository variables are configured."
+          echo "Set the terraform-apply OIDC variables, TF_STATE_BUCKET, and the application variables first."

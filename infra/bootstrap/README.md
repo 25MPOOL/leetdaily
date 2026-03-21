@@ -6,6 +6,7 @@ This root module creates the minimal shared resources required before `infra/ter
 - a GitHub Workload Identity Pool plus dedicated providers for `terraform-plan` and `terraform-apply`
 - dedicated Terraform service accounts for `terraform-plan` and `terraform-apply`
 - project-level IAM bindings required by the current Cloud Run / GCS / Secret Manager / Cloud Scheduler stack
+- Artifact Registry push access for the automated deploy workflow
 
 ## Usage
 
@@ -36,4 +37,6 @@ This module now fixes the auth naming contract in Terraform itself:
 - plan provider ID: `leetdaily-terraform-plan`
 - apply provider ID: `leetdaily-terraform-apply`
 
-The outputs expose both the fixed IDs and the resulting full resource names so downstream automation can validate or derive workflow inputs from a stable convention. Terraform workflow service account emails are derived from the fixed naming convention plus `GCP_PROJECT_ID`. `terraform-plan` should not remain in the skipped path once the remaining repository variables are configured.
+Use the outputs from this module to populate the provider and service-account variables. `terraform-plan` should not remain in the skipped path once these are configured.
+
+The `terraform-apply` identity is trusted for both manual `workflow_dispatch` runs and `push` events on `main`, so the same service account can back the automated deploy workflow.

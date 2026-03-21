@@ -1,6 +1,36 @@
 {
   "checksums": [
     {
+      "id": "github_release/github.com/evilmartians/lefthook/v1.13.6/lefthook_1.13.6_Linux_aarch64.gz",
+      "checksum": "43F46F76E84B8F379FE399E1BAAEAD5613568598E9448B38FC00F9309336F2CA",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/evilmartians/lefthook/v1.13.6/lefthook_1.13.6_Linux_x86_64.gz",
+      "checksum": "C2406F881FD0EE1DDC5E1400D809D7D02BA6C908BB0118139689D925691E884E",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/evilmartians/lefthook/v1.13.6/lefthook_1.13.6_MacOS_arm64.gz",
+      "checksum": "685488FD61AD19482627F3E0D84982E5BCF019298A3D20F93B371D5585A2327E",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/evilmartians/lefthook/v1.13.6/lefthook_1.13.6_MacOS_x86_64.gz",
+      "checksum": "71989DD1D3178B4FA179F3F7906CA135F102CE705B3D36F9B88AED6B976D192D",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/evilmartians/lefthook/v1.13.6/lefthook_1.13.6_Windows_arm64.gz",
+      "checksum": "165150F80B3DF9D662AD32F95BD7A6B08399DD98FE68DF42958C019A47D89644",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/evilmartians/lefthook/v1.13.6/lefthook_1.13.6_Windows_x86_64.gz",
+      "checksum": "F08BF0CBE0B1C35C79F8E0BAD59B283F7AA7F01E622AA02BBB7404C265694F39",
+      "algorithm": "sha256"
+    },
+    {
       "id": "github_release/github.com/jdx/mise/v2025.12.12/mise-v2025.12.12-linux-arm64-musl.tar.gz",
       "checksum": "8875845EAF270E174D63C41C1FE629D893B7CC78BC9BE494B2F81F8F1B98217B",
       "algorithm": "sha256"

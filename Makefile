@@ -3,7 +3,7 @@ BINARY := bin/leetdaily
 BOOTSTRAP_TERRAFORM_DIR := infra/bootstrap
 APP_TERRAFORM_DIR := infra/terraform
 
-.PHONY: all actionlint build ci clean fmt fmtcheck hooks-install pinact renovate-config-check terraform-check terraform-fmtcheck terraform-validate test vet verify workflow-lint
+.PHONY: all actionlint build ci clean fmt fmtcheck hooks-install pinact renovate-config-check terraform-check terraform-fmtcheck terraform-test terraform-validate test vet verify workflow-lint
 
 all: build
 
@@ -66,4 +66,7 @@ terraform-validate:
 	terraform -chdir=$(APP_TERRAFORM_DIR) init -backend=false
 	terraform -chdir=$(APP_TERRAFORM_DIR) validate
 
-terraform-check: terraform-fmtcheck terraform-validate
+terraform-test:
+	terraform -chdir=$(BOOTSTRAP_TERRAFORM_DIR) test
+
+terraform-check: terraform-fmtcheck terraform-validate terraform-test

@@ -38,12 +38,9 @@ Before using this root module in CI or production, apply `infra/bootstrap` once 
 
 - `GCP_PROJECT_ID`
 - `GCP_TERRAFORM_PLAN_WORKLOAD_IDENTITY_PROVIDER`
-- `GCP_TERRAFORM_PLAN_SERVICE_ACCOUNT`
 - `GCP_TERRAFORM_APPLY_WORKLOAD_IDENTITY_PROVIDER`
-- `GCP_TERRAFORM_APPLY_SERVICE_ACCOUNT`
 - `LEETDAILY_CONTAINER_IMAGE`
 - `LEETDAILY_DISCORD_TOKEN_SECRET_ID`
 - `TF_STATE_BUCKET`
-- `TF_STATE_PREFIX`
 
 If CI reports `terraform-plan-skipped`, the Terraform plan has not run yet. Treat that as bootstrap/configuration incomplete rather than a healthy steady state.

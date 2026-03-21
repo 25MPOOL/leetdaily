@@ -21,15 +21,19 @@ After apply, configure these GitHub repository variables:
 
 - `GCP_PROJECT_ID`
 - `GCP_TERRAFORM_PLAN_WORKLOAD_IDENTITY_PROVIDER`
-- `GCP_TERRAFORM_PLAN_SERVICE_ACCOUNT`
 - `GCP_TERRAFORM_APPLY_WORKLOAD_IDENTITY_PROVIDER`
-- `GCP_TERRAFORM_APPLY_SERVICE_ACCOUNT`
 - `TF_STATE_BUCKET`
-- `TF_STATE_PREFIX`
 
 You also need application-specific variables for the main stack:
 
 - `LEETDAILY_CONTAINER_IMAGE`
 - `LEETDAILY_DISCORD_TOKEN_SECRET_ID`
 
-Use the outputs from this module to populate the provider and service-account variables. `terraform-plan` should not remain in the skipped path once these are configured.
+This module now fixes the auth naming contract in Terraform itself:
+
+- plan service account account_id: `leetdaily-terraform-plan`
+- apply service account account_id: `leetdaily-terraform-apply`
+- plan provider ID: `leetdaily-terraform-plan`
+- apply provider ID: `leetdaily-terraform-apply`
+
+The outputs expose both the fixed IDs and the resulting full resource names so downstream automation can validate or derive workflow inputs from a stable convention. Terraform workflow service account emails are derived from the fixed naming convention plus `GCP_PROJECT_ID`. `terraform-plan` should not remain in the skipped path once the remaining repository variables are configured.

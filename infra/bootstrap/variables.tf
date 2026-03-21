@@ -48,18 +48,6 @@ variable "workload_identity_pool_id" {
   default     = "github-actions"
 }
 
-variable "terraform_plan_workload_identity_provider_id" {
-  description = "Workload Identity Provider ID used by terraform-plan"
-  type        = string
-  default     = "leetdaily-terraform-plan"
-}
-
-variable "terraform_apply_workload_identity_provider_id" {
-  description = "Workload Identity Provider ID used by terraform-apply"
-  type        = string
-  default     = "leetdaily-terraform-apply"
-}
-
 variable "terraform_plan_roles" {
   description = "Project-level roles granted to the Terraform plan service account"
   type        = list(string)

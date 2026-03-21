@@ -17,32 +17,50 @@ provider "google" {
 locals {
   repository             = "${var.github_owner}/${var.github_repository}"
   terraform_state_bucket = coalesce(var.terraform_state_bucket_name, "${var.project_id}-${var.service_name}-tfstate")
+  naming = {
+    terraform_plan = {
+      service_account_account_id         = "${var.service_name}-terraform-plan"
+      service_account_display_name       = "LeetDaily Terraform Plan"
+      workload_identity_provider_id      = "${var.service_name}-terraform-plan"
+      workload_identity_provider_name    = "terraform-plan"
+      workload_identity_provider_desc    = "OIDC provider for terraform-plan in ${local.repository}"
+      workload_identity_attribute_filter = "assertion.repository_id == '${var.github_repository_id}' && assertion.event_name == 'pull_request'"
+    }
+    terraform_apply = {
+      service_account_account_id         = "${var.service_name}-terraform-apply"
+      service_account_display_name       = "LeetDaily Terraform Apply"
+      workload_identity_provider_id      = "${var.service_name}-terraform-apply"
+      workload_identity_provider_name    = "terraform-apply"
+      workload_identity_provider_desc    = "OIDC provider for terraform-apply in ${local.repository}"
+      workload_identity_attribute_filter = "assertion.repository_id == '${var.github_repository_id}' && assertion.event_name == 'workflow_dispatch' && assertion.ref == 'refs/heads/main'"
+    }
+  }
 
   terraform_service_accounts = {
     plan = {
-      account_id   = "${var.service_name}-terraform-plan"
-      display_name = "LeetDaily Terraform Plan"
+      account_id   = local.naming.terraform_plan.service_account_account_id
+      display_name = local.naming.terraform_plan.service_account_display_name
       roles        = var.terraform_plan_roles
     }
     apply = {
-      account_id   = "${var.service_name}-terraform-apply"
-      display_name = "LeetDaily Terraform Apply"
+      account_id   = local.naming.terraform_apply.service_account_account_id
+      display_name = local.naming.terraform_apply.service_account_display_name
       roles        = var.terraform_apply_roles
     }
   }
 
   workload_identity_providers = {
     plan = {
-      provider_id         = var.terraform_plan_workload_identity_provider_id
-      display_name        = "GitHub Actions ${local.repository} terraform-plan"
-      description         = "OIDC provider for terraform-plan in ${local.repository}"
-      attribute_condition = "assertion.repository_id == '${var.github_repository_id}' && assertion.event_name == 'pull_request'"
+      provider_id         = local.naming.terraform_plan.workload_identity_provider_id
+      display_name        = "GitHub Actions ${local.repository} ${local.naming.terraform_plan.workload_identity_provider_name}"
+      description         = local.naming.terraform_plan.workload_identity_provider_desc
+      attribute_condition = local.naming.terraform_plan.workload_identity_attribute_filter
     }
     apply = {
-      provider_id         = var.terraform_apply_workload_identity_provider_id
-      display_name        = "GitHub Actions ${local.repository} terraform-apply"
-      description         = "OIDC provider for terraform-apply in ${local.repository}"
-      attribute_condition = "assertion.repository_id == '${var.github_repository_id}' && assertion.event_name == 'workflow_dispatch' && assertion.ref == 'refs/heads/main'"
+      provider_id         = local.naming.terraform_apply.workload_identity_provider_id
+      display_name        = "GitHub Actions ${local.repository} ${local.naming.terraform_apply.workload_identity_provider_name}"
+      description         = local.naming.terraform_apply.workload_identity_provider_desc
+      attribute_condition = local.naming.terraform_apply.workload_identity_attribute_filter
     }
   }
 }

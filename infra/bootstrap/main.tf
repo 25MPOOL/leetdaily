@@ -32,7 +32,7 @@ locals {
       workload_identity_provider_id      = "${var.service_name}-terraform-apply"
       workload_identity_provider_name    = "terraform-apply"
       workload_identity_provider_desc    = "OIDC provider for terraform-apply in ${local.repository}"
-      workload_identity_attribute_filter = "assertion.repository_id == '${var.github_repository_id}' && assertion.event_name == 'workflow_dispatch' && assertion.ref == 'refs/heads/main'"
+      workload_identity_attribute_filter = "assertion.repository_id == '${var.github_repository_id}' && assertion.ref == 'refs/heads/main' && (assertion.event_name == 'workflow_dispatch' || assertion.event_name == 'push')"
     }
   }
 

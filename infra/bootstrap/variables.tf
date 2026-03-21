@@ -65,6 +65,7 @@ variable "terraform_apply_roles" {
   description = "Project-level roles granted to the Terraform apply service account"
   type        = list(string)
   default = [
+    "roles/artifactregistry.writer",
     "roles/cloudscheduler.admin",
     "roles/iam.serviceAccountAdmin",
     "roles/iam.serviceAccountUser",

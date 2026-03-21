@@ -24,7 +24,6 @@ type Config struct {
 	HTTPPort        int
 	DataDir         string
 	DiscordBotToken string
-	DiscordAppKey   string
 	GCSBucket       string
 	ConfigObject    string
 	GuildsObject    string
@@ -44,7 +43,7 @@ func LoadFromEnv(lookup LookupEnv) (Config, error) {
 	}
 
 	cfg := Config{
-		Mode:           ModeHTTP,
+		Mode:           ModeJob,
 		LogLevel:       slog.LevelInfo,
 		HTTPPort:       8080,
 		DataDir:        ".",
@@ -80,10 +79,6 @@ func LoadFromEnv(lookup LookupEnv) (Config, error) {
 
 	if raw, ok := lookup("DISCORD_BOT_TOKEN"); ok && strings.TrimSpace(raw) != "" {
 		cfg.DiscordBotToken = strings.TrimSpace(raw)
-	}
-
-	if raw, ok := lookup("DISCORD_APPLICATION_PUBLIC_KEY"); ok && strings.TrimSpace(raw) != "" {
-		cfg.DiscordAppKey = strings.TrimSpace(raw)
 	}
 
 	if raw, ok := lookup("GCS_BUCKET"); ok && strings.TrimSpace(raw) != "" {

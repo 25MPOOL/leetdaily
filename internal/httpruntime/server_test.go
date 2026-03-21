@@ -11,7 +11,15 @@ import (
 	"github.com/nkoji21/leetdaily/internal/state"
 )
 
-func TestHandlers(t *testing.T) {
+func TestNewRejectsNilJob(t *testing.T) {
+	t.Parallel()
+
+	if _, err := New(":0", time.UTC, nil); err == nil {
+		t.Fatal("New() returned nil error, want validation error")
+	}
+}
+
+func TestServerHandlers(t *testing.T) {
 	t.Parallel()
 
 	job := &stubJob{}
@@ -29,7 +37,7 @@ func TestHandlers(t *testing.T) {
 	t.Run("healthz", func(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest(http.MethodGet, "/healthz", nil)
-		server.httpServer.Handler.ServeHTTP(recorder, request)
+		server.handleHealthz(recorder, request)
 
 		if recorder.Code != http.StatusOK {
 			t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
@@ -39,7 +47,7 @@ func TestHandlers(t *testing.T) {
 	t.Run("run", func(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest(http.MethodPost, "/run", nil)
-		server.httpServer.Handler.ServeHTTP(recorder, request)
+		server.handleRun(recorder, request)
 
 		if recorder.Code != http.StatusAccepted {
 			t.Fatalf("status = %d, want %d", recorder.Code, http.StatusAccepted)
@@ -54,9 +62,10 @@ func TestHandlers(t *testing.T) {
 
 	t.Run("run failure", func(t *testing.T) {
 		job.err = errors.New("boom")
+
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest(http.MethodPost, "/run", nil)
-		server.httpServer.Handler.ServeHTTP(recorder, request)
+		server.handleRun(recorder, request)
 
 		if recorder.Code != http.StatusInternalServerError {
 			t.Fatalf("status = %d, want %d", recorder.Code, http.StatusInternalServerError)

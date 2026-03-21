@@ -12,7 +12,6 @@ import (
 	"github.com/nkoji21/leetdaily/internal/app"
 	"github.com/nkoji21/leetdaily/internal/config"
 	"github.com/nkoji21/leetdaily/internal/discord"
-	"github.com/nkoji21/leetdaily/internal/discordapp"
 	"github.com/nkoji21/leetdaily/internal/httpruntime"
 	"github.com/nkoji21/leetdaily/internal/job"
 	"github.com/nkoji21/leetdaily/internal/leetcode"
@@ -85,16 +84,7 @@ func buildDependencies(ctx context.Context, cfg runtimecfg.Config, logger *slog.
 		return app.Dependencies{}, fmt.Errorf("build job runner: %w", err)
 	}
 
-	httpOptions := httpruntime.Options{}
-	if cfg.DiscordAppKey != "" {
-		interactionHandler, err := discordapp.NewHandler(cfg.DiscordAppKey, repository)
-		if err != nil {
-			return app.Dependencies{}, fmt.Errorf("build Discord interaction handler: %w", err)
-		}
-		httpOptions.DiscordInteractions = interactionHandler
-	}
-
-	httpRunner, err := httpruntime.NewWithOptions(cfg.HTTPAddr(), location, jobRunner, httpOptions)
+	httpRunner, err := httpruntime.New(cfg.HTTPAddr(), location, jobRunner)
 	if err != nil {
 		return app.Dependencies{}, fmt.Errorf("build HTTP runtime: %w", err)
 	}

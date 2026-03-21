@@ -16,6 +16,21 @@ provider "google" {
   region  = var.region
 }
 
+import {
+  to = google_service_account.leetdaily_runtime
+  id = "projects/${var.project_id}/serviceAccounts/${var.service_name}-runtime@${var.project_id}.iam.gserviceaccount.com"
+}
+
+import {
+  to = google_storage_bucket.leetdaily_data
+  id = coalesce(var.bucket_name, "${var.project_id}-${var.service_name}-data")
+}
+
+import {
+  to = google_service_account.scheduler_invoker
+  id = "projects/${var.project_id}/serviceAccounts/${var.service_name}-scheduler@${var.project_id}.iam.gserviceaccount.com"
+}
+
 locals {
   service_name          = var.service_name
   bucket_name           = coalesce(var.bucket_name, "${var.project_id}-${var.service_name}-data")

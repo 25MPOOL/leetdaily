@@ -10,6 +10,7 @@ import (
 	"net/http/httptest"
 	"slices"
 	"testing"
+	"time"
 
 	"github.com/nkoji21/leetdaily/internal/config"
 	"github.com/nkoji21/leetdaily/internal/discord"
@@ -52,15 +53,69 @@ func TestRepositoryNotifierRoutesToGuildChannel(t *testing.T) {
 	}
 }
 
+func TestLoadRuntimeLocationValidatesGuildSettings(t *testing.T) {
+	t.Parallel()
+
+	wantLocation, err := time.LoadLocation("Asia/Tokyo")
+	if err != nil {
+		t.Fatalf("LoadLocation() error = %v", err)
+	}
+
+	location, err := loadRuntimeLocation(context.Background(), &stubRepository{
+		cfg: config.Config{Timezone: "Asia/Tokyo"},
+		guilds: config.GuildSettings{
+			Guilds: []config.Guild{
+				{
+					GuildID:               "111111111111111111",
+					Enabled:               true,
+					ForumChannelID:        "222222222222222222",
+					NotificationChannelID: "333333333333333333",
+					StartProblemNumber:    1,
+				},
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("loadRuntimeLocation() error = %v", err)
+	}
+	if location.String() != wantLocation.String() {
+		t.Fatalf("location = %q, want %q", location.String(), wantLocation.String())
+	}
+}
+
+func TestLoadRuntimeLocationReturnsGuildSettingsError(t *testing.T) {
+	t.Parallel()
+
+	_, err := loadRuntimeLocation(context.Background(), &stubRepository{
+		cfg:      config.Config{Timezone: "Asia/Tokyo"},
+		guildErr: errors.New("duplicate guild"),
+	})
+	if err == nil {
+		t.Fatal("loadRuntimeLocation() error = nil, want error")
+	}
+	if got, want := err.Error(), "load guild settings for runtime wiring: duplicate guild"; got != want {
+		t.Fatalf("loadRuntimeLocation() error = %q, want %q", got, want)
+	}
+}
+
 type stubRepository struct {
-	guilds config.GuildSettings
+	cfg       config.Config
+	configErr error
+	guilds    config.GuildSettings
+	guildErr  error
 }
 
 func (s *stubRepository) LoadConfig(context.Context) (config.Config, error) {
-	return config.Config{}, nil
+	if s.configErr != nil {
+		return config.Config{}, s.configErr
+	}
+	return s.cfg, nil
 }
 
 func (s *stubRepository) LoadGuildSettings(context.Context) (config.GuildSettings, storage.Version, error) {
+	if s.guildErr != nil {
+		return config.GuildSettings{}, storage.Version{}, s.guildErr
+	}
 	return s.guilds, storage.Version{}, nil
 }
 

@@ -69,13 +69,9 @@ func buildDependencies(ctx context.Context, cfg runtimecfg.Config, logger *slog.
 		return app.Dependencies{}, err
 	}
 
-	configValue, err := repository.LoadConfig(ctx)
+	location, err = loadRuntimeLocation(ctx, repository)
 	if err != nil {
-		return app.Dependencies{}, fmt.Errorf("load config for runtime wiring: %w", err)
-	}
-	location, err = configValue.Location()
-	if err != nil {
-		return app.Dependencies{}, fmt.Errorf("load configured timezone: %w", err)
+		return app.Dependencies{}, err
 	}
 
 	leetcodeClient := leetcode.NewClient(nil)
@@ -107,6 +103,24 @@ func buildDependencies(ctx context.Context, cfg runtimecfg.Config, logger *slog.
 		HTTPRunner: httpRunner,
 		JobRunner:  jobModeRunner{runner: jobRunner, location: location},
 	}, nil
+}
+
+func loadRuntimeLocation(ctx context.Context, repository storage.Repository) (*time.Location, error) {
+	configValue, err := repository.LoadConfig(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("load config for runtime wiring: %w", err)
+	}
+
+	if _, err := loadGuildSettings(ctx, repository); err != nil {
+		return nil, fmt.Errorf("load guild settings for runtime wiring: %w", err)
+	}
+
+	location, err := configValue.Location()
+	if err != nil {
+		return nil, fmt.Errorf("load configured timezone: %w", err)
+	}
+
+	return location, nil
 }
 
 type jobModeRunner struct {

@@ -6,8 +6,7 @@ on:
     branches:
       - main
     paths:
-      - infra/**
-      - .github/workflows/terraform-apply.yaml
+      - infra/terraform/**
 
 permissions:
   actions: read

@@ -7,6 +7,7 @@ on:
       - .renovaterc.json
       - renovate.json
       - renovate.json5
+      - infra/**
   push:
     branches:
       - main

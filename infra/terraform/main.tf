@@ -158,7 +158,7 @@ resource "google_service_account" "scheduler_invoker" {
 
 resource "google_cloud_scheduler_job" "daily_run" {
   name        = "${var.service_name}-daily-run"
-  description = "Trigger LeetDaily daily posting job"
+  description = "Trigger LeetDaily daily posting job (paused)"
   region      = var.region
   schedule    = "0 5 * * *"
   time_zone   = "Asia/Tokyo"

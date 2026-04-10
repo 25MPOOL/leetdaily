@@ -27,11 +27,6 @@ variable "service_name" {
   default     = "leetdaily"
 }
 
-variable "container_image" {
-  description = "Container image URL for Cloud Run"
-  type        = string
-}
-
 variable "bucket_name" {
   description = "Optional override for the data bucket name"
   type        = string

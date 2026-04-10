@@ -6,6 +6,10 @@ on:
       - "v*"
   workflow_dispatch:
 
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
 permissions:
   actions: read
   contents: read
@@ -21,16 +25,20 @@ jobs:
         id: check
         env:
           GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+          # TODO: rename to GCP_DEPLOY_WORKLOAD_IDENTITY_PROVIDER once deploy-specific SA is provisioned
           GCP_TERRAFORM_APPLY_WORKLOAD_IDENTITY_PROVIDER: ${{ vars.GCP_TERRAFORM_APPLY_WORKLOAD_IDENTITY_PROVIDER }}
+          # TODO: rename to GCP_DEPLOY_SERVICE_ACCOUNT once deploy-specific SA is provisioned
           GCP_TERRAFORM_APPLY_SERVICE_ACCOUNT: ${{ vars.GCP_TERRAFORM_APPLY_SERVICE_ACCOUNT }}
           LEETDAILY_CONTAINER_IMAGE: ${{ vars.LEETDAILY_CONTAINER_IMAGE }}
+          LEETDAILY_SERVICE_NAME: ${{ vars.LEETDAILY_SERVICE_NAME }}
         run: |
           missing=""
           for key in \
             GCP_PROJECT_ID \
             GCP_TERRAFORM_APPLY_WORKLOAD_IDENTITY_PROVIDER \
             GCP_TERRAFORM_APPLY_SERVICE_ACCOUNT \
-            LEETDAILY_CONTAINER_IMAGE
+            LEETDAILY_CONTAINER_IMAGE \
+            LEETDAILY_SERVICE_NAME
           do
             eval "value=\${$key}"
             if [ -z "$value" ]; then
@@ -41,6 +49,13 @@ jobs:
           if [ -n "$missing" ]; then
             echo "configured=false" >> "$GITHUB_OUTPUT"
             echo "::error title=deploy skipped::Missing repository variables:$missing"
+            exit 0
+          fi
+
+          # Validate LEETDAILY_CONTAINER_IMAGE format (must be a valid container registry path)
+          if ! echo "$LEETDAILY_CONTAINER_IMAGE" | grep -qE '^[a-zA-Z0-9._/-]+:[a-zA-Z0-9._/-]+$'; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::error title=deploy skipped::LEETDAILY_CONTAINER_IMAGE has invalid format: $LEETDAILY_CONTAINER_IMAGE"
             exit 0
           fi
 
@@ -96,6 +111,7 @@ jobs:
           push: true
           tags: ${{ steps.image.outputs.image }}
 
+  # Deploys to Cloud Run Job (not Cloud Run Service)
   update-cloud-run-job:
     needs:
       - preflight
@@ -103,9 +119,6 @@ jobs:
     if: needs.preflight.outputs.configured == 'true'
     runs-on: ubuntu-latest
     environment: production
-    concurrency:
-      group: deploy-production
-      cancel-in-progress: false
     steps:
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
@@ -118,7 +131,7 @@ jobs:
 
       - name: Update Cloud Run Job image
         env:
-          SERVICE_NAME: ${{ vars.LEETDAILY_SERVICE_NAME || 'leetdaily' }}
+          SERVICE_NAME: ${{ vars.LEETDAILY_SERVICE_NAME }}
           IMAGE: ${{ needs.build-image.outputs.image }}
           REGION: ${{ vars.GCP_REGION || 'asia-northeast1' }}
           PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
@@ -130,10 +143,10 @@ jobs:
 
   deploy-skipped:
     needs: preflight
-    if: needs.preflight.outputs.configured != 'true'
+    if: always() && needs.preflight.outputs.configured != 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Skip deploy until bootstrap variables are configured
         run: |
           echo "deploy is skipped until the required repository variables are configured."
-          echo "Set the GCP OIDC variables and GCP_PROJECT_ID first."
+          echo "Required: GCP_PROJECT_ID, GCP_TERRAFORM_APPLY_WORKLOAD_IDENTITY_PROVIDER, GCP_TERRAFORM_APPLY_SERVICE_ACCOUNT, LEETDAILY_CONTAINER_IMAGE, LEETDAILY_SERVICE_NAME"

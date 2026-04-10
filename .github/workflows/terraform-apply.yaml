@@ -2,6 +2,11 @@ name: terraform-apply
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - infra/terraform/**
 
 permissions:
   actions: read

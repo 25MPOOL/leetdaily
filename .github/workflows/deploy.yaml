@@ -23,12 +23,14 @@ jobs:
           GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
           GCP_TERRAFORM_APPLY_WORKLOAD_IDENTITY_PROVIDER: ${{ vars.GCP_TERRAFORM_APPLY_WORKLOAD_IDENTITY_PROVIDER }}
           GCP_TERRAFORM_APPLY_SERVICE_ACCOUNT: ${{ vars.GCP_TERRAFORM_APPLY_SERVICE_ACCOUNT }}
+          LEETDAILY_CONTAINER_IMAGE: ${{ vars.LEETDAILY_CONTAINER_IMAGE }}
         run: |
           missing=""
           for key in \
             GCP_PROJECT_ID \
             GCP_TERRAFORM_APPLY_WORKLOAD_IDENTITY_PROVIDER \
-            GCP_TERRAFORM_APPLY_SERVICE_ACCOUNT
+            GCP_TERRAFORM_APPLY_SERVICE_ACCOUNT \
+            LEETDAILY_CONTAINER_IMAGE
           do
             eval "value=\${$key}"
             if [ -z "$value" ]; then
@@ -115,11 +117,16 @@ jobs:
         uses: google-github-actions/setup-gcloud@6189d56e4096ee891640bb02ac264be376592d6a # v2.1.2
 
       - name: Update Cloud Run Job image
+        env:
+          SERVICE_NAME: ${{ vars.LEETDAILY_SERVICE_NAME || 'leetdaily' }}
+          IMAGE: ${{ needs.build-image.outputs.image }}
+          REGION: ${{ vars.GCP_REGION || 'asia-northeast1' }}
+          PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
         run: |
-          gcloud run jobs update ${{ vars.LEETDAILY_SERVICE_NAME || 'leetdaily' }} \
-            --image=${{ needs.build-image.outputs.image }} \
-            --region=${{ vars.GCP_REGION || 'asia-northeast1' }} \
-            --project=${{ vars.GCP_PROJECT_ID }}
+          gcloud run jobs update "$SERVICE_NAME" \
+            --image="$IMAGE" \
+            --region="$REGION" \
+            --project="$PROJECT_ID"
 
   deploy-skipped:
     needs: preflight

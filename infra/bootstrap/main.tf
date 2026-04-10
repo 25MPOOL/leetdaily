@@ -24,7 +24,7 @@ locals {
       workload_identity_provider_id      = "${var.service_name}-terraform-plan"
       workload_identity_provider_name    = "terraform-plan"
       workload_identity_provider_desc    = "OIDC provider for terraform-plan in ${local.repository}"
-      workload_identity_attribute_filter = "assertion.repository_id == '${var.github_repository_id}' && assertion.event_name == 'pull_request'"
+      workload_identity_attribute_filter = "assertion.repository_id == '${var.github_repository_id}' && (assertion.event_name == 'pull_request' || assertion.event_name == 'pull_request_target')"
     }
     terraform_apply = {
       service_account_account_id         = "${var.service_name}-terraform-apply"
@@ -32,7 +32,7 @@ locals {
       workload_identity_provider_id      = "${var.service_name}-terraform-apply"
       workload_identity_provider_name    = "terraform-apply"
       workload_identity_provider_desc    = "OIDC provider for terraform-apply in ${local.repository}"
-      workload_identity_attribute_filter = "assertion.repository_id == '${var.github_repository_id}' && assertion.ref == 'refs/heads/main' && (assertion.event_name == 'workflow_dispatch' || assertion.event_name == 'push')"
+      workload_identity_attribute_filter = "assertion.repository_id == '${var.github_repository_id}' && (assertion.event_name == 'pull_request' || assertion.event_name == 'workflow_dispatch' || assertion.event_name == 'push')"
     }
   }
 

@@ -84,7 +84,7 @@ resource "google_cloud_run_v2_job" "leetdaily" {
       max_retries     = 0
 
       containers {
-        image = var.container_image
+        image = "gcr.io/cloudrun/placeholder"
 
         env {
           name  = "LEETDAILY_RUNTIME"
@@ -134,6 +134,12 @@ resource "google_cloud_run_v2_job" "leetdaily" {
         }
       }
     }
+  }
+
+  lifecycle {
+    ignore_changes = [
+      template[0].template[0].containers[0].image,
+    ]
   }
 }
 

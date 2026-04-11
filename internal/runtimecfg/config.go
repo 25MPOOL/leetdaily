@@ -129,6 +129,10 @@ func (c Config) Validate() error {
 		return fmt.Errorf("LEETDAILY_DATA_DIR must not be empty")
 	}
 
+	if strings.TrimSpace(c.NeetCodeProblemsFile) == "" {
+		return fmt.Errorf("NEETCODE_PROBLEMS_FILE must not be empty")
+	}
+
 	if c.UsesGCS() {
 		if strings.TrimSpace(c.ConfigObject) == "" {
 			return fmt.Errorf("CONFIG_OBJECT must not be empty when GCS_BUCKET is set")

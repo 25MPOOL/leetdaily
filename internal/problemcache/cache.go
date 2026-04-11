@@ -94,6 +94,8 @@ func (p Problem) Validate() error {
 }
 
 func (p Problem) URL() string {
+	// NeetCodeURL != "" is a defensive guard for structs constructed without
+	// going through Validate(), which enforces this invariant.
 	if p.IsPaidOnly && p.NeetCodeURL != "" {
 		return p.NeetCodeURL
 	}

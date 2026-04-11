@@ -1,6 +1,9 @@
 package problemcache
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
 func SelectNext(cache Cache, nextProblemNumber int) (Problem, error) {
 	return selectNext(cache, nextProblemNumber, nil)
@@ -39,7 +42,7 @@ func difficultyRank(d Difficulty) int {
 	case DifficultyHard:
 		return 3
 	default:
-		return 0
+		return math.MaxInt
 	}
 }
 

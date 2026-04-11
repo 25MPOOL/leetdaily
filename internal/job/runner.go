@@ -147,7 +147,7 @@ func (r *Runner) Run(ctx context.Context, targetDate state.Date) error {
 			}
 		}
 
-		refreshedCache, refreshed, refreshErr := problemcache.Refresh(ctx, r.now(), cache, guildState.NextProblemNumber, cfg.ProblemCache.RefillThreshold, r.fetcher)
+		refreshedCache, refreshed, refreshErr := problemcache.Refresh(ctx, r.now(), cache, guildState.NextProblemNumber, cfg.ProblemCache.RefillThreshold, problemcache.DifficultyMedium, r.fetcher)
 		if refreshErr != nil {
 			if errors.Is(refreshErr, problemcache.ErrRefillUsedStaleCache) {
 				cache = refreshedCache

@@ -78,34 +78,13 @@ func LoadFromEnv(lookup LookupEnv) (Config, error) {
 	if raw, ok := lookup("LEETDAILY_DATA_DIR"); ok && strings.TrimSpace(raw) != "" {
 		cfg.DataDir = filepath.Clean(strings.TrimSpace(raw))
 	}
-
-	if raw, ok := lookup("DISCORD_BOT_TOKEN"); ok && strings.TrimSpace(raw) != "" {
-		cfg.DiscordBotToken = strings.TrimSpace(raw)
-	}
-
-	if raw, ok := lookup("GCS_BUCKET"); ok && strings.TrimSpace(raw) != "" {
-		cfg.GCSBucket = strings.TrimSpace(raw)
-	}
-
-	if raw, ok := lookup("CONFIG_OBJECT"); ok && strings.TrimSpace(raw) != "" {
-		cfg.ConfigObject = strings.TrimSpace(raw)
-	}
-
-	if raw, ok := lookup("GUILDS_OBJECT"); ok && strings.TrimSpace(raw) != "" {
-		cfg.GuildsObject = strings.TrimSpace(raw)
-	}
-
-	if raw, ok := lookup("STATE_OBJECT"); ok && strings.TrimSpace(raw) != "" {
-		cfg.StateObject = strings.TrimSpace(raw)
-	}
-
-	if raw, ok := lookup("PROBLEMS_OBJECT"); ok && strings.TrimSpace(raw) != "" {
-		cfg.ProblemsObject = strings.TrimSpace(raw)
-	}
-
-	if raw, ok := lookup("NEETCODE_PROBLEMS_FILE"); ok && strings.TrimSpace(raw) != "" {
-		cfg.NeetCodeProblemsFile = strings.TrimSpace(raw)
-	}
+	envString(lookup, "DISCORD_BOT_TOKEN", &cfg.DiscordBotToken)
+	envString(lookup, "GCS_BUCKET", &cfg.GCSBucket)
+	envString(lookup, "CONFIG_OBJECT", &cfg.ConfigObject)
+	envString(lookup, "GUILDS_OBJECT", &cfg.GuildsObject)
+	envString(lookup, "STATE_OBJECT", &cfg.StateObject)
+	envString(lookup, "PROBLEMS_OBJECT", &cfg.ProblemsObject)
+	envString(lookup, "NEETCODE_PROBLEMS_FILE", &cfg.NeetCodeProblemsFile)
 
 	if err := cfg.Validate(); err != nil {
 		return Config{}, err
@@ -209,6 +188,12 @@ func (c Config) NeetCodeProblemsPath() string {
 
 func (c Config) UsesGCS() bool {
 	return strings.TrimSpace(c.GCSBucket) != ""
+}
+
+func envString(lookup LookupEnv, key string, target *string) {
+	if raw, ok := lookup(key); ok && strings.TrimSpace(raw) != "" {
+		*target = strings.TrimSpace(raw)
+	}
 }
 
 func parseLogLevel(raw string) (slog.Level, error) {

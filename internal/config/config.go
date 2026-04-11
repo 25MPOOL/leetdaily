@@ -57,7 +57,7 @@ func (c Config) Validate() error {
 		return fmt.Errorf("problem_cache.refill_threshold must be greater than 0: %d", c.ProblemCache.RefillThreshold)
 	}
 
-	if err := (GuildSettings{Guilds: c.Guilds}).Validate(); err != nil {
+	if err := validateGuilds(c.Guilds); err != nil {
 		return err
 	}
 
@@ -65,7 +65,7 @@ func (c Config) Validate() error {
 }
 
 func (c Config) EnabledGuilds() []Guild {
-	return GuildSettings{Guilds: c.Guilds}.EnabledGuilds()
+	return enabledGuilds(c.Guilds)
 }
 
 func (c Config) Location() (*time.Location, error) {
@@ -78,8 +78,16 @@ func (c Config) Location() (*time.Location, error) {
 }
 
 func (g GuildSettings) Validate() error {
-	seenGuilds := make(map[string]struct{}, len(g.Guilds))
-	for i, guild := range g.Guilds {
+	return validateGuilds(g.Guilds)
+}
+
+func (g GuildSettings) EnabledGuilds() []Guild {
+	return enabledGuilds(g.Guilds)
+}
+
+func validateGuilds(guilds []Guild) error {
+	seenGuilds := make(map[string]struct{}, len(guilds))
+	for i, guild := range guilds {
 		if err := guild.Validate(); err != nil {
 			return fmt.Errorf("guilds[%d]: %w", i, err)
 		}
@@ -93,9 +101,9 @@ func (g GuildSettings) Validate() error {
 	return nil
 }
 
-func (g GuildSettings) EnabledGuilds() []Guild {
-	enabled := make([]Guild, 0, len(g.Guilds))
-	for _, guild := range g.Guilds {
+func enabledGuilds(guilds []Guild) []Guild {
+	enabled := make([]Guild, 0, len(guilds))
+	for _, guild := range guilds {
 		if guild.Enabled {
 			enabled = append(enabled, guild)
 		}

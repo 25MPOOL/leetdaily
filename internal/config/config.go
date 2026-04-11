@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"strings"
 	"time"
-	"unicode"
+
+	"github.com/nkoji21/leetdaily/internal/discordid"
 )
 
 type Config struct {
@@ -115,15 +116,15 @@ func (g *GuildSettings) Upsert(guild Guild) {
 }
 
 func (g Guild) Validate() error {
-	if !isSnowflake(g.GuildID) {
+	if !discordid.IsValid(g.GuildID) {
 		return fmt.Errorf("guild_id must be a numeric Discord ID: %q", g.GuildID)
 	}
 
-	if !isSnowflake(g.ForumChannelID) {
+	if !discordid.IsValid(g.ForumChannelID) {
 		return fmt.Errorf("forum_channel_id must be a numeric Discord ID: %q", g.ForumChannelID)
 	}
 
-	if !isSnowflake(g.NotificationChannelID) {
+	if !discordid.IsValid(g.NotificationChannelID) {
 		return fmt.Errorf("notification_channel_id must be a numeric Discord ID: %q", g.NotificationChannelID)
 	}
 
@@ -132,19 +133,4 @@ func (g Guild) Validate() error {
 	}
 
 	return nil
-}
-
-func isSnowflake(value string) bool {
-	value = strings.TrimSpace(value)
-	if value == "" {
-		return false
-	}
-
-	for _, r := range value {
-		if !unicode.IsDigit(r) {
-			return false
-		}
-	}
-
-	return true
 }

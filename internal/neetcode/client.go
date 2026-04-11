@@ -50,6 +50,7 @@ func (s *ProblemSource) FetchProblems(_ context.Context) ([]problemcache.Problem
 			Title:         entry.Title,
 			Slug:          entry.Slug,
 			Difficulty:    entry.Difficulty,
+			Category:      entry.Category,
 			IsPaidOnly:    entry.IsPaidOnly,
 			NeetCodeURL:   entry.NeetCodeURL,
 		}

@@ -365,10 +365,13 @@ func isStale(startedAt *time.Time, now time.Time) bool {
 }
 
 func formatThreadTitle(problem problemcache.Problem) string {
-	return fmt.Sprintf("#%d %s", problem.ProblemNumber, problem.Title)
+	return fmt.Sprintf("#N%d %s", problem.ProblemNumber, problem.Title)
 }
 
 func formatThreadBody(problem problemcache.Problem) string {
+	if problem.Category != "" {
+		return fmt.Sprintf("%s\n%s", problem.URL(), problem.Category)
+	}
 	return problem.URL()
 }
 

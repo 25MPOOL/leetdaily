@@ -9,4 +9,5 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /out/leetdaily ./cmd/leetd
 
 FROM gcr.io/distroless/static-debian12
 COPY --from=build /out/leetdaily /leetdaily
+COPY neetcode150.json /neetcode150.json
 ENTRYPOINT ["/leetdaily"]

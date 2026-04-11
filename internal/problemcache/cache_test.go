@@ -19,14 +19,12 @@ func TestCacheValidateAndByNumber(t *testing.T) {
 				Title:         "Two Sum",
 				Slug:          "two-sum",
 				Difficulty:    DifficultyEasy,
-				IsPaidOnly:    false,
 			},
 			{
 				ProblemNumber: 2,
 				Title:         "Add Two Numbers",
 				Slug:          "add-two-numbers",
 				Difficulty:    DifficultyMedium,
-				IsPaidOnly:    false,
 			},
 		},
 	}
@@ -114,25 +112,86 @@ func TestCacheValidateRejectsInvalidValues(t *testing.T) {
 	}
 }
 
-func TestSelectNextFreeSkipsPaidProblems(t *testing.T) {
+func TestSelectNextReturnsNextProblem(t *testing.T) {
 	t.Parallel()
 
 	cache := Cache{
 		UpdatedAt: timePointer(time.Date(2026, 3, 20, 5, 0, 0, 0, time.UTC)),
 		Problems: []Problem{
-			{ProblemNumber: 10, Title: "Paid", Slug: "paid", Difficulty: DifficultyEasy, IsPaidOnly: true},
-			{ProblemNumber: 11, Title: "Free", Slug: "free", Difficulty: DifficultyMedium, IsPaidOnly: false},
+			{ProblemNumber: 10, Title: "First", Slug: "first", Difficulty: DifficultyEasy},
+			{ProblemNumber: 11, Title: "Second", Slug: "second", Difficulty: DifficultyMedium},
 		},
 	}
 
-	problem, err := SelectNextFree(cache, 10)
+	problem, err := SelectNext(cache, 10)
 	if err != nil {
-		t.Fatalf("SelectNextFree() error = %v", err)
+		t.Fatalf("SelectNext() error = %v", err)
 	}
 
-	if problem.ProblemNumber != 11 {
-		t.Fatalf("SelectNextFree().ProblemNumber = %d, want 11", problem.ProblemNumber)
+	if problem.ProblemNumber != 10 {
+		t.Fatalf("SelectNext().ProblemNumber = %d, want 10", problem.ProblemNumber)
 	}
+}
+
+func TestSelectNextBelowFiltersHard(t *testing.T) {
+	t.Parallel()
+
+	cache := Cache{
+		UpdatedAt: timePointer(time.Date(2026, 3, 20, 5, 0, 0, 0, time.UTC)),
+		Problems: []Problem{
+			{ProblemNumber: 1, Title: "Easy", Slug: "easy", Difficulty: DifficultyEasy},
+			{ProblemNumber: 2, Title: "Medium", Slug: "medium", Difficulty: DifficultyMedium},
+			{ProblemNumber: 3, Title: "Hard", Slug: "hard", Difficulty: DifficultyHard},
+		},
+	}
+
+	t.Run("easy passes", func(t *testing.T) {
+		t.Parallel()
+		p, err := SelectNextBelow(cache, 1, DifficultyMedium)
+		if err != nil {
+			t.Fatalf("SelectNextBelow() error = %v", err)
+		}
+		if p.ProblemNumber != 1 {
+			t.Fatalf("ProblemNumber = %d, want 1", p.ProblemNumber)
+		}
+	})
+
+	t.Run("medium passes", func(t *testing.T) {
+		t.Parallel()
+		p, err := SelectNextBelow(cache, 2, DifficultyMedium)
+		if err != nil {
+			t.Fatalf("SelectNextBelow() error = %v", err)
+		}
+		if p.ProblemNumber != 2 {
+			t.Fatalf("ProblemNumber = %d, want 2", p.ProblemNumber)
+		}
+	})
+
+	t.Run("hard is skipped", func(t *testing.T) {
+		t.Parallel()
+		_, err := SelectNextBelow(cache, 3, DifficultyMedium)
+		if err == nil {
+			t.Fatal("SelectNextBelow() returned nil error, want error for hard-only cache")
+		}
+	})
+
+	t.Run("hard skipped and next easy selected", func(t *testing.T) {
+		t.Parallel()
+		hardThenEasy := Cache{
+			UpdatedAt: timePointer(time.Date(2026, 3, 20, 5, 0, 0, 0, time.UTC)),
+			Problems: []Problem{
+				{ProblemNumber: 5, Title: "Hard", Slug: "hard", Difficulty: DifficultyHard},
+				{ProblemNumber: 6, Title: "Easy", Slug: "easy2", Difficulty: DifficultyEasy},
+			},
+		}
+		p, err := SelectNextBelow(hardThenEasy, 5, DifficultyMedium)
+		if err != nil {
+			t.Fatalf("SelectNextBelow() error = %v", err)
+		}
+		if p.ProblemNumber != 6 {
+			t.Fatalf("ProblemNumber = %d, want 6 (hard skipped)", p.ProblemNumber)
+		}
+	})
 }
 
 func TestRefreshBehaviors(t *testing.T) {
@@ -143,7 +202,7 @@ func TestRefreshBehaviors(t *testing.T) {
 		UpdatedAt: timePointer(time.Date(2026, 3, 20, 5, 0, 0, 0, time.UTC)),
 		Problems: []Problem{
 			{ProblemNumber: 1, Title: "One", Slug: "one", Difficulty: DifficultyEasy},
-			{ProblemNumber: 2, Title: "Two", Slug: "two", Difficulty: DifficultyMedium, IsPaidOnly: true},
+			{ProblemNumber: 2, Title: "Two", Slug: "two", Difficulty: DifficultyMedium},
 			{ProblemNumber: 3, Title: "Three", Slug: "three", Difficulty: DifficultyHard},
 		},
 	}
@@ -151,7 +210,7 @@ func TestRefreshBehaviors(t *testing.T) {
 	t.Run("skip refill when enough free problems remain", func(t *testing.T) {
 		t.Parallel()
 
-		cache, refreshed, err := Refresh(context.Background(), now, current, 1, 2, stubFetcher{})
+		cache, refreshed, err := Refresh(context.Background(), now, current, 1, 2, DifficultyMedium, stubFetcher{})
 		if err != nil {
 			t.Fatalf("Refresh() error = %v", err)
 		}
@@ -166,7 +225,7 @@ func TestRefreshBehaviors(t *testing.T) {
 	t.Run("refill when threshold is not met", func(t *testing.T) {
 		t.Parallel()
 
-		cache, refreshed, err := Refresh(context.Background(), now, current, 3, 2, stubFetcher{
+		cache, refreshed, err := Refresh(context.Background(), now, current, 3, 2, DifficultyMedium, stubFetcher{
 			problems: []Problem{
 				{ProblemNumber: 3, Title: "Three", Slug: "three", Difficulty: DifficultyHard},
 				{ProblemNumber: 4, Title: "Four", Slug: "four", Difficulty: DifficultyEasy},
@@ -189,7 +248,7 @@ func TestRefreshBehaviors(t *testing.T) {
 	t.Run("keep existing cache when refill fails but free problems remain", func(t *testing.T) {
 		t.Parallel()
 
-		cache, refreshed, err := Refresh(context.Background(), now, current, 1, 5, stubFetcher{err: context.DeadlineExceeded})
+		cache, refreshed, err := Refresh(context.Background(), now, current, 1, 5, DifficultyMedium, stubFetcher{err: context.DeadlineExceeded})
 		if !errors.Is(err, ErrRefillUsedStaleCache) {
 			t.Fatalf("Refresh() error = %v, want ErrRefillUsedStaleCache", err)
 		}
@@ -204,7 +263,7 @@ func TestRefreshBehaviors(t *testing.T) {
 	t.Run("fail when refill fails and no free problem remains", func(t *testing.T) {
 		t.Parallel()
 
-		_, _, err := Refresh(context.Background(), now, current, 4, 1, stubFetcher{err: context.DeadlineExceeded})
+		_, _, err := Refresh(context.Background(), now, current, 4, 1, DifficultyMedium, stubFetcher{err: context.DeadlineExceeded})
 		if err == nil {
 			t.Fatal("Refresh() error = nil, want refill error")
 		}

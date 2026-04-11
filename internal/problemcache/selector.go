@@ -1,8 +1,19 @@
 package problemcache
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
-func SelectNextFree(cache Cache, nextProblemNumber int) (Problem, error) {
+func SelectNext(cache Cache, nextProblemNumber int) (Problem, error) {
+	return selectNext(cache, nextProblemNumber, nil)
+}
+
+func SelectNextBelow(cache Cache, nextProblemNumber int, maxDifficulty Difficulty) (Problem, error) {
+	return selectNext(cache, nextProblemNumber, &maxDifficulty)
+}
+
+func selectNext(cache Cache, nextProblemNumber int, maxDifficulty *Difficulty) (Problem, error) {
 	if nextProblemNumber < 1 {
 		return Problem{}, fmt.Errorf("next problem number must be greater than 0: %d", nextProblemNumber)
 	}
@@ -10,13 +21,29 @@ func SelectNextFree(cache Cache, nextProblemNumber int) (Problem, error) {
 	indexed := cache.ByNumber()
 	for number := nextProblemNumber; number <= maxProblemNumber(indexed); number++ {
 		problem, ok := indexed[number]
-		if !ok || problem.IsPaidOnly {
+		if !ok {
+			continue
+		}
+		if maxDifficulty != nil && difficultyRank(problem.Difficulty) > difficultyRank(*maxDifficulty) {
 			continue
 		}
 		return problem, nil
 	}
 
-	return Problem{}, fmt.Errorf("no free problem found at or after #%d", nextProblemNumber)
+	return Problem{}, fmt.Errorf("no problem found at or after #%d", nextProblemNumber)
+}
+
+func difficultyRank(d Difficulty) int {
+	switch d {
+	case DifficultyEasy:
+		return 1
+	case DifficultyMedium:
+		return 2
+	case DifficultyHard:
+		return 3
+	default:
+		return math.MaxInt
+	}
 }
 
 func maxProblemNumber(indexed map[int]Problem) int {

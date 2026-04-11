@@ -16,7 +16,7 @@ import (
 	"github.com/nkoji21/leetdaily/internal/config"
 	"github.com/nkoji21/leetdaily/internal/discord"
 	"github.com/nkoji21/leetdaily/internal/job"
-	"github.com/nkoji21/leetdaily/internal/leetcode"
+	"github.com/nkoji21/leetdaily/internal/neetcode"
 	"github.com/nkoji21/leetdaily/internal/state"
 	"github.com/nkoji21/leetdaily/internal/storage"
 	"github.com/nkoji21/leetdaily/internal/storage/filesystem"
@@ -165,7 +165,7 @@ func newIntegrationEnv(t *testing.T) *integrationEnv {
 	writeJSON(t, filepath.Join(root, "config.json"), cfg)
 	writeJSON(t, filepath.Join(root, "guilds.json"), config.GuildSettings{Guilds: []config.Guild{guild}})
 
-	leetcodeServer := newFakeLeetCodeServer(t)
+	problemsFile := writeProblemsJSON(t, root)
 	discordServer, fakeDiscord := newFakeDiscordServer(t)
 
 	discordClient, err := discord.NewClientWithBaseURL(discordServer.Client(), "token", discordServer.URL)
@@ -177,8 +177,8 @@ func newIntegrationEnv(t *testing.T) *integrationEnv {
 		t.Fatalf("NewNotifier() error = %v", err)
 	}
 
-	leetcodeClient := leetcode.NewClientWithEndpoint(leetcodeServer.Client(), leetcodeServer.URL)
-	runner, err := job.NewWithOptions(repository, leetcodeClient, discordClient, notifier, job.Options{
+	neetcodeClient := neetcode.NewClient(problemsFile)
+	runner, err := job.NewWithOptions(repository, neetcodeClient, discordClient, notifier, job.Options{
 		Now: func() time.Time { return time.Date(2026, 3, 20, 5, 0, 0, 0, time.UTC) },
 		Sleep: func(context.Context, time.Duration) error {
 			return nil
@@ -196,37 +196,17 @@ func newIntegrationEnv(t *testing.T) *integrationEnv {
 	}
 }
 
-func newFakeLeetCodeServer(t *testing.T) *httptest.Server {
+func writeProblemsJSON(t *testing.T, dir string) string {
 	t.Helper()
 
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		_ = json.NewEncoder(w).Encode(map[string]any{
-			"data": map[string]any{
-				"problemsetQuestionList": map[string]any{
-					"total": 2,
-					"questions": []map[string]any{
-						{
-							"frontendQuestionId": "1",
-							"title":              "Two Sum",
-							"titleSlug":          "two-sum",
-							"difficulty":         "Easy",
-							"isPaidOnly":         false,
-						},
-						{
-							"frontendQuestionId": "2",
-							"title":              "Add Two Numbers",
-							"titleSlug":          "add-two-numbers",
-							"difficulty":         "Medium",
-							"isPaidOnly":         false,
-						},
-					},
-				},
-			},
-		})
-	}))
-
-	t.Cleanup(server.Close)
-	return server
+	path := filepath.Join(dir, "neetcode150.json")
+	writeJSON(t, path, map[string]any{
+		"problems": []map[string]any{
+			{"problem_number": 1, "title": "Two Sum", "slug": "two-sum", "difficulty": "Easy", "category": "Arrays & Hashing"},
+			{"problem_number": 2, "title": "Add Two Numbers", "slug": "add-two-numbers", "difficulty": "Medium", "category": "Linked List"},
+		},
+	})
+	return path
 }
 
 type fakeDiscord struct {

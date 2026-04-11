@@ -19,16 +19,17 @@ const (
 )
 
 type Config struct {
-	Mode            Mode
-	LogLevel        slog.Level
-	HTTPPort        int
-	DataDir         string
-	DiscordBotToken string
-	GCSBucket       string
-	ConfigObject    string
-	GuildsObject    string
-	StateObject     string
-	ProblemsObject  string
+	Mode                 Mode
+	LogLevel             slog.Level
+	HTTPPort             int
+	DataDir              string
+	DiscordBotToken      string
+	GCSBucket            string
+	ConfigObject         string
+	GuildsObject         string
+	StateObject          string
+	ProblemsObject       string
+	NeetCodeProblemsFile string
 }
 
 func Load() (Config, error) {
@@ -43,14 +44,15 @@ func LoadFromEnv(lookup LookupEnv) (Config, error) {
 	}
 
 	cfg := Config{
-		Mode:           ModeJob,
-		LogLevel:       slog.LevelInfo,
-		HTTPPort:       8080,
-		DataDir:        ".",
-		ConfigObject:   "config.json",
-		GuildsObject:   "guilds.json",
-		StateObject:    "state.json",
-		ProblemsObject: "problems.json",
+		Mode:                 ModeJob,
+		LogLevel:             slog.LevelInfo,
+		HTTPPort:             8080,
+		DataDir:              ".",
+		ConfigObject:         "config.json",
+		GuildsObject:         "guilds.json",
+		StateObject:          "state.json",
+		ProblemsObject:       "problems.json",
+		NeetCodeProblemsFile: "neetcode150.json",
 	}
 
 	if raw, ok := lookup("LEETDAILY_RUNTIME"); ok && strings.TrimSpace(raw) != "" {
@@ -101,6 +103,10 @@ func LoadFromEnv(lookup LookupEnv) (Config, error) {
 		cfg.ProblemsObject = strings.TrimSpace(raw)
 	}
 
+	if raw, ok := lookup("NEETCODE_PROBLEMS_FILE"); ok && strings.TrimSpace(raw) != "" {
+		cfg.NeetCodeProblemsFile = strings.TrimSpace(raw)
+	}
+
 	if err := cfg.Validate(); err != nil {
 		return Config{}, err
 	}
@@ -121,6 +127,10 @@ func (c Config) Validate() error {
 
 	if strings.TrimSpace(c.DataDir) == "" {
 		return fmt.Errorf("LEETDAILY_DATA_DIR must not be empty")
+	}
+
+	if strings.TrimSpace(c.NeetCodeProblemsFile) == "" {
+		return fmt.Errorf("NEETCODE_PROBLEMS_FILE must not be empty")
 	}
 
 	if c.UsesGCS() {
@@ -191,6 +201,10 @@ func (c Config) ProblemsPath() string {
 	}
 
 	return filepath.Join(c.DataDir, "problems.json")
+}
+
+func (c Config) NeetCodeProblemsPath() string {
+	return filepath.Join(c.DataDir, c.NeetCodeProblemsFile)
 }
 
 func (c Config) UsesGCS() bool {

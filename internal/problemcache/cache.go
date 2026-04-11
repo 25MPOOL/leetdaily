@@ -25,6 +25,7 @@ type Problem struct {
 	Slug          string     `json:"slug"`
 	Difficulty    Difficulty `json:"difficulty"`
 	IsPaidOnly    bool       `json:"is_paid_only"`
+	NeetCodeURL   string     `json:"neetcode_url"`
 }
 
 func (c Cache) Validate() error {
@@ -85,9 +86,18 @@ func (p Problem) Validate() error {
 		return fmt.Errorf("difficulty must be one of Easy/Medium/Hard: %q", p.Difficulty)
 	}
 
+	if p.IsPaidOnly && strings.TrimSpace(p.NeetCodeURL) == "" {
+		return fmt.Errorf("neetcode_url must not be empty for paid-only problems")
+	}
+
 	return nil
 }
 
 func (p Problem) URL() string {
+	// NeetCodeURL != "" is a defensive guard for structs constructed without
+	// going through Validate(), which enforces this invariant.
+	if p.IsPaidOnly && p.NeetCodeURL != "" {
+		return p.NeetCodeURL
+	}
 	return fmt.Sprintf("https://leetcode.com/problems/%s", p.Slug)
 }

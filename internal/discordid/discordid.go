@@ -1,14 +1,10 @@
 package discordid
 
-import (
-	"strings"
-	"unicode"
-)
+import "unicode"
 
 // IsValid reports whether value is a valid Discord snowflake ID
-// (a non-empty string of ASCII digits).
+// (a non-empty string of ASCII digits with no surrounding whitespace).
 func IsValid(value string) bool {
-	value = strings.TrimSpace(value)
 	if value == "" {
 		return false
 	}

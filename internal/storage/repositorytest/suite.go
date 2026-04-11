@@ -216,10 +216,10 @@ func RunRepositorySuite(t *testing.T, name string, newHarness func(*testing.T) H
 			t.Fatalf("LoadProblemCache() error = %v, want ErrNotFound", err)
 		}
 
-		// guilds.json が未発見かつ config.json も未発見の場合はエラーを返す。
+		// guilds.json が未発見かつ config.json も未発見の場合は ErrNotFound を返す。
 		_, _, err = repository.LoadGuildSettings(context.Background())
-		if err == nil {
-			t.Fatalf("LoadGuildSettings() with no config: got nil, want error")
+		if !errors.Is(err, storage.ErrNotFound) {
+			t.Fatalf("LoadGuildSettings() with no config: got %v, want ErrNotFound", err)
 		}
 	})
 

@@ -67,7 +67,7 @@ func buildDependencies(ctx context.Context, cfg runtimecfg.Config, logger *slog.
 		return app.Dependencies{}, err
 	}
 
-	neetcodeClient := neetcode.NewClient(cfg.NeetCodeProblemsPath())
+	neetcodeClient := neetcode.NewProblemSource(cfg.NeetCodeProblemsPath())
 	jobRunner, err := job.New(
 		repository,
 		neetcodeClient,
@@ -95,7 +95,7 @@ func loadRuntimeLocation(ctx context.Context, repository storage.Repository) (*t
 		return nil, fmt.Errorf("load config for runtime wiring: %w", err)
 	}
 
-	if _, _, err := repository.LoadGuildSettings(ctx); err != nil {
+	if _, _, err = repository.LoadGuildSettings(ctx); err != nil {
 		return nil, fmt.Errorf("load guild settings for runtime wiring: %w", err)
 	}
 

@@ -14,7 +14,7 @@ type ProblemSource struct {
 	path string
 }
 
-func NewClient(path string) *ProblemSource {
+func NewProblemSource(path string) *ProblemSource {
 	return &ProblemSource{path: path}
 }
 

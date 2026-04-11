@@ -20,7 +20,7 @@ func TestIsValid(t *testing.T) {
 		{"abc", false},
 		{"123abc", false},
 		{"12.34", false},
-		{" 123456789012345678 ", true},
+		{" 123456789012345678 ", false},
 	}
 
 	for _, tc := range cases {

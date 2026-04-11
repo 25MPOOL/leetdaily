@@ -11,11 +11,6 @@ permissions:
 env:
   GCP_REGION: asia-northeast1
   GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
-  TFACTION_IS_APPLY: "true"
-  TFACTION_JOB_TYPE: terraform
-  TFACTION_TARGET: infra/prod
-  TF_STATE_PREFIX: prod/infra/terraform
-  TFACTION_WORKING_DIR: infra/terraform
   TERRAFORM_APPLY_SERVICE_ACCOUNT: leetdaily-terraform-apply@${{ vars.GCP_PROJECT_ID }}.iam.gserviceaccount.com
   TF_CLI_ARGS_init: >-
     -backend-config=bucket=${{ vars.TF_STATE_BUCKET }}
@@ -83,15 +78,13 @@ jobs:
           workload_identity_provider: ${{ vars.GCP_TERRAFORM_APPLY_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ env.TERRAFORM_APPLY_SERVICE_ACCOUNT }}
 
-      - name: Set up tfaction
-        uses: suzuki-shunsuke/tfaction/setup@4562d910bbacecf384c8aeda25332284fcf05f38 # v1.20.1
-        with:
-          github_token: ${{ github.token }}
+      - name: Terraform init
+        working-directory: infra/terraform
+        run: terraform init
 
       - name: Terraform apply
-        uses: suzuki-shunsuke/tfaction/apply@4562d910bbacecf384c8aeda25332284fcf05f38 # v1.20.1
-        with:
-          github_token: ${{ github.token }}
+        working-directory: infra/terraform
+        run: terraform apply -auto-approve
 
   terraform-apply-skipped:
     needs: preflight

@@ -6,22 +6,14 @@ on:
       - "v*"
   workflow_dispatch:
 
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
 permissions:
   actions: read
   contents: read
   id-token: write
-
-env:
-  TFACTION_IS_APPLY: "true"
-  TFACTION_JOB_TYPE: terraform
-  TFACTION_TARGET: infra/prod
-  TFACTION_WORKING_DIR: infra/terraform
-  TF_CLI_ARGS_init: >-
-    -backend-config=bucket=${{ vars.TF_STATE_BUCKET }}
-    -backend-config=prefix=${{ vars.TF_STATE_PREFIX || 'prod/infra/terraform' }}
-  TF_VAR_discord_token_secret_id: ${{ vars.LEETDAILY_DISCORD_TOKEN_SECRET_ID }}
-  TF_VAR_project_id: ${{ vars.GCP_PROJECT_ID }}
-  TF_VAR_region: ${{ vars.GCP_REGION || 'asia-northeast1' }}
 
 jobs:
   preflight:
@@ -33,11 +25,12 @@ jobs:
         id: check
         env:
           GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+          # TODO: rename to GCP_DEPLOY_WORKLOAD_IDENTITY_PROVIDER once deploy-specific SA is provisioned
           GCP_TERRAFORM_APPLY_WORKLOAD_IDENTITY_PROVIDER: ${{ vars.GCP_TERRAFORM_APPLY_WORKLOAD_IDENTITY_PROVIDER }}
+          # TODO: rename to GCP_DEPLOY_SERVICE_ACCOUNT once deploy-specific SA is provisioned
           GCP_TERRAFORM_APPLY_SERVICE_ACCOUNT: ${{ vars.GCP_TERRAFORM_APPLY_SERVICE_ACCOUNT }}
           LEETDAILY_CONTAINER_IMAGE: ${{ vars.LEETDAILY_CONTAINER_IMAGE }}
-          LEETDAILY_DISCORD_TOKEN_SECRET_ID: ${{ vars.LEETDAILY_DISCORD_TOKEN_SECRET_ID }}
-          TF_STATE_BUCKET: ${{ vars.TF_STATE_BUCKET }}
+          LEETDAILY_SERVICE_NAME: ${{ vars.LEETDAILY_SERVICE_NAME }}
         run: |
           missing=""
           for key in \
@@ -45,8 +38,7 @@ jobs:
             GCP_TERRAFORM_APPLY_WORKLOAD_IDENTITY_PROVIDER \
             GCP_TERRAFORM_APPLY_SERVICE_ACCOUNT \
             LEETDAILY_CONTAINER_IMAGE \
-            LEETDAILY_DISCORD_TOKEN_SECRET_ID \
-            TF_STATE_BUCKET
+            LEETDAILY_SERVICE_NAME
           do
             eval "value=\${$key}"
             if [ -z "$value" ]; then
@@ -57,6 +49,13 @@ jobs:
           if [ -n "$missing" ]; then
             echo "configured=false" >> "$GITHUB_OUTPUT"
             echo "::error title=deploy skipped::Missing repository variables:$missing"
+            exit 0
+          fi
+
+          # Validate LEETDAILY_CONTAINER_IMAGE format (must be a valid container registry path)
+          if ! echo "$LEETDAILY_CONTAINER_IMAGE" | grep -qE '^[a-zA-Z0-9._/-]+:[a-zA-Z0-9._/-]+$'; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::error title=deploy skipped::LEETDAILY_CONTAINER_IMAGE has invalid format: $LEETDAILY_CONTAINER_IMAGE"
             exit 0
           fi
 
@@ -112,49 +111,42 @@ jobs:
           push: true
           tags: ${{ steps.image.outputs.image }}
 
-  terraform-apply:
+  # Deploys to Cloud Run Job (not Cloud Run Service)
+  update-cloud-run-job:
     needs:
       - preflight
       - build-image
     if: needs.preflight.outputs.configured == 'true'
     runs-on: ubuntu-latest
     environment: production
-    concurrency:
-      group: deploy-production
-      cancel-in-progress: false
-    env:
-      TF_VAR_container_image: ${{ needs.build-image.outputs.image }}
     steps:
-      - name: Check out repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
-      - name: Install aqua-managed tools
-        uses: aquaproj/aqua-installer@11dd79b4e498d471a9385aa9fb7f62bb5f52a73c # v4.0.4
-        with:
-          aqua_version: v2.57.0
-
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
         with:
           workload_identity_provider: ${{ vars.GCP_TERRAFORM_APPLY_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.GCP_TERRAFORM_APPLY_SERVICE_ACCOUNT }}
 
-      - name: Terraform init
-        env:
-          TF_IN_AUTOMATION: "true"
-        run: terraform -chdir=infra/terraform init -input=false
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@6189d56e4096ee891640bb02ac264be376592d6a # v2.1.2
 
-      - name: Terraform apply
+      - name: Update Cloud Run Job image
         env:
-          TF_IN_AUTOMATION: "true"
-        run: terraform -chdir=infra/terraform apply -input=false -auto-approve
+          SERVICE_NAME: ${{ vars.LEETDAILY_SERVICE_NAME }}
+          IMAGE: ${{ needs.build-image.outputs.image }}
+          REGION: ${{ vars.GCP_REGION || 'asia-northeast1' }}
+          PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+        run: |
+          gcloud run jobs update "$SERVICE_NAME" \
+            --image="$IMAGE" \
+            --region="$REGION" \
+            --project="$PROJECT_ID"
 
   deploy-skipped:
     needs: preflight
-    if: needs.preflight.outputs.configured != 'true'
+    if: always() && needs.preflight.outputs.configured != 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Skip deploy until bootstrap variables are configured
         run: |
           echo "deploy is skipped until the required repository variables are configured."
-          echo "Set the terraform-apply OIDC variables, TF_STATE_BUCKET, and the application variables first."
+          echo "Required: GCP_PROJECT_ID, GCP_TERRAFORM_APPLY_WORKLOAD_IDENTITY_PROVIDER, GCP_TERRAFORM_APPLY_SERVICE_ACCOUNT, LEETDAILY_CONTAINER_IMAGE, LEETDAILY_SERVICE_NAME"

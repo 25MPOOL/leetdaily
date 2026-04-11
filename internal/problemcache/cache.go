@@ -24,6 +24,7 @@ type Problem struct {
 	Title         string     `json:"title"`
 	Slug          string     `json:"slug"`
 	Difficulty    Difficulty `json:"difficulty"`
+	Category      string     `json:"category"`
 	IsPaidOnly    bool       `json:"is_paid_only"`
 	NeetCodeURL   string     `json:"neetcode_url"`
 }

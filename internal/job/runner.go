@@ -152,10 +152,9 @@ func (r *Runner) Run(ctx context.Context, targetDate state.Date) error {
 
 		newStateVersion, newCacheVersion, newCache, err := gr.execute(ctx, cache, cacheVersion)
 		stateVersion = newStateVersion
-		if err == nil {
-			cache = newCache
-			cacheVersion = newCacheVersion
-		} else {
+		cache = newCache
+		cacheVersion = newCacheVersion
+		if err != nil {
 			errs = append(errs, fmt.Errorf("guild %s: %w", guild.GuildID, err))
 		}
 	}
@@ -189,16 +188,19 @@ func (gr *guildRun) execute(ctx context.Context, cache problemcache.Cache, cache
 		gr.stateVersion = newVersion
 	}
 
+	// DifficultyMedium is the intentional cap: Hard problems are excluded by design.
+	// To make this configurable, add a MaxDifficulty field to config.Guild.
 	refreshedCache, refreshed, refreshErr := problemcache.Refresh(ctx, gr.runner.now(), cache, gr.guildState.NextProblemNumber, gr.cfg.ProblemCache.RefillThreshold, problemcache.DifficultyMedium, gr.runner.fetcher)
 	if refreshErr != nil {
 		notifyErr := gr.runner.notifier.NotifyFailure(ctx, gr.guild.GuildID, refreshErr)
-		if notifyErr != nil {
-			refreshErr = errors.Join(refreshErr, notifyErr)
-		}
 		if !errors.Is(refreshErr, problemcache.ErrRefillUsedStaleCache) {
-			return gr.stateVersion, cacheVersion, cache, refreshErr
+			return gr.stateVersion, cacheVersion, cache, errors.Join(refreshErr, notifyErr)
 		}
+		// Stale cache: continue with existing cache, but surface any notification failure.
 		cache = refreshedCache
+		if notifyErr != nil {
+			return gr.stateVersion, cacheVersion, cache, errors.Join(refreshErr, notifyErr)
+		}
 	}
 	if refreshed {
 		cache = refreshedCache
@@ -209,7 +211,7 @@ func (gr *guildRun) execute(ctx context.Context, cache problemcache.Cache, cache
 		cacheVersion = newVersion
 	}
 
-	problem, err := problemcache.SelectNextBelow(cache, gr.guildState.NextProblemNumber, problemcache.DifficultyMedium)
+	problem, err := problemcache.SelectNextAtMost(cache, gr.guildState.NextProblemNumber, problemcache.DifficultyMedium) // same cap as Refresh above
 	if err != nil {
 		notifyErr := gr.runner.notifier.NotifyFailure(ctx, gr.guild.GuildID, err)
 		if notifyErr != nil {

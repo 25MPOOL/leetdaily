@@ -9,7 +9,7 @@ func SelectNext(cache Cache, nextProblemNumber int) (Problem, error) {
 	return selectNext(cache, nextProblemNumber, nil)
 }
 
-func SelectNextBelow(cache Cache, nextProblemNumber int, maxDifficulty Difficulty) (Problem, error) {
+func SelectNextAtMost(cache Cache, nextProblemNumber int, maxDifficulty Difficulty) (Problem, error) {
 	return selectNext(cache, nextProblemNumber, &maxDifficulty)
 }
 

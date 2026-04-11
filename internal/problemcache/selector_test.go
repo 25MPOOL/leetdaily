@@ -62,7 +62,7 @@ func TestSelectNextEmptyCache(t *testing.T) {
 	}
 }
 
-func TestSelectNextBelow(t *testing.T) {
+func TestSelectNextAtMost(t *testing.T) {
 	t.Parallel()
 
 	updatedAt := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
@@ -92,18 +92,18 @@ func TestSelectNextBelow(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
-			got, err := SelectNextBelow(cache, tc.nextNumber, tc.maxDifficulty)
+			got, err := SelectNextAtMost(cache, tc.nextNumber, tc.maxDifficulty)
 			if tc.wantErr {
 				if err == nil {
-					t.Fatalf("SelectNextBelow(%d, %s) got nil, want error", tc.nextNumber, tc.maxDifficulty)
+					t.Fatalf("SelectNextAtMost(%d, %s) got nil, want error", tc.nextNumber, tc.maxDifficulty)
 				}
 				return
 			}
 			if err != nil {
-				t.Fatalf("SelectNextBelow(%d, %s) error = %v", tc.nextNumber, tc.maxDifficulty, err)
+				t.Fatalf("SelectNextAtMost(%d, %s) error = %v", tc.nextNumber, tc.maxDifficulty, err)
 			}
 			if got.ProblemNumber != tc.wantNumber {
-				t.Fatalf("SelectNextBelow(%d, %s).ProblemNumber = %d, want %d", tc.nextNumber, tc.maxDifficulty, got.ProblemNumber, tc.wantNumber)
+				t.Fatalf("SelectNextAtMost(%d, %s).ProblemNumber = %d, want %d", tc.nextNumber, tc.maxDifficulty, got.ProblemNumber, tc.wantNumber)
 			}
 		})
 	}

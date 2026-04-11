@@ -34,7 +34,7 @@ func TestRepositoryNotifierRoutesToGuildChannel(t *testing.T) {
 		t.Fatalf("NewClientWithBaseURL() error = %v", err)
 	}
 
-	notifier := discord.NewRepositoryNotifier(&stubRepository{
+	notifier, err := discord.NewRepositoryNotifier(&stubRepository{
 		guilds: config.GuildSettings{
 			Guilds: []config.Guild{
 				{GuildID: "111111111111111111", NotificationChannelID: "222222222222222222"},
@@ -42,6 +42,9 @@ func TestRepositoryNotifierRoutesToGuildChannel(t *testing.T) {
 			},
 		},
 	}, client, slog.New(slog.NewTextHandler(io.Discard, nil)))
+	if err != nil {
+		t.Fatalf("NewRepositoryNotifier() error = %v", err)
+	}
 
 	if err := notifier.NotifyFailure(context.Background(), "333333333333333333", errors.New("boom")); err != nil {
 		t.Fatalf("NotifyFailure() error = %v", err)

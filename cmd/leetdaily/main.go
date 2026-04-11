@@ -68,11 +68,15 @@ func buildDependencies(ctx context.Context, cfg runtimecfg.Config, logger *slog.
 	}
 
 	neetcodeClient := neetcode.NewProblemSource(cfg.NeetCodeProblemsPath())
+	notifier, err := discord.NewRepositoryNotifier(repository, discordClient, logger)
+	if err != nil {
+		return app.Dependencies{}, fmt.Errorf("build notifier: %w", err)
+	}
 	jobRunner, err := job.New(
 		repository,
 		neetcodeClient,
 		discordClient,
-		discord.NewRepositoryNotifier(repository, discordClient, logger),
+		notifier,
 	)
 	if err != nil {
 		return app.Dependencies{}, fmt.Errorf("build job runner: %w", err)

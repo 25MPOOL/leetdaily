@@ -2,6 +2,7 @@ package discord
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 
 	"github.com/nkoji21/leetdaily/internal/config"
@@ -16,12 +17,15 @@ type RepositoryNotifier struct {
 	logger     *slog.Logger
 }
 
-func NewRepositoryNotifier(repository storage.Repository, client *Client, logger *slog.Logger) *RepositoryNotifier {
+func NewRepositoryNotifier(repository storage.Repository, client *Client, logger *slog.Logger) (*RepositoryNotifier, error) {
+	if client == nil {
+		return nil, fmt.Errorf("discord client must not be nil")
+	}
 	return &RepositoryNotifier{
 		repository: repository,
 		client:     client,
 		logger:     logger,
-	}
+	}, nil
 }
 
 func (n *RepositoryNotifier) NotifyFailure(ctx context.Context, guildID string, err error) error {

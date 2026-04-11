@@ -132,7 +132,7 @@ func TestSelectNextReturnsNextProblem(t *testing.T) {
 	}
 }
 
-func TestSelectNextBelowFiltersHard(t *testing.T) {
+func TestSelectNextAtMostFiltersHard(t *testing.T) {
 	t.Parallel()
 
 	cache := Cache{
@@ -146,9 +146,9 @@ func TestSelectNextBelowFiltersHard(t *testing.T) {
 
 	t.Run("easy passes", func(t *testing.T) {
 		t.Parallel()
-		p, err := SelectNextBelow(cache, 1, DifficultyMedium)
+		p, err := SelectNextAtMost(cache, 1, DifficultyMedium)
 		if err != nil {
-			t.Fatalf("SelectNextBelow() error = %v", err)
+			t.Fatalf("SelectNextAtMost() error = %v", err)
 		}
 		if p.ProblemNumber != 1 {
 			t.Fatalf("ProblemNumber = %d, want 1", p.ProblemNumber)
@@ -157,9 +157,9 @@ func TestSelectNextBelowFiltersHard(t *testing.T) {
 
 	t.Run("medium passes", func(t *testing.T) {
 		t.Parallel()
-		p, err := SelectNextBelow(cache, 2, DifficultyMedium)
+		p, err := SelectNextAtMost(cache, 2, DifficultyMedium)
 		if err != nil {
-			t.Fatalf("SelectNextBelow() error = %v", err)
+			t.Fatalf("SelectNextAtMost() error = %v", err)
 		}
 		if p.ProblemNumber != 2 {
 			t.Fatalf("ProblemNumber = %d, want 2", p.ProblemNumber)
@@ -168,9 +168,9 @@ func TestSelectNextBelowFiltersHard(t *testing.T) {
 
 	t.Run("hard is skipped", func(t *testing.T) {
 		t.Parallel()
-		_, err := SelectNextBelow(cache, 3, DifficultyMedium)
+		_, err := SelectNextAtMost(cache, 3, DifficultyMedium)
 		if err == nil {
-			t.Fatal("SelectNextBelow() returned nil error, want error for hard-only cache")
+			t.Fatal("SelectNextAtMost() returned nil error, want error for hard-only cache")
 		}
 	})
 
@@ -183,9 +183,9 @@ func TestSelectNextBelowFiltersHard(t *testing.T) {
 				{ProblemNumber: 6, Title: "Easy", Slug: "easy2", Difficulty: DifficultyEasy},
 			},
 		}
-		p, err := SelectNextBelow(hardThenEasy, 5, DifficultyMedium)
+		p, err := SelectNextAtMost(hardThenEasy, 5, DifficultyMedium)
 		if err != nil {
-			t.Fatalf("SelectNextBelow() error = %v", err)
+			t.Fatalf("SelectNextAtMost() error = %v", err)
 		}
 		if p.ProblemNumber != 6 {
 			t.Fatalf("ProblemNumber = %d, want 6 (hard skipped)", p.ProblemNumber)

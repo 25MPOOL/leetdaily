@@ -19,7 +19,7 @@ func writeJSON(t *testing.T, path string, value any) {
 	}
 }
 
-func TestClientFetchProblemsSuccess(t *testing.T) {
+func TestProblemSourceFetchProblemsSuccess(t *testing.T) {
 	t.Parallel()
 
 	dir := t.TempDir()
@@ -55,7 +55,7 @@ func TestClientFetchProblemsSuccess(t *testing.T) {
 	}
 }
 
-func TestClientFetchProblemsFileNotFound(t *testing.T) {
+func TestProblemSourceFetchProblemsFileNotFound(t *testing.T) {
 	t.Parallel()
 
 	client := NewProblemSource("/nonexistent/path/problems.json")
@@ -64,7 +64,7 @@ func TestClientFetchProblemsFileNotFound(t *testing.T) {
 	}
 }
 
-func TestClientFetchProblemsMalformedJSON(t *testing.T) {
+func TestProblemSourceFetchProblemsMalformedJSON(t *testing.T) {
 	t.Parallel()
 
 	dir := t.TempDir()
@@ -79,7 +79,7 @@ func TestClientFetchProblemsMalformedJSON(t *testing.T) {
 	}
 }
 
-func TestClientFetchProblemsValidationFailure(t *testing.T) {
+func TestProblemSourceFetchProblemsValidationFailure(t *testing.T) {
 	t.Parallel()
 
 	dir := t.TempDir()
@@ -97,7 +97,7 @@ func TestClientFetchProblemsValidationFailure(t *testing.T) {
 	}
 }
 
-func TestClientFetchProblemsPaidOnlyMissingNeetCodeURL(t *testing.T) {
+func TestProblemSourceFetchProblemsPaidOnlyMissingNeetCodeURL(t *testing.T) {
 	t.Parallel()
 
 	dir := t.TempDir()

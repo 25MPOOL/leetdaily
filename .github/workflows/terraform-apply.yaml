@@ -1,15 +1,12 @@
 name: terraform-apply
 
 on:
-  pull_request:
-    types:
-      - labeled
+  workflow_dispatch:
 
 permissions:
   actions: read
   contents: read
   id-token: write
-  pull-requests: write
 
 env:
   GCP_REGION: asia-northeast1
@@ -104,4 +101,4 @@ jobs:
       - name: Skip terraform apply until bootstrap variables are configured
         run: |
           echo "terraform-apply is skipped until the required repository variables are configured."
-          echo "Required: GCP_PROJECT_ID, GCP_TERRAFORM_APPLY_WORKLOAD_IDENTITY_PROVIDER, LEETDAILY_DISCORD_TOKEN_SECRET_ID, TF_STATE_BUCKET"
+          echo "Run infra/bootstrap, then set GCP_PROJECT_ID, GCP_TERRAFORM_APPLY_WORKLOAD_IDENTITY_PROVIDER, TF_STATE_BUCKET, and the application variables."

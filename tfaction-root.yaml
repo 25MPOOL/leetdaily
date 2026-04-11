@@ -1,5 +1,5 @@
 ---
-plan_workflow_name: pull_request_target
+plan_workflow_name: terraform-plan.yaml
 
 tflint:
   enabled: true

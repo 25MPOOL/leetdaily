@@ -1,9 +1,9 @@
-name: pull_request_target
+name: terraform-plan
 
 on:
-  pull_request_target:
+  pull_request:
     paths:
-      - .github/workflows/pull_request_target.yaml
+      - .github/workflows/terraform-plan.yaml
       - .github/workflows/terraform-apply.yaml
       - aqua.yaml
       - infra/bootstrap/**
@@ -26,8 +26,7 @@ env:
   TF_STATE_PREFIX: prod/infra/terraform
   TFACTION_WORKING_DIR: infra/terraform
   TFCMT_SHA: ${{ github.event.pull_request.head.sha }}
-  # TODO: replace with dedicated plan SA once #76 is resolved
-  TERRAFORM_PLAN_SERVICE_ACCOUNT: leetdaily-terraform-apply@${{ vars.GCP_PROJECT_ID }}.iam.gserviceaccount.com
+  TERRAFORM_PLAN_SERVICE_ACCOUNT: leetdaily-terraform-plan@${{ vars.GCP_PROJECT_ID }}.iam.gserviceaccount.com
   TF_CLI_ARGS_init: >-
     -backend-config=bucket=${{ vars.TF_STATE_BUCKET }}
     -backend-config=prefix=prod/infra/terraform
@@ -45,14 +44,14 @@ jobs:
         id: check
         env:
           GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
-          GCP_TERRAFORM_APPLY_WORKLOAD_IDENTITY_PROVIDER: ${{ vars.GCP_TERRAFORM_APPLY_WORKLOAD_IDENTITY_PROVIDER }}
+          GCP_TERRAFORM_PLAN_WORKLOAD_IDENTITY_PROVIDER: ${{ vars.GCP_TERRAFORM_PLAN_WORKLOAD_IDENTITY_PROVIDER }}
           LEETDAILY_DISCORD_TOKEN_SECRET_ID: ${{ vars.LEETDAILY_DISCORD_TOKEN_SECRET_ID }}
           TF_STATE_BUCKET: ${{ vars.TF_STATE_BUCKET }}
         run: |
           missing=""
           for key in \
             GCP_PROJECT_ID \
-            GCP_TERRAFORM_APPLY_WORKLOAD_IDENTITY_PROVIDER \
+            GCP_TERRAFORM_PLAN_WORKLOAD_IDENTITY_PROVIDER \
             LEETDAILY_DISCORD_TOKEN_SECRET_ID \
             TF_STATE_BUCKET
           do
@@ -86,7 +85,7 @@ jobs:
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
         with:
-          workload_identity_provider: ${{ vars.GCP_TERRAFORM_APPLY_WORKLOAD_IDENTITY_PROVIDER }}
+          workload_identity_provider: ${{ vars.GCP_TERRAFORM_PLAN_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ env.TERRAFORM_PLAN_SERVICE_ACCOUNT }}
 
       - name: Set up tfaction
@@ -107,4 +106,4 @@ jobs:
       - name: Skip terraform plan until bootstrap variables are configured
         run: |
           echo "terraform-plan is skipped until the required repository variables are configured."
-          echo "Required: GCP_PROJECT_ID, GCP_TERRAFORM_APPLY_WORKLOAD_IDENTITY_PROVIDER, LEETDAILY_DISCORD_TOKEN_SECRET_ID, TF_STATE_BUCKET"
+          echo "Run infra/bootstrap, then set GCP_PROJECT_ID, GCP_TERRAFORM_PLAN_WORKLOAD_IDENTITY_PROVIDER, TF_STATE_BUCKET, and the application variables."

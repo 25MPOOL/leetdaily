@@ -379,7 +379,7 @@ func (s *stubPoster) EnsureDifficultyTags(context.Context, string) (map[problemc
 	return s.tags, nil
 }
 
-func (s *stubPoster) CreateForumThread(context.Context, string, string, string, string) (discord.Thread, error) {
+func (s *stubPoster) CreateForumThread(context.Context, discord.ForumThreadParams) (discord.Thread, error) {
 	if len(s.threadErrs) > 0 {
 		err := s.threadErrs[0]
 		s.threadErrs = s.threadErrs[1:]

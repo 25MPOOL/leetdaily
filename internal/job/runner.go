@@ -26,7 +26,7 @@ type Repository interface {
 
 type ForumPoster interface {
 	EnsureDifficultyTags(context.Context, string) (map[problemcache.Difficulty]string, error)
-	CreateForumThread(context.Context, string, string, string, string) (discord.Thread, error)
+	CreateForumThread(context.Context, discord.ForumThreadParams) (discord.Thread, error)
 }
 
 type Notifier interface {
@@ -221,7 +221,12 @@ func (r *Runner) processGuild(
 			return guildState, stateVersion, fmt.Errorf("save posting state for guild %s: %w", guild.GuildID, err)
 		}
 
-		thread, err := r.poster.CreateForumThread(ctx, guild.ForumChannelID, tags[problem.Difficulty], formatThreadTitle(problem), formatThreadBody(problem))
+		thread, err := r.poster.CreateForumThread(ctx, discord.ForumThreadParams{
+			ForumChannelID: guild.ForumChannelID,
+			TagID:          tags[problem.Difficulty],
+			Title:          formatThreadTitle(problem),
+			Body:           formatThreadBody(problem),
+		})
 		if err == nil {
 			now := r.now()
 			guildState.LastPostedProblemNumber = intPointer(problem.ProblemNumber)

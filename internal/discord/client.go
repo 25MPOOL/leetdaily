@@ -124,19 +124,26 @@ func normalizeTagName(name string) string {
 	return strings.ToLower(strings.TrimSpace(name))
 }
 
-func (c *Client) CreateForumThread(ctx context.Context, forumChannelID, tagID, title, body string) (Thread, error) {
+type ForumThreadParams struct {
+	ForumChannelID string
+	TagID          string
+	Title          string
+	Body           string
+}
+
+func (c *Client) CreateForumThread(ctx context.Context, params ForumThreadParams) (Thread, error) {
 	payload := map[string]any{
-		"name":         title,
-		"applied_tags": []string{tagID},
+		"name":         params.Title,
+		"applied_tags": []string{params.TagID},
 		"message": map[string]any{
-			"content": body,
+			"content": params.Body,
 		},
 	}
 
 	var response struct {
 		ID string `json:"id"`
 	}
-	if err := c.doJSON(ctx, http.MethodPost, fmt.Sprintf("/channels/%s/threads", forumChannelID), payload, &response); err != nil {
+	if err := c.doJSON(ctx, http.MethodPost, fmt.Sprintf("/channels/%s/threads", params.ForumChannelID), payload, &response); err != nil {
 		return Thread{}, err
 	}
 

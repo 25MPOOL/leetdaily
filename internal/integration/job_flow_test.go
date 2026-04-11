@@ -79,8 +79,8 @@ func TestJobFlowIntegration(t *testing.T) {
 		env.discord.threadFailures = 3
 		env.discord.mu.Unlock()
 
-		if err := env.runner.Run(context.Background(), targetDate); err != nil {
-			t.Fatalf("Run() error = %v", err)
+		if err := env.runner.Run(context.Background(), targetDate); err == nil {
+			t.Fatal("Run() expected error after retries exhausted, got nil")
 		}
 		if env.discord.notificationCalls != 1 {
 			t.Fatalf("notificationCalls = %d, want 1", env.discord.notificationCalls)
@@ -177,7 +177,7 @@ func newIntegrationEnv(t *testing.T) *integrationEnv {
 		t.Fatalf("NewNotifier() error = %v", err)
 	}
 
-	neetcodeClient := neetcode.NewClient(problemsFile)
+	neetcodeClient := neetcode.NewProblemSource(problemsFile)
 	runner, err := job.NewWithOptions(repository, neetcodeClient, discordClient, notifier, job.Options{
 		Now: func() time.Time { return time.Date(2026, 3, 20, 5, 0, 0, 0, time.UTC) },
 		Sleep: func(context.Context, time.Duration) error {

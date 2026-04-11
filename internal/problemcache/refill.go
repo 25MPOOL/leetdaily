@@ -58,6 +58,6 @@ func Refresh(ctx context.Context, now time.Time, cache Cache, nextProblemNumber,
 }
 
 func HasProblemFrom(cache Cache, nextProblemNumber int, maxDifficulty Difficulty) bool {
-	_, err := SelectNextBelow(cache, nextProblemNumber, maxDifficulty)
+	_, err := SelectNextAtMost(cache, nextProblemNumber, maxDifficulty)
 	return err == nil
 }

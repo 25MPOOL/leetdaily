@@ -26,7 +26,7 @@ type Repository interface {
 
 type ForumPoster interface {
 	EnsureDifficultyTags(context.Context, string) (map[problemcache.Difficulty]string, error)
-	CreateForumThread(context.Context, string, string, string, string) (discord.Thread, error)
+	CreateForumThread(context.Context, discord.ForumThreadParams) (discord.Thread, error)
 }
 
 type Notifier interface {
@@ -75,6 +75,11 @@ func NewWithOptions(repository Repository, fetcher problemcache.Fetcher, poster 
 		now:        coalesceNow(options.Now),
 		sleep:      coalesceSleep(options.Sleep),
 	}, nil
+}
+
+// Now returns the current time using the runner's injectable clock.
+func (r *Runner) Now() time.Time {
+	return r.now()
 }
 
 func coalesceNow(now func() time.Time) func() time.Time {
@@ -131,180 +136,196 @@ func (r *Runner) Run(ctx context.Context, targetDate state.Date) error {
 		}
 	}
 
+	var errs []error
 	for _, guild := range guildSettings.EnabledGuilds() {
 		guildState, _ := currentState.EnsureGuild(guild.GuildID, guild.StartProblemNumber)
 
-		if shouldSkip(guildState, targetDate, r.now()) {
-			continue
+		gr := &guildRun{
+			runner:       r,
+			cfg:          cfg,
+			state:        &currentState,
+			stateVersion: stateVersion,
+			guild:        guild,
+			guildState:   guildState,
+			targetDate:   targetDate,
 		}
 
-		if recovered := recoverStalePosting(guildState, targetDate, r.now()); recovered.Job.Status != guildState.Job.Status {
-			guildState = recovered
-			currentState.GuildStates[guild.GuildID] = guildState
-			stateVersion, err = r.repository.SaveState(ctx, currentState, stateVersion)
-			if err != nil {
-				return fmt.Errorf("save stale recovery state for guild %s: %w", guild.GuildID, err)
-			}
-		}
-
-		refreshedCache, refreshed, refreshErr := problemcache.Refresh(ctx, r.now(), cache, guildState.NextProblemNumber, cfg.ProblemCache.RefillThreshold, problemcache.DifficultyMedium, r.fetcher)
-		if refreshErr != nil {
-			if errors.Is(refreshErr, problemcache.ErrRefillUsedStaleCache) {
-				cache = refreshedCache
-				notifyErr := r.notifier.NotifyFailure(ctx, guild.GuildID, refreshErr)
-				if notifyErr != nil {
-					refreshErr = errors.Join(refreshErr, notifyErr)
-				}
-			} else {
-				notifyErr := r.notifier.NotifyFailure(ctx, guild.GuildID, refreshErr)
-				if notifyErr != nil {
-					refreshErr = errors.Join(refreshErr, notifyErr)
-				}
-				continue
-			}
-		}
-		if refreshed {
-			cache = refreshedCache
-			cacheVersion, err = r.repository.SaveProblemCache(ctx, cache, cacheVersion)
-			if err != nil {
-				return fmt.Errorf("save refreshed problem cache: %w", err)
-			}
-		}
-
-		problem, err := problemcache.SelectNextBelow(cache, guildState.NextProblemNumber, problemcache.DifficultyMedium)
+		newStateVersion, newCacheVersion, newCache, err := gr.execute(ctx, cache, cacheVersion)
+		stateVersion = newStateVersion
+		cache = newCache
+		cacheVersion = newCacheVersion
 		if err != nil {
-			notifyErr := r.notifier.NotifyFailure(ctx, guild.GuildID, err)
-			if notifyErr != nil {
-				err = errors.Join(err, notifyErr)
-			}
-			continue
-		}
-
-		guildState, stateVersion, err = r.processGuild(ctx, cfg, currentState, stateVersion, guild, guildState, targetDate, problem)
-		currentState.GuildStates[guild.GuildID] = guildState
-		if err != nil {
-			continue
+			errs = append(errs, fmt.Errorf("guild %s: %w", guild.GuildID, err))
 		}
 	}
 
-	return nil
+	return errors.Join(errs...)
 }
 
-func (r *Runner) processGuild(
-	ctx context.Context,
-	cfg config.Config,
-	currentState state.State,
-	stateVersion storage.Version,
-	guild config.Guild,
-	guildState state.GuildState,
-	targetDate state.Date,
-	problem problemcache.Problem,
-) (state.GuildState, storage.Version, error) {
-	tags, err := r.poster.EnsureDifficultyTags(ctx, guild.ForumChannelID)
-	if err != nil {
-		return r.failGuild(ctx, currentState, stateVersion, guild, guildState, targetDate, problem.ProblemNumber, cfg.Retry.MaxAttempts, err)
+// guildRun holds the per-guild execution context for a single Run iteration.
+type guildRun struct {
+	runner       *Runner
+	cfg          config.Config
+	state        *state.State
+	stateVersion storage.Version
+	guild        config.Guild
+	guildState   state.GuildState
+	targetDate   state.Date
+}
+
+func (gr *guildRun) execute(ctx context.Context, cache problemcache.Cache, cacheVersion storage.Version) (storage.Version, storage.Version, problemcache.Cache, error) {
+	if shouldSkip(gr.guildState, gr.targetDate, gr.runner.now()) {
+		return gr.stateVersion, cacheVersion, cache, nil
 	}
 
-	for attempt := 1; attempt <= cfg.Retry.MaxAttempts; attempt++ {
-		startedAt := r.now()
-		guildState.Job = state.JobState{
-			TargetDate:       &targetDate,
+	if recovered := recoverStalePosting(gr.guildState, gr.targetDate, gr.runner.now()); recovered.Job.Status != gr.guildState.Job.Status {
+		gr.guildState = recovered
+		gr.state.GuildStates[gr.guild.GuildID] = gr.guildState
+		newVersion, err := gr.runner.repository.SaveState(ctx, *gr.state, gr.stateVersion)
+		if err != nil {
+			return gr.stateVersion, cacheVersion, cache, fmt.Errorf("save stale recovery state for guild %s: %w", gr.guild.GuildID, err)
+		}
+		gr.stateVersion = newVersion
+	}
+
+	// DifficultyMedium is the intentional cap: Hard problems are excluded by design.
+	// To make this configurable, add a MaxDifficulty field to config.Guild.
+	refreshedCache, refreshed, refreshErr := problemcache.Refresh(ctx, gr.runner.now(), cache, gr.guildState.NextProblemNumber, gr.cfg.ProblemCache.RefillThreshold, problemcache.DifficultyMedium, gr.runner.fetcher)
+	if refreshErr != nil {
+		notifyErr := gr.runner.notifier.NotifyFailure(ctx, gr.guild.GuildID, refreshErr)
+		if !errors.Is(refreshErr, problemcache.ErrRefillUsedStaleCache) {
+			return gr.stateVersion, cacheVersion, cache, errors.Join(refreshErr, notifyErr)
+		}
+		// Stale cache: continue with existing cache, but surface any notification failure.
+		cache = refreshedCache
+		if notifyErr != nil {
+			return gr.stateVersion, cacheVersion, cache, errors.Join(refreshErr, notifyErr)
+		}
+	}
+	if refreshed {
+		cache = refreshedCache
+		newVersion, err := gr.runner.repository.SaveProblemCache(ctx, cache, cacheVersion)
+		if err != nil {
+			return gr.stateVersion, cacheVersion, cache, fmt.Errorf("save refreshed problem cache: %w", err)
+		}
+		cacheVersion = newVersion
+	}
+
+	problem, err := problemcache.SelectNextAtMost(cache, gr.guildState.NextProblemNumber, problemcache.DifficultyMedium) // same cap as Refresh above
+	if err != nil {
+		notifyErr := gr.runner.notifier.NotifyFailure(ctx, gr.guild.GuildID, err)
+		if notifyErr != nil {
+			err = errors.Join(err, notifyErr)
+		}
+		return gr.stateVersion, cacheVersion, cache, err
+	}
+
+	newStateVersion, err := gr.post(ctx, problem)
+	gr.stateVersion = newStateVersion
+	return gr.stateVersion, cacheVersion, cache, err
+}
+
+func (gr *guildRun) post(ctx context.Context, problem problemcache.Problem) (storage.Version, error) {
+	tags, err := gr.runner.poster.EnsureDifficultyTags(ctx, gr.guild.ForumChannelID)
+	if err != nil {
+		return gr.recordFailure(ctx, problem.ProblemNumber, gr.cfg.Retry.MaxAttempts, err)
+	}
+
+	for attempt := 1; attempt <= gr.cfg.Retry.MaxAttempts; attempt++ {
+		startedAt := gr.runner.now()
+		gr.guildState.Job = state.JobState{
+			TargetDate:       &gr.targetDate,
 			Status:           state.JobStatusPosting,
 			ProblemNumber:    intPointer(problem.ProblemNumber),
 			RetryCount:       attempt - 1,
 			PostingStartedAt: &startedAt,
 		}
-		currentState.GuildStates[guild.GuildID] = guildState
+		gr.state.GuildStates[gr.guild.GuildID] = gr.guildState
 
-		stateVersion, err = r.repository.SaveState(ctx, currentState, stateVersion)
-		if err != nil {
-			return guildState, stateVersion, fmt.Errorf("save posting state for guild %s: %w", guild.GuildID, err)
+		newVersion, saveErr := gr.runner.repository.SaveState(ctx, *gr.state, gr.stateVersion)
+		if saveErr != nil {
+			return gr.stateVersion, fmt.Errorf("save posting state for guild %s: %w", gr.guild.GuildID, saveErr)
 		}
+		gr.stateVersion = newVersion
 
-		thread, err := r.poster.CreateForumThread(ctx, guild.ForumChannelID, tags[problem.Difficulty], formatThreadTitle(problem), formatThreadBody(problem))
-		if err == nil {
-			now := r.now()
-			guildState.LastPostedProblemNumber = intPointer(problem.ProblemNumber)
-			guildState.LastPostedAt = &now
-			guildState.LastPostedThreadID = &thread.ID
-			guildState.NextProblemNumber = problem.ProblemNumber + 1
-			guildState.Job = state.JobState{
-				TargetDate:    &targetDate,
+		thread, postErr := gr.runner.poster.CreateForumThread(ctx, discord.ForumThreadParams{
+			ForumChannelID: gr.guild.ForumChannelID,
+			TagID:          tags[problem.Difficulty],
+			Title:          formatThreadTitle(problem),
+			Body:           formatThreadBody(problem),
+		})
+		if postErr == nil {
+			now := gr.runner.now()
+			gr.guildState.LastPostedProblemNumber = intPointer(problem.ProblemNumber)
+			gr.guildState.LastPostedAt = &now
+			gr.guildState.LastPostedThreadID = &thread.ID
+			gr.guildState.NextProblemNumber = problem.ProblemNumber + 1
+			gr.guildState.Job = state.JobState{
+				TargetDate:    &gr.targetDate,
 				Status:        state.JobStatusPosted,
 				ProblemNumber: intPointer(problem.ProblemNumber),
 				RetryCount:    attempt - 1,
 			}
-			currentState.GuildStates[guild.GuildID] = guildState
-			stateVersion, err = r.repository.SaveState(ctx, currentState, stateVersion)
-			if err != nil {
-				return guildState, stateVersion, fmt.Errorf("save posted state for guild %s: %w", guild.GuildID, err)
+			gr.state.GuildStates[gr.guild.GuildID] = gr.guildState
+			newVersion, saveErr = gr.runner.repository.SaveState(ctx, *gr.state, gr.stateVersion)
+			if saveErr != nil {
+				return gr.stateVersion, fmt.Errorf("save posted state for guild %s: %w", gr.guild.GuildID, saveErr)
 			}
-			return guildState, stateVersion, nil
+			return newVersion, nil
 		}
 
-		lastErr := err.Error()
-		guildState.Job = state.JobState{
-			TargetDate:    &targetDate,
+		lastErr := postErr.Error()
+		gr.guildState.Job = state.JobState{
+			TargetDate:    &gr.targetDate,
 			Status:        state.JobStatusFailed,
 			ProblemNumber: intPointer(problem.ProblemNumber),
 			RetryCount:    attempt,
 			LastError:     &lastErr,
 		}
-		currentState.GuildStates[guild.GuildID] = guildState
-		var saveErr error
-		stateVersion, saveErr = r.repository.SaveState(ctx, currentState, stateVersion)
+		gr.state.GuildStates[gr.guild.GuildID] = gr.guildState
+		newVersion, saveErr = gr.runner.repository.SaveState(ctx, *gr.state, gr.stateVersion)
 		if saveErr != nil {
-			return guildState, stateVersion, fmt.Errorf("save failed state for guild %s: %w", guild.GuildID, saveErr)
+			return gr.stateVersion, fmt.Errorf("save failed state for guild %s: %w", gr.guild.GuildID, saveErr)
 		}
+		gr.stateVersion = newVersion
 
-		if attempt < cfg.Retry.MaxAttempts {
-			if sleepErr := r.sleep(ctx, time.Duration(cfg.Retry.IntervalMinutes)*time.Minute); sleepErr != nil {
-				return guildState, stateVersion, sleepErr
+		if attempt < gr.cfg.Retry.MaxAttempts {
+			if sleepErr := gr.runner.sleep(ctx, time.Duration(gr.cfg.Retry.IntervalMinutes)*time.Minute); sleepErr != nil {
+				return gr.stateVersion, sleepErr
 			}
 			continue
 		}
 
-		notifyErr := r.notifier.NotifyFailure(ctx, guild.GuildID, err)
+		notifyErr := gr.runner.notifier.NotifyFailure(ctx, gr.guild.GuildID, postErr)
 		if notifyErr != nil {
-			return guildState, stateVersion, errors.Join(err, notifyErr)
+			return gr.stateVersion, errors.Join(postErr, notifyErr)
 		}
-		return guildState, stateVersion, err
+		return gr.stateVersion, postErr
 	}
 
-	return guildState, stateVersion, nil
+	return gr.stateVersion, nil
 }
 
-func (r *Runner) failGuild(
-	ctx context.Context,
-	currentState state.State,
-	stateVersion storage.Version,
-	guild config.Guild,
-	guildState state.GuildState,
-	targetDate state.Date,
-	problemNumber int,
-	retryCount int,
-	cause error,
-) (state.GuildState, storage.Version, error) {
+func (gr *guildRun) recordFailure(ctx context.Context, problemNumber, retryCount int, cause error) (storage.Version, error) {
 	lastErr := cause.Error()
-	guildState.Job = state.JobState{
-		TargetDate:    &targetDate,
+	gr.guildState.Job = state.JobState{
+		TargetDate:    &gr.targetDate,
 		Status:        state.JobStatusFailed,
 		ProblemNumber: intPointer(problemNumber),
 		RetryCount:    retryCount,
 		LastError:     &lastErr,
 	}
-	currentState.GuildStates[guild.GuildID] = guildState
-	var err error
-	stateVersion, err = r.repository.SaveState(ctx, currentState, stateVersion)
+	gr.state.GuildStates[gr.guild.GuildID] = gr.guildState
+	newVersion, err := gr.runner.repository.SaveState(ctx, *gr.state, gr.stateVersion)
 	if err != nil {
-		return guildState, stateVersion, err
+		return gr.stateVersion, err
 	}
 
-	notifyErr := r.notifier.NotifyFailure(ctx, guild.GuildID, cause)
+	notifyErr := gr.runner.notifier.NotifyFailure(ctx, gr.guild.GuildID, cause)
 	if notifyErr != nil {
-		return guildState, stateVersion, errors.Join(cause, notifyErr)
+		return newVersion, errors.Join(cause, notifyErr)
 	}
-	return guildState, stateVersion, cause
+	return newVersion, cause
 }
 
 func shouldSkip(guildState state.GuildState, targetDate state.Date, now time.Time) bool {

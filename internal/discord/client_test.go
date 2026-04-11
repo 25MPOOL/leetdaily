@@ -124,7 +124,7 @@ func TestCreateForumThreadAndSendNotification(t *testing.T) {
 			body, _ := io.ReadAll(r.Body)
 			_ = json.Unmarshal(body, &threadPayload)
 			_ = json.NewEncoder(w).Encode(map[string]any{"id": "thread-1"})
-		case "/channels/channel-1/messages":
+		case "/channels/111111111111111111/messages":
 			body, _ := io.ReadAll(r.Body)
 			_ = json.Unmarshal(body, &notificationPayload)
 			_ = json.NewEncoder(w).Encode(map[string]any{"id": "message-1"})
@@ -139,7 +139,12 @@ func TestCreateForumThreadAndSendNotification(t *testing.T) {
 		t.Fatalf("NewClientWithBaseURL() error = %v", err)
 	}
 
-	thread, err := client.CreateForumThread(context.Background(), "forum-1", "easy-1", "Two Sum", "Discuss this problem")
+	thread, err := client.CreateForumThread(context.Background(), ForumThreadParams{
+		ForumChannelID: "forum-1",
+		TagID:          "easy-1",
+		Title:          "Two Sum",
+		Body:           "Discuss this problem",
+	})
 	if err != nil {
 		t.Fatalf("CreateForumThread() error = %v", err)
 	}
@@ -147,7 +152,7 @@ func TestCreateForumThreadAndSendNotification(t *testing.T) {
 		t.Fatalf("thread.ID = %q, want %q", thread.ID, "thread-1")
 	}
 
-	notifier, err := NewNotifier(client, "channel-1")
+	notifier, err := NewNotifier(client, "111111111111111111")
 	if err != nil {
 		t.Fatalf("NewNotifier() error = %v", err)
 	}

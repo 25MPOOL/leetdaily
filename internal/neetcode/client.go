@@ -9,12 +9,13 @@ import (
 	"github.com/nkoji21/leetdaily/internal/problemcache"
 )
 
-type Client struct {
+// ProblemSource reads the NeetCode 150 problem list from a local JSON file.
+type ProblemSource struct {
 	path string
 }
 
-func NewClient(path string) *Client {
-	return &Client{path: path}
+func NewProblemSource(path string) *ProblemSource {
+	return &ProblemSource{path: path}
 }
 
 type problemEntry struct {
@@ -31,15 +32,15 @@ type problemList struct {
 	Problems []problemEntry `json:"problems"`
 }
 
-func (c *Client) FetchProblems(_ context.Context) ([]problemcache.Problem, error) {
-	data, err := os.ReadFile(c.path)
+func (s *ProblemSource) FetchProblems(_ context.Context) ([]problemcache.Problem, error) {
+	data, err := os.ReadFile(s.path)
 	if err != nil {
-		return nil, fmt.Errorf("read NeetCode 150 problem list %q: %w", c.path, err)
+		return nil, fmt.Errorf("read NeetCode 150 problem list %q: %w", s.path, err)
 	}
 
 	var list problemList
 	if err := json.Unmarshal(data, &list); err != nil {
-		return nil, fmt.Errorf("decode NeetCode 150 problem list %q: %w", c.path, err)
+		return nil, fmt.Errorf("decode NeetCode 150 problem list %q: %w", s.path, err)
 	}
 
 	problems := make([]problemcache.Problem, 0, len(list.Problems))

@@ -162,8 +162,8 @@ func TestRunnerNotifiesAfterRetriesExhausted(t *testing.T) {
 	runner := newRunnerForTest(t, repository, stubFetcher{}, poster, notifier)
 	runner.sleep = func(context.Context, time.Duration) error { return nil }
 
-	if err := runner.Run(context.Background(), targetDate); err != nil {
-		t.Fatalf("Run() error = %v", err)
+	if err := runner.Run(context.Background(), targetDate); err == nil {
+		t.Fatal("Run() expected error after retries exhausted, got nil")
 	}
 
 	got := repository.state.GuildStates["123456789012345678"]
@@ -247,8 +247,8 @@ func TestRunnerSavesRecoveredStalePostingBeforeEarlyFailure(t *testing.T) {
 	runner := newRunnerForTest(t, repository, stubFetcher{err: context.DeadlineExceeded}, &stubPoster{}, notifier)
 	runner.now = func() time.Time { return time.Date(2026, 3, 20, 5, 0, 0, 0, time.UTC) }
 
-	if err := runner.Run(context.Background(), targetDate); err != nil {
-		t.Fatalf("Run() error = %v", err)
+	if err := runner.Run(context.Background(), targetDate); err == nil {
+		t.Fatal("Run() expected error after cache refresh failure, got nil")
 	}
 
 	got := repository.state.GuildStates["123456789012345678"]
@@ -379,7 +379,7 @@ func (s *stubPoster) EnsureDifficultyTags(context.Context, string) (map[problemc
 	return s.tags, nil
 }
 
-func (s *stubPoster) CreateForumThread(context.Context, string, string, string, string) (discord.Thread, error) {
+func (s *stubPoster) CreateForumThread(context.Context, discord.ForumThreadParams) (discord.Thread, error) {
 	if len(s.threadErrs) > 0 {
 		err := s.threadErrs[0]
 		s.threadErrs = s.threadErrs[1:]

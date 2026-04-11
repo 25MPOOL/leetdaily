@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"strings"
 	"time"
-	"unicode"
+
+	"github.com/nkoji21/leetdaily/internal/discordid"
 )
 
 type JobStatus string
@@ -68,7 +69,7 @@ func (s *State) EnsureGuild(guildID string, startProblemNumber int) (GuildState,
 
 func (s State) Validate() error {
 	for guildID, guildState := range s.GuildStates {
-		if !isSnowflake(guildID) {
+		if !discordid.IsValid(guildID) {
 			return fmt.Errorf("guild_states[%q]: key must be a numeric Discord ID", guildID)
 		}
 
@@ -93,7 +94,7 @@ func (g GuildState) Validate() error {
 		return fmt.Errorf("last_posted_at must not be zero")
 	}
 
-	if g.LastPostedThreadID != nil && !isSnowflake(*g.LastPostedThreadID) {
+	if g.LastPostedThreadID != nil && !discordid.IsValid(*g.LastPostedThreadID) {
 		return fmt.Errorf("last_posted_thread_id must be a numeric Discord ID: %q", *g.LastPostedThreadID)
 	}
 
@@ -132,19 +133,4 @@ func (j JobState) Validate() error {
 	}
 
 	return nil
-}
-
-func isSnowflake(value string) bool {
-	value = strings.TrimSpace(value)
-	if value == "" {
-		return false
-	}
-
-	for _, r := range value {
-		if !unicode.IsDigit(r) {
-			return false
-		}
-	}
-
-	return true
 }

@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"strings"
 	"time"
-	"unicode"
+
+	"github.com/nkoji21/leetdaily/internal/discordid"
 )
 
 type Config struct {
@@ -56,7 +57,7 @@ func (c Config) Validate() error {
 		return fmt.Errorf("problem_cache.refill_threshold must be greater than 0: %d", c.ProblemCache.RefillThreshold)
 	}
 
-	if err := (GuildSettings{Guilds: c.Guilds}).Validate(); err != nil {
+	if err := validateGuilds(c.Guilds); err != nil {
 		return err
 	}
 
@@ -64,7 +65,7 @@ func (c Config) Validate() error {
 }
 
 func (c Config) EnabledGuilds() []Guild {
-	return GuildSettings{Guilds: c.Guilds}.EnabledGuilds()
+	return enabledGuilds(c.Guilds)
 }
 
 func (c Config) Location() (*time.Location, error) {
@@ -77,8 +78,16 @@ func (c Config) Location() (*time.Location, error) {
 }
 
 func (g GuildSettings) Validate() error {
-	seenGuilds := make(map[string]struct{}, len(g.Guilds))
-	for i, guild := range g.Guilds {
+	return validateGuilds(g.Guilds)
+}
+
+func (g GuildSettings) EnabledGuilds() []Guild {
+	return enabledGuilds(g.Guilds)
+}
+
+func validateGuilds(guilds []Guild) error {
+	seenGuilds := make(map[string]struct{}, len(guilds))
+	for i, guild := range guilds {
 		if err := guild.Validate(); err != nil {
 			return fmt.Errorf("guilds[%d]: %w", i, err)
 		}
@@ -92,9 +101,9 @@ func (g GuildSettings) Validate() error {
 	return nil
 }
 
-func (g GuildSettings) EnabledGuilds() []Guild {
-	enabled := make([]Guild, 0, len(g.Guilds))
-	for _, guild := range g.Guilds {
+func enabledGuilds(guilds []Guild) []Guild {
+	enabled := make([]Guild, 0, len(guilds))
+	for _, guild := range guilds {
 		if guild.Enabled {
 			enabled = append(enabled, guild)
 		}
@@ -115,15 +124,15 @@ func (g *GuildSettings) Upsert(guild Guild) {
 }
 
 func (g Guild) Validate() error {
-	if !isSnowflake(g.GuildID) {
+	if !discordid.IsValid(g.GuildID) {
 		return fmt.Errorf("guild_id must be a numeric Discord ID: %q", g.GuildID)
 	}
 
-	if !isSnowflake(g.ForumChannelID) {
+	if !discordid.IsValid(g.ForumChannelID) {
 		return fmt.Errorf("forum_channel_id must be a numeric Discord ID: %q", g.ForumChannelID)
 	}
 
-	if !isSnowflake(g.NotificationChannelID) {
+	if !discordid.IsValid(g.NotificationChannelID) {
 		return fmt.Errorf("notification_channel_id must be a numeric Discord ID: %q", g.NotificationChannelID)
 	}
 
@@ -132,19 +141,4 @@ func (g Guild) Validate() error {
 	}
 
 	return nil
-}
-
-func isSnowflake(value string) bool {
-	value = strings.TrimSpace(value)
-	if value == "" {
-		return false
-	}
-
-	for _, r := range value {
-		if !unicode.IsDigit(r) {
-			return false
-		}
-	}
-
-	return true
 }

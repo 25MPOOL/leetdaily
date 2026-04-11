@@ -3,6 +3,7 @@ package httpruntime
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -16,20 +17,29 @@ type DailyJob interface {
 type Server struct {
 	httpServer *http.Server
 	job        DailyJob
+	logger     *slog.Logger
 	now        func() time.Time
 	location   *time.Location
 }
 
 func New(addr string, location *time.Location, job DailyJob) (*Server, error) {
+	return NewWithLogger(addr, location, job, slog.Default())
+}
+
+func NewWithLogger(addr string, location *time.Location, job DailyJob, logger *slog.Logger) (*Server, error) {
 	if job == nil {
 		return nil, fmt.Errorf("HTTP runtime job must not be nil")
 	}
 	if location == nil {
 		location = time.UTC
 	}
+	if logger == nil {
+		logger = slog.Default()
+	}
 
 	server := &Server{
 		job:      job,
+		logger:   logger,
 		now:      time.Now,
 		location: location,
 	}
@@ -82,7 +92,8 @@ func (s *Server) handleRun(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := s.job.Run(r.Context(), targetDate); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		s.logger.Error("job run failed", "error", err)
+		http.Error(w, "job execution failed", http.StatusInternalServerError)
 		return
 	}
 

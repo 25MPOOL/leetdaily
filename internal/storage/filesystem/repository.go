@@ -56,7 +56,7 @@ func (r *Repository) LoadGuildSettings(ctx context.Context) (config.GuildSetting
 
 		cfg, cfgErr := r.LoadConfig(ctx)
 		if cfgErr != nil {
-			return config.GuildSettings{}, storage.Version{}, err
+			return config.GuildSettings{}, storage.Version{}, cfgErr
 		}
 		return config.GuildSettings{Guilds: append([]config.Guild(nil), cfg.Guilds...)}, storage.Version{}, nil
 	}

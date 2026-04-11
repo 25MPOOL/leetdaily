@@ -3,21 +3,20 @@ package main
 import (
 	"context"
 	"fmt"
-	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
+	"log/slog"
+
 	"github.com/nkoji21/leetdaily/internal/app"
-	"github.com/nkoji21/leetdaily/internal/config"
 	"github.com/nkoji21/leetdaily/internal/discord"
 	"github.com/nkoji21/leetdaily/internal/httpruntime"
 	"github.com/nkoji21/leetdaily/internal/job"
 	"github.com/nkoji21/leetdaily/internal/logging"
 	"github.com/nkoji21/leetdaily/internal/neetcode"
 	"github.com/nkoji21/leetdaily/internal/runtimecfg"
-	"github.com/nkoji21/leetdaily/internal/state"
 	"github.com/nkoji21/leetdaily/internal/storage"
 	"github.com/nkoji21/leetdaily/internal/storage/provider"
 )
@@ -63,22 +62,21 @@ func buildDependencies(ctx context.Context, cfg runtimecfg.Config, logger *slog.
 		return app.Dependencies{}, fmt.Errorf("build Discord client: %w", err)
 	}
 
-	location, err := time.LoadLocation("UTC")
+	location, err := loadRuntimeLocation(ctx, repository)
 	if err != nil {
 		return app.Dependencies{}, err
 	}
 
-	location, err = loadRuntimeLocation(ctx, repository)
+	neetcodeClient := neetcode.NewProblemSource(cfg.NeetCodeProblemsPath())
+	notifier, err := discord.NewRepositoryNotifier(repository, discordClient, logger)
 	if err != nil {
-		return app.Dependencies{}, err
+		return app.Dependencies{}, fmt.Errorf("build notifier: %w", err)
 	}
-
-	neetcodeClient := neetcode.NewClient(cfg.NeetCodeProblemsPath())
 	jobRunner, err := job.New(
 		repository,
 		neetcodeClient,
 		discordClient,
-		newNotifier(repository, discordClient, logger),
+		notifier,
 	)
 	if err != nil {
 		return app.Dependencies{}, fmt.Errorf("build job runner: %w", err)
@@ -91,7 +89,7 @@ func buildDependencies(ctx context.Context, cfg runtimecfg.Config, logger *slog.
 
 	return app.Dependencies{
 		HTTPRunner: httpRunner,
-		JobRunner:  jobModeRunner{runner: jobRunner, location: location},
+		JobRunner:  job.NewDateRunner(jobRunner, location),
 	}, nil
 }
 
@@ -101,7 +99,7 @@ func loadRuntimeLocation(ctx context.Context, repository storage.Repository) (*t
 		return nil, fmt.Errorf("load config for runtime wiring: %w", err)
 	}
 
-	if _, err := loadGuildSettings(ctx, repository); err != nil {
+	if _, _, err = repository.LoadGuildSettings(ctx); err != nil {
 		return nil, fmt.Errorf("load guild settings for runtime wiring: %w", err)
 	}
 
@@ -111,69 +109,4 @@ func loadRuntimeLocation(ctx context.Context, repository storage.Repository) (*t
 	}
 
 	return location, nil
-}
-
-type jobModeRunner struct {
-	runner   *job.Runner
-	location *time.Location
-}
-
-func (r jobModeRunner) Run(ctx context.Context) error {
-	targetDate, err := state.ParseDate(time.Now().In(r.location).Format("2006-01-02"))
-	if err != nil {
-		return err
-	}
-
-	return r.runner.Run(ctx, targetDate)
-}
-
-type repositoryNotifier struct {
-	repository storage.Repository
-	client     *discord.Client
-	logger     *slog.Logger
-}
-
-func newNotifier(repository storage.Repository, client *discord.Client, logger *slog.Logger) *repositoryNotifier {
-	return &repositoryNotifier{
-		repository: repository,
-		client:     client,
-		logger:     logger,
-	}
-}
-
-func (n *repositoryNotifier) NotifyFailure(ctx context.Context, guildID string, err error) error {
-	guilds, notifyErr := loadGuildSettings(ctx, n.repository)
-	if notifyErr != nil {
-		n.logger.Warn("skip failure notification because guild settings could not be loaded", "guild_id", guildID, "error", notifyErr)
-		return nil
-	}
-
-	var guild config.Guild
-	ok := false
-	for _, candidate := range guilds.Guilds {
-		if candidate.GuildID == guildID {
-			guild = candidate
-			ok = true
-			break
-		}
-	}
-	if !ok {
-		n.logger.Warn("skip missing notifier mapping", "guild_id", guildID)
-		return nil
-	}
-
-	notifier, notifyErr := discord.NewNotifier(n.client, guild.NotificationChannelID)
-	if notifyErr != nil {
-		n.logger.Warn("skip invalid notifier channel", "guild_id", guildID, "channel_id", guild.NotificationChannelID, "error", notifyErr)
-		return nil
-	}
-	return notifier.NotifyFailure(ctx, guildID, err)
-}
-
-func loadGuildSettings(ctx context.Context, repository storage.Repository) (config.GuildSettings, error) {
-	guilds, _, err := repository.LoadGuildSettings(ctx)
-	if err != nil {
-		return config.GuildSettings{}, err
-	}
-	return guilds, nil
 }

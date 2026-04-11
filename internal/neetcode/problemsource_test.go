@@ -19,7 +19,7 @@ func writeJSON(t *testing.T, path string, value any) {
 	}
 }
 
-func TestClientFetchProblemsSuccess(t *testing.T) {
+func TestProblemSourceFetchProblemsSuccess(t *testing.T) {
 	t.Parallel()
 
 	dir := t.TempDir()
@@ -32,7 +32,7 @@ func TestClientFetchProblemsSuccess(t *testing.T) {
 		},
 	})
 
-	client := NewClient(path)
+	client := NewProblemSource(path)
 	problems, err := client.FetchProblems(context.Background())
 	if err != nil {
 		t.Fatalf("FetchProblems() error = %v", err)
@@ -55,16 +55,16 @@ func TestClientFetchProblemsSuccess(t *testing.T) {
 	}
 }
 
-func TestClientFetchProblemsFileNotFound(t *testing.T) {
+func TestProblemSourceFetchProblemsFileNotFound(t *testing.T) {
 	t.Parallel()
 
-	client := NewClient("/nonexistent/path/problems.json")
+	client := NewProblemSource("/nonexistent/path/problems.json")
 	if _, err := client.FetchProblems(context.Background()); err == nil {
 		t.Fatal("FetchProblems() returned nil error, want file-not-found error")
 	}
 }
 
-func TestClientFetchProblemsMalformedJSON(t *testing.T) {
+func TestProblemSourceFetchProblemsMalformedJSON(t *testing.T) {
 	t.Parallel()
 
 	dir := t.TempDir()
@@ -73,13 +73,13 @@ func TestClientFetchProblemsMalformedJSON(t *testing.T) {
 		t.Fatalf("WriteFile() error = %v", err)
 	}
 
-	client := NewClient(path)
+	client := NewProblemSource(path)
 	if _, err := client.FetchProblems(context.Background()); err == nil {
 		t.Fatal("FetchProblems() returned nil error, want JSON decode error")
 	}
 }
 
-func TestClientFetchProblemsValidationFailure(t *testing.T) {
+func TestProblemSourceFetchProblemsValidationFailure(t *testing.T) {
 	t.Parallel()
 
 	dir := t.TempDir()
@@ -91,13 +91,13 @@ func TestClientFetchProblemsValidationFailure(t *testing.T) {
 		},
 	})
 
-	client := NewClient(path)
+	client := NewProblemSource(path)
 	if _, err := client.FetchProblems(context.Background()); err == nil {
 		t.Fatal("FetchProblems() returned nil error, want validation error")
 	}
 }
 
-func TestClientFetchProblemsPaidOnlyMissingNeetCodeURL(t *testing.T) {
+func TestProblemSourceFetchProblemsPaidOnlyMissingNeetCodeURL(t *testing.T) {
 	t.Parallel()
 
 	dir := t.TempDir()
@@ -109,7 +109,7 @@ func TestClientFetchProblemsPaidOnlyMissingNeetCodeURL(t *testing.T) {
 		},
 	})
 
-	client := NewClient(path)
+	client := NewProblemSource(path)
 	if _, err := client.FetchProblems(context.Background()); err == nil {
 		t.Fatal("FetchProblems() returned nil error, want validation error for missing neetcode_url")
 	}

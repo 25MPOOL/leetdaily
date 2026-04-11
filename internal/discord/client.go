@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 
@@ -124,19 +125,26 @@ func normalizeTagName(name string) string {
 	return strings.ToLower(strings.TrimSpace(name))
 }
 
-func (c *Client) CreateForumThread(ctx context.Context, forumChannelID, tagID, title, body string) (Thread, error) {
+type ForumThreadParams struct {
+	ForumChannelID string
+	TagID          string
+	Title          string
+	Body           string
+}
+
+func (c *Client) CreateForumThread(ctx context.Context, params ForumThreadParams) (Thread, error) {
 	payload := map[string]any{
-		"name":         title,
-		"applied_tags": []string{tagID},
+		"name":         params.Title,
+		"applied_tags": []string{params.TagID},
 		"message": map[string]any{
-			"content": body,
+			"content": params.Body,
 		},
 	}
 
 	var response struct {
 		ID string `json:"id"`
 	}
-	if err := c.doJSON(ctx, http.MethodPost, fmt.Sprintf("/channels/%s/threads", forumChannelID), payload, &response); err != nil {
+	if err := c.doJSON(ctx, http.MethodPost, fmt.Sprintf("/channels/%s/threads", params.ForumChannelID), payload, &response); err != nil {
 		return Thread{}, err
 	}
 
@@ -177,7 +185,8 @@ func (c *Client) doJSON(ctx context.Context, method, path string, payload any, d
 	defer response.Body.Close()
 
 	if response.StatusCode < 200 || response.StatusCode >= 300 {
-		return fmt.Errorf("Discord API %s %s returned status %d", method, path, response.StatusCode)
+		body, _ := io.ReadAll(io.LimitReader(response.Body, 1024))
+		return fmt.Errorf("Discord API %s %s returned status %d: %s", method, path, response.StatusCode, body)
 	}
 
 	if destination == nil {

@@ -3,7 +3,8 @@ package discord
 import (
 	"context"
 	"fmt"
-	"strings"
+
+	"github.com/nkoji21/leetdaily/internal/discordid"
 )
 
 type Notifier struct {
@@ -15,8 +16,8 @@ func NewNotifier(client *Client, channelID string) (*Notifier, error) {
 	if client == nil {
 		return nil, fmt.Errorf("Discord notifier client must not be nil")
 	}
-	if strings.TrimSpace(channelID) == "" {
-		return nil, fmt.Errorf("Discord notification channel ID must not be empty")
+	if !discordid.IsValid(channelID) {
+		return nil, fmt.Errorf("Discord notification channel ID %q is not a valid snowflake", channelID)
 	}
 
 	return &Notifier{client: client, channelID: channelID}, nil

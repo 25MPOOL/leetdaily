@@ -63,12 +63,7 @@ func buildDependencies(ctx context.Context, cfg runtimecfg.Config, logger *slog.
 		return app.Dependencies{}, fmt.Errorf("build Discord client: %w", err)
 	}
 
-	location, err := time.LoadLocation("UTC")
-	if err != nil {
-		return app.Dependencies{}, err
-	}
-
-	location, err = loadRuntimeLocation(ctx, repository)
+	location, err := loadRuntimeLocation(ctx, repository)
 	if err != nil {
 		return app.Dependencies{}, err
 	}

@@ -424,7 +424,7 @@ func testCache() problemcache.Cache {
 		UpdatedAt: timePointer(time.Date(2026, 3, 20, 4, 0, 0, 0, time.UTC)),
 		Problems: []problemcache.Problem{
 			{ProblemNumber: 1, Title: "One", Slug: "one", Difficulty: problemcache.DifficultyEasy},
-			{ProblemNumber: 2, Title: "Two", Slug: "two", Difficulty: problemcache.DifficultyMedium, IsPaidOnly: true},
+			{ProblemNumber: 2, Title: "Two", Slug: "two", Difficulty: problemcache.DifficultyMedium},
 			{ProblemNumber: 3, Title: "Three", Slug: "three", Difficulty: problemcache.DifficultyHard},
 		},
 	}

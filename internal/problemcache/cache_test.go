@@ -19,14 +19,12 @@ func TestCacheValidateAndByNumber(t *testing.T) {
 				Title:         "Two Sum",
 				Slug:          "two-sum",
 				Difficulty:    DifficultyEasy,
-				IsPaidOnly:    false,
 			},
 			{
 				ProblemNumber: 2,
 				Title:         "Add Two Numbers",
 				Slug:          "add-two-numbers",
 				Difficulty:    DifficultyMedium,
-				IsPaidOnly:    false,
 			},
 		},
 	}
@@ -114,24 +112,24 @@ func TestCacheValidateRejectsInvalidValues(t *testing.T) {
 	}
 }
 
-func TestSelectNextFreeSkipsPaidProblems(t *testing.T) {
+func TestSelectNextReturnsNextProblem(t *testing.T) {
 	t.Parallel()
 
 	cache := Cache{
 		UpdatedAt: timePointer(time.Date(2026, 3, 20, 5, 0, 0, 0, time.UTC)),
 		Problems: []Problem{
-			{ProblemNumber: 10, Title: "Paid", Slug: "paid", Difficulty: DifficultyEasy, IsPaidOnly: true},
-			{ProblemNumber: 11, Title: "Free", Slug: "free", Difficulty: DifficultyMedium, IsPaidOnly: false},
+			{ProblemNumber: 10, Title: "First", Slug: "first", Difficulty: DifficultyEasy},
+			{ProblemNumber: 11, Title: "Second", Slug: "second", Difficulty: DifficultyMedium},
 		},
 	}
 
-	problem, err := SelectNextFree(cache, 10)
+	problem, err := SelectNext(cache, 10)
 	if err != nil {
-		t.Fatalf("SelectNextFree() error = %v", err)
+		t.Fatalf("SelectNext() error = %v", err)
 	}
 
-	if problem.ProblemNumber != 11 {
-		t.Fatalf("SelectNextFree().ProblemNumber = %d, want 11", problem.ProblemNumber)
+	if problem.ProblemNumber != 10 {
+		t.Fatalf("SelectNext().ProblemNumber = %d, want 10", problem.ProblemNumber)
 	}
 }
 
@@ -143,7 +141,7 @@ func TestRefreshBehaviors(t *testing.T) {
 		UpdatedAt: timePointer(time.Date(2026, 3, 20, 5, 0, 0, 0, time.UTC)),
 		Problems: []Problem{
 			{ProblemNumber: 1, Title: "One", Slug: "one", Difficulty: DifficultyEasy},
-			{ProblemNumber: 2, Title: "Two", Slug: "two", Difficulty: DifficultyMedium, IsPaidOnly: true},
+			{ProblemNumber: 2, Title: "Two", Slug: "two", Difficulty: DifficultyMedium},
 			{ProblemNumber: 3, Title: "Three", Slug: "three", Difficulty: DifficultyHard},
 		},
 	}

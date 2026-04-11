@@ -171,7 +171,7 @@ func (r *Runner) Run(ctx context.Context, targetDate state.Date) error {
 			}
 		}
 
-		problem, err := problemcache.SelectNextFree(cache, guildState.NextProblemNumber)
+		problem, err := problemcache.SelectNextBelow(cache, guildState.NextProblemNumber, problemcache.DifficultyMedium)
 		if err != nil {
 			notifyErr := r.notifier.NotifyFailure(ctx, guild.GuildID, err)
 			if notifyErr != nil {

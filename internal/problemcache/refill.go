@@ -15,13 +15,13 @@ type Fetcher interface {
 }
 
 func NeedsRefill(cache Cache, nextProblemNumber, threshold int) bool {
-	return CountFreeProblemsFrom(cache, nextProblemNumber) < threshold
+	return CountProblemsFrom(cache, nextProblemNumber) < threshold
 }
 
-func CountFreeProblemsFrom(cache Cache, nextProblemNumber int) int {
+func CountProblemsFrom(cache Cache, nextProblemNumber int) int {
 	count := 0
 	for _, problem := range cache.Problems {
-		if problem.ProblemNumber >= nextProblemNumber && !problem.IsPaidOnly {
+		if problem.ProblemNumber >= nextProblemNumber {
 			count++
 		}
 	}
@@ -36,7 +36,7 @@ func Refresh(ctx context.Context, now time.Time, cache Cache, nextProblemNumber,
 
 	problems, err := fetcher.FetchProblems(ctx)
 	if err != nil {
-		if HasFreeProblemFrom(cache, nextProblemNumber) {
+		if HasProblemFrom(cache, nextProblemNumber) {
 			return cache, false, fmt.Errorf("%w: %w", ErrRefillUsedStaleCache, err)
 		}
 		return Cache{}, false, fmt.Errorf("refill problem cache: %w", err)
@@ -57,7 +57,7 @@ func Refresh(ctx context.Context, now time.Time, cache Cache, nextProblemNumber,
 	return refreshed, true, nil
 }
 
-func HasFreeProblemFrom(cache Cache, nextProblemNumber int) bool {
-	_, err := SelectNextFree(cache, nextProblemNumber)
+func HasProblemFrom(cache Cache, nextProblemNumber int) bool {
+	_, err := SelectNext(cache, nextProblemNumber)
 	return err == nil
 }

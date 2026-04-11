@@ -14,8 +14,8 @@ import (
 	"github.com/nkoji21/leetdaily/internal/discord"
 	"github.com/nkoji21/leetdaily/internal/httpruntime"
 	"github.com/nkoji21/leetdaily/internal/job"
-	"github.com/nkoji21/leetdaily/internal/leetcode"
 	"github.com/nkoji21/leetdaily/internal/logging"
+	"github.com/nkoji21/leetdaily/internal/neetcode"
 	"github.com/nkoji21/leetdaily/internal/runtimecfg"
 	"github.com/nkoji21/leetdaily/internal/state"
 	"github.com/nkoji21/leetdaily/internal/storage"
@@ -73,10 +73,10 @@ func buildDependencies(ctx context.Context, cfg runtimecfg.Config, logger *slog.
 		return app.Dependencies{}, err
 	}
 
-	leetcodeClient := leetcode.NewClient(nil)
+	neetcodeClient := neetcode.NewClient(cfg.NeetCodeProblemsPath())
 	jobRunner, err := job.New(
 		repository,
-		leetcodeClient,
+		neetcodeClient,
 		discordClient,
 		newNotifier(repository, discordClient, logger),
 	)

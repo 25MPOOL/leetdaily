@@ -20,7 +20,7 @@ func NewDateRunner(runner *Runner, location *time.Location) *DateRunner {
 }
 
 func (r *DateRunner) Run(ctx context.Context) error {
-	targetDate, err := state.ParseDate(time.Now().In(r.location).Format("2006-01-02"))
+	targetDate, err := state.ParseDate(r.runner.Now().In(r.location).Format("2006-01-02"))
 	if err != nil {
 		return err
 	}

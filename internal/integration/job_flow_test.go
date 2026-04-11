@@ -79,8 +79,8 @@ func TestJobFlowIntegration(t *testing.T) {
 		env.discord.threadFailures = 3
 		env.discord.mu.Unlock()
 
-		if err := env.runner.Run(context.Background(), targetDate); err != nil {
-			t.Fatalf("Run() error = %v", err)
+		if err := env.runner.Run(context.Background(), targetDate); err == nil {
+			t.Fatal("Run() expected error after retries exhausted, got nil")
 		}
 		if env.discord.notificationCalls != 1 {
 			t.Fatalf("notificationCalls = %d, want 1", env.discord.notificationCalls)

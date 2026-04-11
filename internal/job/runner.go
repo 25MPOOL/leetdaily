@@ -77,6 +77,11 @@ func NewWithOptions(repository Repository, fetcher problemcache.Fetcher, poster 
 	}, nil
 }
 
+// Now returns the current time using the runner's injectable clock.
+func (r *Runner) Now() time.Time {
+	return r.now()
+}
+
 func coalesceNow(now func() time.Time) func() time.Time {
 	if now != nil {
 		return now
@@ -131,6 +136,7 @@ func (r *Runner) Run(ctx context.Context, targetDate state.Date) error {
 		}
 	}
 
+	var errs []error
 	for _, guild := range guildSettings.EnabledGuilds() {
 		guildState, _ := currentState.EnsureGuild(guild.GuildID, guild.StartProblemNumber)
 
@@ -149,10 +155,12 @@ func (r *Runner) Run(ctx context.Context, targetDate state.Date) error {
 		if err == nil {
 			cache = newCache
 			cacheVersion = newCacheVersion
+		} else {
+			errs = append(errs, fmt.Errorf("guild %s: %w", guild.GuildID, err))
 		}
 	}
 
-	return nil
+	return errors.Join(errs...)
 }
 
 // guildRun holds the per-guild execution context for a single Run iteration.

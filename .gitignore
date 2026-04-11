@@ -1,5 +1,6 @@
 bin/
 leetdaily
+.claude/
 .env
 .env.*
 !.env.example

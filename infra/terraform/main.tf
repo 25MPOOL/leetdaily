@@ -92,6 +92,11 @@ resource "google_cloud_run_v2_job" "leetdaily" {
         }
 
         env {
+          name  = "LEETDAILY_DATA_DIR"
+          value = "/"
+        }
+
+        env {
           name  = "GCS_BUCKET"
           value = google_storage_bucket.leetdaily_data.name
         }

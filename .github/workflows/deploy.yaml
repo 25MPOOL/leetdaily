@@ -111,8 +111,7 @@ jobs:
           push: true
           tags: ${{ steps.image.outputs.image }}
 
-  # Deploys to Cloud Run Job (not Cloud Run Service)
-  update-cloud-run-job:
+  update-cloud-run-service:
     needs:
       - preflight
       - build-image
@@ -129,14 +128,14 @@ jobs:
       - name: Set up gcloud
         uses: google-github-actions/setup-gcloud@6189d56e4096ee891640bb02ac264be376592d6a # v2.1.2
 
-      - name: Update Cloud Run Job image
+      - name: Update Cloud Run Service image
         env:
           SERVICE_NAME: ${{ vars.LEETDAILY_SERVICE_NAME }}
           IMAGE: ${{ needs.build-image.outputs.image }}
           REGION: ${{ vars.GCP_REGION || 'asia-northeast1' }}
           PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
         run: |
-          gcloud run jobs update "$SERVICE_NAME" \
+          gcloud run services update "$SERVICE_NAME" \
             --image="$IMAGE" \
             --region="$REGION" \
             --project="$PROJECT_ID"

@@ -62,10 +62,9 @@ variable "problems_object" {
   default     = "problems.json"
 }
 
-variable "cloud_run_timeout_seconds" {
-  description = "Cloud Run request timeout in seconds"
-  type        = number
-  default     = 900
+variable "discord_application_id" {
+  description = "Discord application ID for slash command registration"
+  type        = string
 }
 
 variable "cloud_run_cpu" {

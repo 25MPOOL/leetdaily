@@ -94,6 +94,29 @@ func (p Problem) Validate() error {
 	return nil
 }
 
+// CategoryProgress returns (position, total) for the given problem within its category,
+// counting only problems at or below maxDifficulty.
+// position is 1-indexed. If the category is empty, returns (0, 0).
+func CategoryProgress(cache Cache, problem Problem, maxDifficulty Difficulty) (position int, total int) {
+	if problem.Category == "" {
+		return 0, 0
+	}
+	maxRank := difficultyRank(maxDifficulty)
+	for _, p := range cache.Problems {
+		if p.Category != problem.Category {
+			continue
+		}
+		if difficultyRank(p.Difficulty) > maxRank {
+			continue
+		}
+		total++
+		if p.ProblemNumber <= problem.ProblemNumber {
+			position++
+		}
+	}
+	return position, total
+}
+
 func (p Problem) URL() string {
 	// NeetCodeURL != "" is a defensive guard for structs constructed without
 	// going through Validate(), which enforces this invariant.

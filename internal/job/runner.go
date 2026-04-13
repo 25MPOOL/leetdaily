@@ -220,12 +220,12 @@ func (gr *guildRun) execute(ctx context.Context, cache problemcache.Cache, cache
 		return gr.stateVersion, cacheVersion, cache, err
 	}
 
-	newStateVersion, err := gr.post(ctx, problem)
+	newStateVersion, err := gr.post(ctx, problem, cache, problemcache.DifficultyMedium)
 	gr.stateVersion = newStateVersion
 	return gr.stateVersion, cacheVersion, cache, err
 }
 
-func (gr *guildRun) post(ctx context.Context, problem problemcache.Problem) (storage.Version, error) {
+func (gr *guildRun) post(ctx context.Context, problem problemcache.Problem, cache problemcache.Cache, maxDifficulty problemcache.Difficulty) (storage.Version, error) {
 	tags, err := gr.runner.poster.EnsureDifficultyTags(ctx, gr.guild.ForumChannelID)
 	if err != nil {
 		return gr.recordFailure(ctx, problem.ProblemNumber, gr.cfg.Retry.MaxAttempts, err)
@@ -252,7 +252,7 @@ func (gr *guildRun) post(ctx context.Context, problem problemcache.Problem) (sto
 			ForumChannelID: gr.guild.ForumChannelID,
 			TagID:          tags[problem.Difficulty],
 			Title:          formatThreadTitle(problem),
-			Body:           formatThreadBody(problem),
+			Body:           formatThreadBody(problem, cache, maxDifficulty),
 		})
 		if postErr == nil {
 			now := gr.runner.now()
@@ -368,9 +368,10 @@ func formatThreadTitle(problem problemcache.Problem) string {
 	return fmt.Sprintf("#N%d %s", problem.ProblemNumber, problem.Title)
 }
 
-func formatThreadBody(problem problemcache.Problem) string {
+func formatThreadBody(problem problemcache.Problem, cache problemcache.Cache, maxDifficulty problemcache.Difficulty) string {
 	if problem.Category != "" {
-		return fmt.Sprintf("%s\n%s", problem.URL(), problem.Category)
+		pos, total := problemcache.CategoryProgress(cache, problem, maxDifficulty)
+		return fmt.Sprintf("%s\n%s (%d/%d)", problem.URL(), problem.Category, pos, total)
 	}
 	return problem.URL()
 }

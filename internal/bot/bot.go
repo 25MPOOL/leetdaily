@@ -46,9 +46,12 @@ type Bot struct {
 	check      *checkHandler
 }
 
+var dmPermissionFalse = false
+
 var checkCommand = &discordgo.ApplicationCommand{
-	Name:        "check",
-	Description: "未解決の問題一覧を表示します",
+	Name:         "check",
+	Description:  "未解決の問題一覧を表示します",
+	DMPermission: &dmPermissionFalse,
 }
 
 // New creates a Bot from the provided Config.

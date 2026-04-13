@@ -158,10 +158,12 @@ func collectForumThreads(lister ThreadLister, guildID, forumChannelID string) ([
 		if !archived.HasMore {
 			break
 		}
-		if len(archived.Threads) > 0 {
-			ts := archived.Threads[len(archived.Threads)-1].ThreadMetadata.ArchiveTimestamp
-			before = &ts
+		last := archived.Threads[len(archived.Threads)-1]
+		if len(archived.Threads) == 0 || last.ThreadMetadata == nil {
+			break
 		}
+		ts := last.ThreadMetadata.ArchiveTimestamp
+		before = &ts
 	}
 
 	return threads, nil

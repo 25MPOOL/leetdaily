@@ -73,6 +73,10 @@ func (h *checkHandler) buildResponse(ctx context.Context, i *discordgo.Interacti
 		return fmt.Sprintf("このコマンドは <#%s> でのみ使用できます。", guild.NotificationChannelID), nil
 	}
 
+	if i.Member == nil || i.Member.User == nil {
+		return "このコマンドはサーバー内でのみ使用できます。", nil
+	}
+
 	currentState, _, err := h.repository.LoadState(ctx)
 	if err != nil {
 		return "", fmt.Errorf("load state: %w", err)

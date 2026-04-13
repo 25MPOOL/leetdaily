@@ -178,6 +178,45 @@ func TestRunnerNotifiesAfterRetriesExhausted(t *testing.T) {
 	}
 }
 
+func TestRunnerRecordsPostedThreadAndAddsReaction(t *testing.T) {
+	t.Parallel()
+
+	targetDate := mustDate(t, "2026-03-20")
+	repository := &stubRepository{
+		config: testConfig(),
+		state:  state.New(),
+		cache:  testCache(),
+	}
+	poster := &stubPoster{
+		tags: map[problemcache.Difficulty]string{
+			problemcache.DifficultyEasy:   "easy-1",
+			problemcache.DifficultyMedium: "medium-1",
+			problemcache.DifficultyHard:   "hard-1",
+		},
+		threadID: "thread-1",
+	}
+
+	runner := newRunnerForTest(t, repository, stubFetcher{}, poster, &stubNotifier{})
+	if err := runner.Run(context.Background(), targetDate); err != nil {
+		t.Fatalf("Run() error = %v", err)
+	}
+
+	got := repository.state.GuildStates["123456789012345678"]
+	pt, ok := got.PostedThreads[1]
+	if !ok {
+		t.Fatal("PostedThreads[1] not recorded")
+	}
+	if pt.ThreadID != "thread-1" {
+		t.Fatalf("PostedThreads[1].ThreadID = %q, want %q", pt.ThreadID, "thread-1")
+	}
+	if pt.MessageID != "111111111111111111" {
+		t.Fatalf("PostedThreads[1].MessageID = %q, want %q", pt.MessageID, "111111111111111111")
+	}
+	if poster.reactionCalls != 1 {
+		t.Fatalf("reactionCalls = %d, want 1", poster.reactionCalls)
+	}
+}
+
 func TestRunnerRefreshesProblemCacheWhenThresholdIsLow(t *testing.T) {
 	t.Parallel()
 
@@ -370,9 +409,10 @@ func (s stubFetcher) FetchProblems(context.Context) ([]problemcache.Problem, err
 }
 
 type stubPoster struct {
-	tags       map[problemcache.Difficulty]string
-	threadID   string
-	threadErrs []error
+	tags          map[problemcache.Difficulty]string
+	threadID      string
+	threadErrs    []error
+	reactionCalls int
 }
 
 func (s *stubPoster) EnsureDifficultyTags(context.Context, string) (map[problemcache.Difficulty]string, error) {
@@ -385,7 +425,12 @@ func (s *stubPoster) CreateForumThread(context.Context, discord.ForumThreadParam
 		s.threadErrs = s.threadErrs[1:]
 		return discord.Thread{}, err
 	}
-	return discord.Thread{ID: s.threadID}, nil
+	return discord.Thread{ID: s.threadID, MessageID: "111111111111111111"}, nil
+}
+
+func (s *stubPoster) AddReaction(context.Context, string, string, string) error {
+	s.reactionCalls++
+	return nil
 }
 
 type stubNotifier struct {

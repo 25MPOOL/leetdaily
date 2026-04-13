@@ -25,7 +25,8 @@ type Client struct {
 }
 
 type Thread struct {
-	ID string
+	ID        string
+	MessageID string
 }
 
 type ForumTag struct {
@@ -142,7 +143,10 @@ func (c *Client) CreateForumThread(ctx context.Context, params ForumThreadParams
 	}
 
 	var response struct {
-		ID string `json:"id"`
+		ID      string `json:"id"`
+		Message struct {
+			ID string `json:"id"`
+		} `json:"message"`
 	}
 	if err := c.doJSON(ctx, http.MethodPost, fmt.Sprintf("/channels/%s/threads", params.ForumChannelID), payload, &response); err != nil {
 		return Thread{}, err
@@ -152,7 +156,11 @@ func (c *Client) CreateForumThread(ctx context.Context, params ForumThreadParams
 		return Thread{}, fmt.Errorf("Discord thread create returned empty thread ID")
 	}
 
-	return Thread{ID: response.ID}, nil
+	return Thread{ID: response.ID, MessageID: response.Message.ID}, nil
+}
+
+func (c *Client) AddReaction(ctx context.Context, channelID, messageID, emoji string) error {
+	return c.doJSON(ctx, http.MethodPut, fmt.Sprintf("/channels/%s/messages/%s/reactions/%s/@me", channelID, messageID, emoji), nil, nil)
 }
 
 func (c *Client) SendMessage(ctx context.Context, channelID, content string) error {

@@ -10,6 +10,36 @@ import (
 	"testing"
 )
 
+func TestAddReaction(t *testing.T) {
+	t.Parallel()
+
+	var capturedPath string
+	var capturedMethod string
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		capturedMethod = r.Method
+		capturedPath = r.URL.Path
+		w.WriteHeader(http.StatusNoContent)
+	}))
+	defer server.Close()
+
+	client, err := NewClientWithBaseURL(server.Client(), "token", server.URL)
+	if err != nil {
+		t.Fatalf("NewClientWithBaseURL() error = %v", err)
+	}
+
+	if err := client.AddReaction(context.Background(), "chan-1", "msg-1", "done_4:1461518237329133761"); err != nil {
+		t.Fatalf("AddReaction() error = %v", err)
+	}
+
+	if capturedMethod != http.MethodPut {
+		t.Fatalf("method = %q, want %q", capturedMethod, http.MethodPut)
+	}
+	wantPath := "/channels/chan-1/messages/msg-1/reactions/done_4:1461518237329133761/@me"
+	if capturedPath != wantPath {
+		t.Fatalf("path = %q, want %q", capturedPath, wantPath)
+	}
+}
+
 func TestEnsureDifficultyTagsCreatesMissingTags(t *testing.T) {
 	t.Parallel()
 
@@ -123,7 +153,10 @@ func TestCreateForumThreadAndSendNotification(t *testing.T) {
 		case "/channels/forum-1/threads":
 			body, _ := io.ReadAll(r.Body)
 			_ = json.Unmarshal(body, &threadPayload)
-			_ = json.NewEncoder(w).Encode(map[string]any{"id": "thread-1"})
+			_ = json.NewEncoder(w).Encode(map[string]any{
+				"id":      "thread-1",
+				"message": map[string]any{"id": "message-1"},
+			})
 		case "/channels/111111111111111111/messages":
 			body, _ := io.ReadAll(r.Body)
 			_ = json.Unmarshal(body, &notificationPayload)
@@ -150,6 +183,9 @@ func TestCreateForumThreadAndSendNotification(t *testing.T) {
 	}
 	if thread.ID != "thread-1" {
 		t.Fatalf("thread.ID = %q, want %q", thread.ID, "thread-1")
+	}
+	if thread.MessageID != "message-1" {
+		t.Fatalf("thread.MessageID = %q, want %q", thread.MessageID, "message-1")
 	}
 
 	notifier, err := NewNotifier(client, "111111111111111111")

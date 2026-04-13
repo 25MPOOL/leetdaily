@@ -269,6 +269,76 @@ func TestRefreshBehaviors(t *testing.T) {
 	})
 }
 
+func TestCategoryProgress(t *testing.T) {
+	t.Parallel()
+
+	updatedAt := timePointer(time.Date(2026, 4, 1, 0, 0, 0, 0, time.UTC))
+	cache := Cache{
+		UpdatedAt: updatedAt,
+		Problems: []Problem{
+			{ProblemNumber: 1, Title: "A", Slug: "a", Difficulty: DifficultyEasy, Category: "Arrays & Hashing"},
+			{ProblemNumber: 2, Title: "B", Slug: "b", Difficulty: DifficultyMedium, Category: "Arrays & Hashing"},
+			{ProblemNumber: 3, Title: "C", Slug: "c", Difficulty: DifficultyHard, Category: "Arrays & Hashing"},
+			{ProblemNumber: 4, Title: "D", Slug: "d", Difficulty: DifficultyEasy, Category: "Two Pointers"},
+			{ProblemNumber: 5, Title: "E", Slug: "e", Difficulty: DifficultyMedium, Category: "Two Pointers"},
+		},
+	}
+
+	cases := []struct {
+		name          string
+		problem       Problem
+		maxDifficulty Difficulty
+		wantPos       int
+		wantTotal     int
+	}{
+		{
+			name:          "first in category",
+			problem:       cache.Problems[0],
+			maxDifficulty: DifficultyMedium,
+			wantPos:       1,
+			wantTotal:     2, // Hard excluded
+		},
+		{
+			name:          "second in category",
+			problem:       cache.Problems[1],
+			maxDifficulty: DifficultyMedium,
+			wantPos:       2,
+			wantTotal:     2, // Hard excluded
+		},
+		{
+			name:          "hard excluded from count",
+			problem:       cache.Problems[1],
+			maxDifficulty: DifficultyHard,
+			wantPos:       2,
+			wantTotal:     3, // Hard included
+		},
+		{
+			name:          "different category",
+			problem:       cache.Problems[3],
+			maxDifficulty: DifficultyMedium,
+			wantPos:       1,
+			wantTotal:     2,
+		},
+		{
+			name:          "empty category returns zero",
+			problem:       Problem{ProblemNumber: 1, Title: "X", Slug: "x", Difficulty: DifficultyEasy, Category: ""},
+			maxDifficulty: DifficultyMedium,
+			wantPos:       0,
+			wantTotal:     0,
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			pos, total := CategoryProgress(cache, tc.problem, tc.maxDifficulty)
+			if pos != tc.wantPos || total != tc.wantTotal {
+				t.Fatalf("CategoryProgress() = (%d, %d), want (%d, %d)", pos, total, tc.wantPos, tc.wantTotal)
+			}
+		})
+	}
+}
+
 type stubFetcher struct {
 	problems []Problem
 	err      error

@@ -167,7 +167,7 @@ resource "google_cloud_scheduler_job" "daily_run" {
   region      = var.region
   schedule    = "0 5 * * *"
   time_zone   = "Asia/Tokyo"
-  paused      = true
+  paused      = false
 
   retry_config {
     retry_count = 0

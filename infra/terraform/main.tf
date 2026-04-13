@@ -144,14 +144,14 @@ resource "google_cloud_run_v2_service" "leetdaily" {
           cpu    = var.cloud_run_cpu
           memory = var.cloud_run_memory
         }
-        cpu_idle = true
+        cpu_idle = false
       }
 
       startup_probe {
         http_get { path = "/healthz" }
         initial_delay_seconds = 0
-        period_seconds        = 3
-        failure_threshold     = 5
+        period_seconds        = 5
+        failure_threshold     = 12
       }
 
       liveness_probe {

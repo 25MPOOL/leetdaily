@@ -16,6 +16,7 @@ type Runner interface {
 type Dependencies struct {
 	HTTPRunner Runner
 	JobRunner  Runner
+	BotRunner  Runner
 }
 
 type App struct {
@@ -23,6 +24,7 @@ type App struct {
 	logger     *slog.Logger
 	httpRunner Runner
 	jobRunner  Runner
+	botRunner  Runner
 }
 
 func New(cfg runtimecfg.Config, logger *slog.Logger, deps Dependencies) *App {
@@ -41,6 +43,10 @@ func New(cfg runtimecfg.Config, logger *slog.Logger, deps Dependencies) *App {
 			mode:   runtimecfg.ModeJob,
 			logger: logger.With("component", "job_runtime"),
 		},
+		botRunner: placeholderRunner{
+			mode:   runtimecfg.ModeBot,
+			logger: logger.With("component", "bot_runtime"),
+		},
 	}
 
 	if deps.HTTPRunner != nil {
@@ -49,6 +55,10 @@ func New(cfg runtimecfg.Config, logger *slog.Logger, deps Dependencies) *App {
 
 	if deps.JobRunner != nil {
 		app.jobRunner = deps.JobRunner
+	}
+
+	if deps.BotRunner != nil {
+		app.botRunner = deps.BotRunner
 	}
 
 	return app
@@ -62,6 +72,8 @@ func (a *App) Run(ctx context.Context) error {
 		return a.httpRunner.Run(ctx)
 	case runtimecfg.ModeJob:
 		return a.jobRunner.Run(ctx)
+	case runtimecfg.ModeBot:
+		return a.botRunner.Run(ctx)
 	default:
 		return fmt.Errorf("unsupported runtime mode %q", a.cfg.Mode)
 	}

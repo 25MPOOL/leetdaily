@@ -16,6 +16,7 @@ type Mode string
 const (
 	ModeHTTP Mode = "http"
 	ModeJob  Mode = "job"
+	ModeBot  Mode = "bot"
 )
 
 type Config struct {
@@ -24,6 +25,7 @@ type Config struct {
 	HTTPPort             int
 	DataDir              string
 	DiscordBotToken      string
+	DiscordApplicationID string
 	GCSBucket            string
 	ConfigObject         string
 	GuildsObject         string
@@ -79,6 +81,7 @@ func LoadFromEnv(lookup LookupEnv) (Config, error) {
 		cfg.DataDir = filepath.Clean(strings.TrimSpace(raw))
 	}
 	envString(lookup, "DISCORD_BOT_TOKEN", &cfg.DiscordBotToken)
+	envString(lookup, "DISCORD_APPLICATION_ID", &cfg.DiscordApplicationID)
 	envString(lookup, "GCS_BUCKET", &cfg.GCSBucket)
 	envString(lookup, "CONFIG_OBJECT", &cfg.ConfigObject)
 	envString(lookup, "GUILDS_OBJECT", &cfg.GuildsObject)
@@ -95,9 +98,13 @@ func LoadFromEnv(lookup LookupEnv) (Config, error) {
 
 func (c Config) Validate() error {
 	switch c.Mode {
-	case ModeHTTP, ModeJob:
+	case ModeHTTP, ModeJob, ModeBot:
 	default:
 		return fmt.Errorf("unsupported LEETDAILY_RUNTIME %q", c.Mode)
+	}
+
+	if c.Mode == ModeBot && strings.TrimSpace(c.DiscordApplicationID) == "" {
+		return fmt.Errorf("DISCORD_APPLICATION_ID must not be empty in bot mode")
 	}
 
 	if c.HTTPPort < 1 || c.HTTPPort > 65535 {

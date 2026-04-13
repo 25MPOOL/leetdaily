@@ -22,11 +22,17 @@ type State struct {
 }
 
 type GuildState struct {
-	NextProblemNumber       int        `json:"next_problem_number"`
-	LastPostedProblemNumber *int       `json:"last_posted_problem_number"`
-	LastPostedAt            *time.Time `json:"last_posted_at"`
-	LastPostedThreadID      *string    `json:"last_posted_thread_id"`
-	Job                     JobState   `json:"job"`
+	NextProblemNumber       int                  `json:"next_problem_number"`
+	LastPostedProblemNumber *int                 `json:"last_posted_problem_number"`
+	LastPostedAt            *time.Time           `json:"last_posted_at"`
+	LastPostedThreadID      *string              `json:"last_posted_thread_id"`
+	PostedThreads           map[int]PostedThread `json:"posted_threads"`
+	Job                     JobState             `json:"job"`
+}
+
+type PostedThread struct {
+	ThreadID  string `json:"thread_id"`
+	MessageID string `json:"message_id"`
 }
 
 type JobState struct {
@@ -47,6 +53,7 @@ func New() State {
 func DefaultGuildState(startProblemNumber int) GuildState {
 	return GuildState{
 		NextProblemNumber: startProblemNumber,
+		PostedThreads:     map[int]PostedThread{},
 		Job: JobState{
 			Status: JobStatusIdle,
 		},
@@ -96,6 +103,18 @@ func (g GuildState) Validate() error {
 
 	if g.LastPostedThreadID != nil && !discordid.IsValid(*g.LastPostedThreadID) {
 		return fmt.Errorf("last_posted_thread_id must be a numeric Discord ID: %q", *g.LastPostedThreadID)
+	}
+
+	for problemNumber, pt := range g.PostedThreads {
+		if problemNumber < 1 {
+			return fmt.Errorf("posted_threads: problem number must be greater than 0: %d", problemNumber)
+		}
+		if !discordid.IsValid(pt.ThreadID) {
+			return fmt.Errorf("posted_threads[%d].thread_id must be a numeric Discord ID: %q", problemNumber, pt.ThreadID)
+		}
+		if !discordid.IsValid(pt.MessageID) {
+			return fmt.Errorf("posted_threads[%d].message_id must be a numeric Discord ID: %q", problemNumber, pt.MessageID)
+		}
 	}
 
 	if err := g.Job.Validate(); err != nil {

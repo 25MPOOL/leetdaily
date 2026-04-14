@@ -36,6 +36,11 @@ import {
   id = "projects/${var.project_id}/locations/${var.region}/jobs/${var.service_name}-daily-run"
 }
 
+import {
+  to = google_cloud_run_v2_service.leetdaily
+  id = "projects/${var.project_id}/locations/${var.region}/services/${var.service_name}"
+}
+
 locals {
   service_name      = var.service_name
   bucket_name       = coalesce(var.bucket_name, "${var.project_id}-${var.service_name}-data")

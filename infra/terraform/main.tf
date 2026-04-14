@@ -202,7 +202,7 @@ resource "google_cloud_scheduler_job" "daily_run" {
     http_method = "POST"
     uri         = local.scheduler_run_url
 
-    oauth_token {
+    oidc_token {
       service_account_email = google_service_account.scheduler_invoker.email
     }
   }

@@ -108,12 +108,17 @@ func (h *checkHandler) buildResponse(ctx context.Context, i *discordgo.Interacti
 		users, err := h.allReactionUsers(pt.ThreadID, pt.MessageID, "done_4:1461518237329133761")
 		if err != nil {
 			h.logger.Warn("failed to get reactions", "problem_number", problemNumber, "error", err)
+			unsolved = append(unsolved, unsolvedEntry{number: problemNumber, problem: problem})
 			continue
 		}
 
 		if !containsUser(users, userID) {
 			unsolved = append(unsolved, unsolvedEntry{number: problemNumber, problem: problem})
 		}
+	}
+
+	if len(guildState.PostedThreads) == 0 {
+		return "まだ問題が投稿されていません。", nil
 	}
 
 	if len(unsolved) == 0 {

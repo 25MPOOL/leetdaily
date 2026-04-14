@@ -66,7 +66,7 @@ func TestBackfillRecordsMissingThreads(t *testing.T) {
 	}
 }
 
-func TestBackfillSkipsAlreadyTracked(t *testing.T) {
+func TestBackfillAddsReactionToAlreadyTracked(t *testing.T) {
 	t.Parallel()
 
 	guild := testGuild()
@@ -95,8 +95,9 @@ func TestBackfillSkipsAlreadyTracked(t *testing.T) {
 		t.Fatalf("backfill() error = %v", err)
 	}
 
-	if lister.reactionAddCalls != 0 {
-		t.Errorf("reactionAddCalls = %d, want 0 (already tracked)", lister.reactionAddCalls)
+	// Reaction should be added to the already-tracked thread.
+	if lister.reactionAddCalls != 1 {
+		t.Errorf("reactionAddCalls = %d, want 1 (ensure reaction on tracked thread)", lister.reactionAddCalls)
 	}
 }
 

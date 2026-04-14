@@ -100,8 +100,12 @@ func backfillGuild(lister ThreadLister, logger *slog.Logger, guild config.Guild,
 			continue
 		}
 
-		if _, already := guildState.PostedThreads[problemNumber]; already {
-			continue // already tracked
+		if pt, already := guildState.PostedThreads[problemNumber]; already {
+			// Thread is already tracked. Ensure the bot reaction exists.
+			if err := lister.MessageReactionAdd(pt.ThreadID, pt.MessageID, "done_4:1461518237329133761"); err != nil {
+				logger.Warn("backfill: failed to add reaction to tracked thread", "thread_id", pt.ThreadID, "error", err)
+			}
+			continue
 		}
 
 		// Fetch the first message in the thread to get its ID.

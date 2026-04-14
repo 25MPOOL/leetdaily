@@ -2,6 +2,8 @@ package bot
 
 import (
 	"context"
+	"fmt"
+	"log/slog"
 	"testing"
 	"time"
 
@@ -106,6 +108,73 @@ func TestCheckHandlerUnsolvedProblems(t *testing.T) {
 	}
 }
 
+func TestCheckHandlerReactionErrorCountsAsUnsolved(t *testing.T) {
+	t.Parallel()
+
+	repo := &stubCheckRepository{
+		guildSettings: config.GuildSettings{Guilds: []config.Guild{testGuild()}},
+		state: state.State{
+			GuildStates: map[string]state.GuildState{
+				"123456789012345678": {
+					NextProblemNumber: 2,
+					PostedThreads: map[int]state.PostedThread{
+						1: {ThreadID: "thread-1", MessageID: "msg-1"},
+					},
+				},
+			},
+		},
+		cache: problemcache.Cache{
+			UpdatedAt: timePtr(time.Now()),
+			Problems: []problemcache.Problem{
+				{ProblemNumber: 1, Title: "Two Sum", Slug: "two-sum", Difficulty: problemcache.DifficultyEasy, Category: "Arrays & Hashing"},
+			},
+		},
+	}
+	// Reaction fetch returns an error.
+	reactions := &stubReactionChecker{errOnMessageID: "msg-1"}
+
+	h := &checkHandler{repository: repo, reactionClient: reactions, logger: slog.Default()}
+
+	interaction := makeInteraction("123456789012345678", "345678901234567890", "user-1")
+	content, err := h.buildResponse(context.Background(), interaction)
+	if err != nil {
+		t.Fatalf("buildResponse() error = %v", err)
+	}
+
+	if content == "✅ 全問解決済みです！" {
+		t.Fatal("reaction fetch error should not produce all-solved message")
+	}
+}
+
+func TestCheckHandlerNoPostedThreads(t *testing.T) {
+	t.Parallel()
+
+	repo := &stubCheckRepository{
+		guildSettings: config.GuildSettings{Guilds: []config.Guild{testGuild()}},
+		state: state.State{
+			GuildStates: map[string]state.GuildState{
+				"123456789012345678": {
+					NextProblemNumber: 1,
+					PostedThreads:     map[int]state.PostedThread{},
+				},
+			},
+		},
+		cache: problemcache.Cache{},
+	}
+
+	h := &checkHandler{repository: repo, reactionClient: &stubReactionChecker{}}
+
+	interaction := makeInteraction("123456789012345678", "345678901234567890", "user-1")
+	content, err := h.buildResponse(context.Background(), interaction)
+	if err != nil {
+		t.Fatalf("buildResponse() error = %v", err)
+	}
+
+	if content == "✅ 全問解決済みです！" {
+		t.Fatal("empty PostedThreads should not produce all-solved message")
+	}
+}
+
 func TestCheckHandlerWrongChannel(t *testing.T) {
 	t.Parallel()
 
@@ -171,9 +240,14 @@ func (s *stubCheckRepository) SaveProblemCache(_ context.Context, c problemcache
 type stubReactionChecker struct {
 	// users maps messageID -> list of users who reacted.
 	users map[string][]*discordgo.User
+	// errOnMessageID returns an error when this messageID is queried.
+	errOnMessageID string
 }
 
 func (s *stubReactionChecker) MessageReactions(_, messageID, _ string, _ int, _, _ string, _ ...discordgo.RequestOption) ([]*discordgo.User, error) {
+	if s.errOnMessageID != "" && messageID == s.errOnMessageID {
+		return nil, fmt.Errorf("simulated reaction fetch error")
+	}
 	return s.users[messageID], nil
 }
 

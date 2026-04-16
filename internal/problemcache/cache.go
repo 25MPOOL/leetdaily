@@ -2,6 +2,7 @@ package problemcache
 
 import (
 	"fmt"
+	"net/url"
 	"strings"
 	"time"
 )
@@ -124,4 +125,19 @@ func (p Problem) URL() string {
 		return p.NeetCodeURL
 	}
 	return fmt.Sprintf("https://leetcode.com/problems/%s", p.Slug)
+}
+
+// NeetCodeSolutionURL returns the NeetCode solution page URL for this problem.
+// Returns an empty string if NeetCodeURL is not set.
+func (p Problem) NeetCodeSolutionURL() string {
+	if p.NeetCodeURL == "" {
+		return ""
+	}
+	u, err := url.Parse(p.NeetCodeURL)
+	if err != nil {
+		return ""
+	}
+	u.RawQuery = ""
+	u.Fragment = ""
+	return strings.TrimRight(u.String(), "/") + "/solution"
 }

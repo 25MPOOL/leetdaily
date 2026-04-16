@@ -381,11 +381,16 @@ func formatThreadTitle(problem problemcache.Problem) string {
 }
 
 func formatThreadBody(problem problemcache.Problem, cache problemcache.Cache, maxDifficulty problemcache.Difficulty) string {
+	solutionURL := problem.NeetCodeSolutionURL()
+	links := fmt.Sprintf("📄 問題: %s", problem.URL())
+	if solutionURL != "" {
+		links += fmt.Sprintf("\n💡 解説: %s", solutionURL)
+	}
 	if problem.Category != "" {
 		pos, total := problemcache.CategoryProgress(cache, problem, maxDifficulty)
-		return fmt.Sprintf("%s\n%s (%d/%d)", problem.URL(), problem.Category, pos, total)
+		return fmt.Sprintf("%s (%d/%d)\n%s", problem.Category, pos, total, links)
 	}
-	return problem.URL()
+	return links
 }
 
 func intPointer(value int) *int {

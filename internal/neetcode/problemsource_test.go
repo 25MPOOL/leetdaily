@@ -50,8 +50,8 @@ func TestProblemSourceFetchProblemsSuccess(t *testing.T) {
 		t.Fatalf("problems[2] should be paid-only with NeetCodeURL set, got %+v", problems[2])
 	}
 
-	if got := problems[2].URL(); got != "https://neetcode.io/problems/string-encode-and-decode" {
-		t.Fatalf("URL() = %q, want NeetCode URL", got)
+	if got := problems[2].URL(); got != "https://leetcode.com/problems/encode-and-decode-strings" {
+		t.Fatalf("URL() = %q, want LeetCode URL", got)
 	}
 }
 

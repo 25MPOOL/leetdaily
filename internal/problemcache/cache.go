@@ -119,11 +119,6 @@ func CategoryProgress(cache Cache, problem Problem, maxDifficulty Difficulty) (p
 }
 
 func (p Problem) URL() string {
-	// NeetCodeURL != "" is a defensive guard for structs constructed without
-	// going through Validate(), which enforces this invariant.
-	if p.IsPaidOnly && p.NeetCodeURL != "" {
-		return p.NeetCodeURL
-	}
 	return fmt.Sprintf("https://leetcode.com/problems/%s", p.Slug)
 }
 

@@ -191,6 +191,24 @@ func TestSelectNextAtMostFiltersHard(t *testing.T) {
 			t.Fatalf("ProblemNumber = %d, want 6 (hard skipped)", p.ProblemNumber)
 		}
 	})
+
+	t.Run("paid-only skipped and next free selected", func(t *testing.T) {
+		t.Parallel()
+		paidThenFree := Cache{
+			UpdatedAt: timePointer(time.Date(2026, 3, 20, 5, 0, 0, 0, time.UTC)),
+			Problems: []Problem{
+				{ProblemNumber: 6, Title: "Paid", Slug: "paid", Difficulty: DifficultyMedium, IsPaidOnly: true, NeetCodeURL: "https://neetcode.io/problems/paid"},
+				{ProblemNumber: 7, Title: "Free", Slug: "free", Difficulty: DifficultyEasy},
+			},
+		}
+		p, err := SelectNextAtMost(paidThenFree, 6, DifficultyMedium)
+		if err != nil {
+			t.Fatalf("SelectNextAtMost() error = %v", err)
+		}
+		if p.ProblemNumber != 7 {
+			t.Fatalf("ProblemNumber = %d, want 7 (paid-only skipped)", p.ProblemNumber)
+		}
+	})
 }
 
 func TestRefreshBehaviors(t *testing.T) {

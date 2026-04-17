@@ -27,6 +27,9 @@ func selectNext(cache Cache, nextProblemNumber int, maxDifficulty *Difficulty) (
 		if maxDifficulty != nil && difficultyRank(problem.Difficulty) > difficultyRank(*maxDifficulty) {
 			continue
 		}
+		if problem.IsPaidOnly {
+			continue
+		}
 		return problem, nil
 	}
 

@@ -19,13 +19,14 @@ func NewProblemSource(path string) *ProblemSource {
 }
 
 type problemEntry struct {
-	ProblemNumber int                     `json:"problem_number"`
-	Title         string                  `json:"title"`
-	Slug          string                  `json:"slug"`
-	Difficulty    problemcache.Difficulty `json:"difficulty"`
-	Category      string                  `json:"category"`
-	IsPaidOnly    bool                    `json:"is_paid_only"`
-	NeetCodeURL   string                  `json:"neetcode_url"`
+	ProblemNumber  int                     `json:"problem_number"`
+	LeetCodeNumber int                     `json:"leetcode_number"`
+	Title          string                  `json:"title"`
+	Slug           string                  `json:"slug"`
+	Difficulty     problemcache.Difficulty `json:"difficulty"`
+	Category       string                  `json:"category"`
+	IsPaidOnly     bool                    `json:"is_paid_only"`
+	NeetCodeURL    string                  `json:"neetcode_url"`
 }
 
 type problemList struct {
@@ -46,13 +47,14 @@ func (s *ProblemSource) FetchProblems(_ context.Context) ([]problemcache.Problem
 	problems := make([]problemcache.Problem, 0, len(list.Problems))
 	for i, entry := range list.Problems {
 		p := problemcache.Problem{
-			ProblemNumber: entry.ProblemNumber,
-			Title:         entry.Title,
-			Slug:          entry.Slug,
-			Difficulty:    entry.Difficulty,
-			Category:      entry.Category,
-			IsPaidOnly:    entry.IsPaidOnly,
-			NeetCodeURL:   entry.NeetCodeURL,
+			ProblemNumber:  entry.ProblemNumber,
+			LeetCodeNumber: entry.LeetCodeNumber,
+			Title:          entry.Title,
+			Slug:           entry.Slug,
+			Difficulty:     entry.Difficulty,
+			Category:       entry.Category,
+			IsPaidOnly:     entry.IsPaidOnly,
+			NeetCodeURL:    entry.NeetCodeURL,
 		}
 		if err := p.Validate(); err != nil {
 			return nil, fmt.Errorf("problems[%d]: %w", i, err)

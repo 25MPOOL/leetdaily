@@ -190,14 +190,14 @@ func TestRunnerRefreshesProblemCacheWhenThresholdIsLow(t *testing.T) {
 		cache: problemcache.Cache{
 			UpdatedAt: timePointer(time.Date(2026, 3, 20, 4, 0, 0, 0, time.UTC)),
 			Problems: []problemcache.Problem{
-				{ProblemNumber: 1, Title: "One", Slug: "one", Difficulty: problemcache.DifficultyEasy},
+				{ProblemNumber: 1, LeetCodeNumber: 1, Title: "One", Slug: "one", Difficulty: problemcache.DifficultyEasy},
 			},
 		},
 	}
 	fetcher := stubFetcher{
 		problems: []problemcache.Problem{
-			{ProblemNumber: 1, Title: "One", Slug: "one", Difficulty: problemcache.DifficultyEasy},
-			{ProblemNumber: 2, Title: "Two", Slug: "two", Difficulty: problemcache.DifficultyEasy},
+			{ProblemNumber: 1, LeetCodeNumber: 1, Title: "One", Slug: "one", Difficulty: problemcache.DifficultyEasy},
+			{ProblemNumber: 2, LeetCodeNumber: 2, Title: "Two", Slug: "two", Difficulty: problemcache.DifficultyEasy},
 		},
 	}
 	poster := &stubPoster{
@@ -423,9 +423,9 @@ func testCache() problemcache.Cache {
 	return problemcache.Cache{
 		UpdatedAt: timePointer(time.Date(2026, 3, 20, 4, 0, 0, 0, time.UTC)),
 		Problems: []problemcache.Problem{
-			{ProblemNumber: 1, Title: "One", Slug: "one", Difficulty: problemcache.DifficultyEasy},
-			{ProblemNumber: 2, Title: "Two", Slug: "two", Difficulty: problemcache.DifficultyMedium},
-			{ProblemNumber: 3, Title: "Three", Slug: "three", Difficulty: problemcache.DifficultyHard},
+			{ProblemNumber: 1, LeetCodeNumber: 1, Title: "One", Slug: "one", Difficulty: problemcache.DifficultyEasy},
+			{ProblemNumber: 2, LeetCodeNumber: 2, Title: "Two", Slug: "two", Difficulty: problemcache.DifficultyMedium},
+			{ProblemNumber: 3, LeetCodeNumber: 3, Title: "Three", Slug: "three", Difficulty: problemcache.DifficultyHard},
 		},
 	}
 }

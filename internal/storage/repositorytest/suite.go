@@ -124,10 +124,11 @@ func RunRepositorySuite(t *testing.T, name string, newHarness func(*testing.T) H
 			UpdatedAt: &updatedAt,
 			Problems: []problemcache.Problem{
 				{
-					ProblemNumber: 1,
-					Title:         "Two Sum",
-					Slug:          "two-sum",
-					Difficulty:    problemcache.DifficultyEasy,
+					ProblemNumber:  1,
+					LeetCodeNumber: 1,
+					Title:          "Two Sum",
+					Slug:           "two-sum",
+					Difficulty:     problemcache.DifficultyEasy,
 				},
 			},
 		}
@@ -287,10 +288,11 @@ func RunRepositorySuite(t *testing.T, name string, newHarness func(*testing.T) H
 		}
 
 		current.Problems = append(current.Problems, problemcache.Problem{
-			ProblemNumber: 1,
-			Title:         "Two Sum",
-			Slug:          "two-sum",
-			Difficulty:    problemcache.DifficultyEasy,
+			ProblemNumber:  1,
+			LeetCodeNumber: 1,
+			Title:          "Two Sum",
+			Slug:           "two-sum",
+			Difficulty:     problemcache.DifficultyEasy,
 		})
 		newVersion, err := repository.SaveProblemCache(context.Background(), current, loadedVersion)
 		if err != nil {
@@ -302,10 +304,11 @@ func RunRepositorySuite(t *testing.T, name string, newHarness func(*testing.T) H
 		}
 
 		current.Problems = append(current.Problems, problemcache.Problem{
-			ProblemNumber: 2,
-			Title:         "Add Two Numbers",
-			Slug:          "add-two-numbers",
-			Difficulty:    problemcache.DifficultyMedium,
+			ProblemNumber:  2,
+			LeetCodeNumber: 2,
+			Title:          "Add Two Numbers",
+			Slug:           "add-two-numbers",
+			Difficulty:     problemcache.DifficultyMedium,
 		})
 		_, err = repository.SaveProblemCache(context.Background(), current, loadedVersion)
 		if !errors.Is(err, storage.ErrConflict) {

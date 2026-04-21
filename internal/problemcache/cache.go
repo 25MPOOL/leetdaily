@@ -21,13 +21,14 @@ type Cache struct {
 }
 
 type Problem struct {
-	ProblemNumber int        `json:"problem_number"`
-	Title         string     `json:"title"`
-	Slug          string     `json:"slug"`
-	Difficulty    Difficulty `json:"difficulty"`
-	Category      string     `json:"category"`
-	IsPaidOnly    bool       `json:"is_paid_only"`
-	NeetCodeURL   string     `json:"neetcode_url"`
+	ProblemNumber  int        `json:"problem_number"`
+	LeetCodeNumber int        `json:"leetcode_number"`
+	Title          string     `json:"title"`
+	Slug           string     `json:"slug"`
+	Difficulty     Difficulty `json:"difficulty"`
+	Category       string     `json:"category"`
+	IsPaidOnly     bool       `json:"is_paid_only"`
+	NeetCodeURL    string     `json:"neetcode_url"`
 }
 
 func (c Cache) Validate() error {
@@ -72,6 +73,10 @@ func (c Cache) ByNumber() map[int]Problem {
 func (p Problem) Validate() error {
 	if p.ProblemNumber < 1 {
 		return fmt.Errorf("problem_number must be greater than 0: %d", p.ProblemNumber)
+	}
+
+	if p.LeetCodeNumber < 1 {
+		return fmt.Errorf("leetcode_number must be greater than 0: %d", p.LeetCodeNumber)
 	}
 
 	if strings.TrimSpace(p.Title) == "" {

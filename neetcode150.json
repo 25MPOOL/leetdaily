@@ -7,7 +7,8 @@
       "difficulty": "Easy",
       "category": "Arrays & Hashing",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/duplicate-integer?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/duplicate-integer?list=neetcode150",
+      "leetcode_number": 217
     },
     {
       "problem_number": 2,
@@ -16,7 +17,8 @@
       "difficulty": "Easy",
       "category": "Arrays & Hashing",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/is-anagram?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/is-anagram?list=neetcode150",
+      "leetcode_number": 242
     },
     {
       "problem_number": 3,
@@ -25,7 +27,8 @@
       "difficulty": "Easy",
       "category": "Arrays & Hashing",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/two-integer-sum?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/two-integer-sum?list=neetcode150",
+      "leetcode_number": 1
     },
     {
       "problem_number": 4,
@@ -34,7 +37,8 @@
       "difficulty": "Medium",
       "category": "Arrays & Hashing",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/anagram-groups?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/anagram-groups?list=neetcode150",
+      "leetcode_number": 49
     },
     {
       "problem_number": 5,
@@ -43,7 +47,8 @@
       "difficulty": "Medium",
       "category": "Arrays & Hashing",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/top-k-elements-in-list?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/top-k-elements-in-list?list=neetcode150",
+      "leetcode_number": 347
     },
     {
       "problem_number": 6,
@@ -52,7 +57,8 @@
       "difficulty": "Medium",
       "category": "Arrays & Hashing",
       "is_paid_only": true,
-      "neetcode_url": "https://neetcode.io/problems/string-encode-and-decode?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/string-encode-and-decode?list=neetcode150",
+      "leetcode_number": 271
     },
     {
       "problem_number": 7,
@@ -61,7 +67,8 @@
       "difficulty": "Medium",
       "category": "Arrays & Hashing",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/products-of-array-discluding-self?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/products-of-array-discluding-self?list=neetcode150",
+      "leetcode_number": 238
     },
     {
       "problem_number": 8,
@@ -70,7 +77,8 @@
       "difficulty": "Medium",
       "category": "Arrays & Hashing",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/valid-sudoku?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/valid-sudoku?list=neetcode150",
+      "leetcode_number": 36
     },
     {
       "problem_number": 9,
@@ -79,7 +87,8 @@
       "difficulty": "Medium",
       "category": "Arrays & Hashing",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/longest-consecutive-sequence?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/longest-consecutive-sequence?list=neetcode150",
+      "leetcode_number": 128
     },
     {
       "problem_number": 10,
@@ -88,7 +97,8 @@
       "difficulty": "Easy",
       "category": "Two Pointers",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/is-palindrome?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/is-palindrome?list=neetcode150",
+      "leetcode_number": 125
     },
     {
       "problem_number": 11,
@@ -97,7 +107,8 @@
       "difficulty": "Medium",
       "category": "Two Pointers",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/two-integer-sum-ii?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/two-integer-sum-ii?list=neetcode150",
+      "leetcode_number": 167
     },
     {
       "problem_number": 12,
@@ -106,7 +117,8 @@
       "difficulty": "Medium",
       "category": "Two Pointers",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/three-integer-sum?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/three-integer-sum?list=neetcode150",
+      "leetcode_number": 15
     },
     {
       "problem_number": 13,
@@ -115,7 +127,8 @@
       "difficulty": "Medium",
       "category": "Two Pointers",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/max-water-container?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/max-water-container?list=neetcode150",
+      "leetcode_number": 11
     },
     {
       "problem_number": 14,
@@ -124,7 +137,8 @@
       "difficulty": "Hard",
       "category": "Two Pointers",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/trapping-rain-water?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/trapping-rain-water?list=neetcode150",
+      "leetcode_number": 42
     },
     {
       "problem_number": 15,
@@ -133,7 +147,8 @@
       "difficulty": "Easy",
       "category": "Sliding Window",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/buy-and-sell-crypto?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/buy-and-sell-crypto?list=neetcode150",
+      "leetcode_number": 121
     },
     {
       "problem_number": 16,
@@ -142,7 +157,8 @@
       "difficulty": "Medium",
       "category": "Sliding Window",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/longest-substring-without-duplicates?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/longest-substring-without-duplicates?list=neetcode150",
+      "leetcode_number": 3
     },
     {
       "problem_number": 17,
@@ -151,7 +167,8 @@
       "difficulty": "Medium",
       "category": "Sliding Window",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/longest-repeating-substring-with-replacement?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/longest-repeating-substring-with-replacement?list=neetcode150",
+      "leetcode_number": 424
     },
     {
       "problem_number": 18,
@@ -160,7 +177,8 @@
       "difficulty": "Medium",
       "category": "Sliding Window",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/permutation-string?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/permutation-string?list=neetcode150",
+      "leetcode_number": 567
     },
     {
       "problem_number": 19,
@@ -169,7 +187,8 @@
       "difficulty": "Hard",
       "category": "Sliding Window",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/minimum-window-with-characters?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/minimum-window-with-characters?list=neetcode150",
+      "leetcode_number": 76
     },
     {
       "problem_number": 20,
@@ -178,7 +197,8 @@
       "difficulty": "Hard",
       "category": "Sliding Window",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/sliding-window-maximum?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/sliding-window-maximum?list=neetcode150",
+      "leetcode_number": 239
     },
     {
       "problem_number": 21,
@@ -187,7 +207,8 @@
       "difficulty": "Easy",
       "category": "Stack",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/validate-parentheses?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/validate-parentheses?list=neetcode150",
+      "leetcode_number": 20
     },
     {
       "problem_number": 22,
@@ -196,7 +217,8 @@
       "difficulty": "Medium",
       "category": "Stack",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/minimum-stack?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/minimum-stack?list=neetcode150",
+      "leetcode_number": 155
     },
     {
       "problem_number": 23,
@@ -205,7 +227,8 @@
       "difficulty": "Medium",
       "category": "Stack",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/evaluate-reverse-polish-notation?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/evaluate-reverse-polish-notation?list=neetcode150",
+      "leetcode_number": 150
     },
     {
       "problem_number": 24,
@@ -214,7 +237,8 @@
       "difficulty": "Medium",
       "category": "Stack",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/daily-temperatures?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/daily-temperatures?list=neetcode150",
+      "leetcode_number": 739
     },
     {
       "problem_number": 25,
@@ -223,7 +247,8 @@
       "difficulty": "Medium",
       "category": "Stack",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/car-fleet?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/car-fleet?list=neetcode150",
+      "leetcode_number": 853
     },
     {
       "problem_number": 26,
@@ -232,7 +257,8 @@
       "difficulty": "Hard",
       "category": "Stack",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/largest-rectangle-in-histogram?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/largest-rectangle-in-histogram?list=neetcode150",
+      "leetcode_number": 84
     },
     {
       "problem_number": 27,
@@ -241,7 +267,8 @@
       "difficulty": "Easy",
       "category": "Binary Search",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/binary-search?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/binary-search?list=neetcode150",
+      "leetcode_number": 704
     },
     {
       "problem_number": 28,
@@ -250,7 +277,8 @@
       "difficulty": "Medium",
       "category": "Binary Search",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/search-2d-matrix?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/search-2d-matrix?list=neetcode150",
+      "leetcode_number": 74
     },
     {
       "problem_number": 29,
@@ -259,7 +287,8 @@
       "difficulty": "Medium",
       "category": "Binary Search",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/eating-bananas?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/eating-bananas?list=neetcode150",
+      "leetcode_number": 875
     },
     {
       "problem_number": 30,
@@ -268,7 +297,8 @@
       "difficulty": "Medium",
       "category": "Binary Search",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/find-minimum-in-rotated-sorted-array?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/find-minimum-in-rotated-sorted-array?list=neetcode150",
+      "leetcode_number": 153
     },
     {
       "problem_number": 31,
@@ -277,7 +307,8 @@
       "difficulty": "Medium",
       "category": "Binary Search",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/find-target-in-rotated-sorted-array?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/find-target-in-rotated-sorted-array?list=neetcode150",
+      "leetcode_number": 33
     },
     {
       "problem_number": 32,
@@ -286,7 +317,8 @@
       "difficulty": "Medium",
       "category": "Binary Search",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/time-based-key-value-store?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/time-based-key-value-store?list=neetcode150",
+      "leetcode_number": 981
     },
     {
       "problem_number": 33,
@@ -295,7 +327,8 @@
       "difficulty": "Hard",
       "category": "Binary Search",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/median-of-two-sorted-arrays?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/median-of-two-sorted-arrays?list=neetcode150",
+      "leetcode_number": 4
     },
     {
       "problem_number": 34,
@@ -304,7 +337,8 @@
       "difficulty": "Easy",
       "category": "Linked List",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/reverse-a-linked-list?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/reverse-a-linked-list?list=neetcode150",
+      "leetcode_number": 206
     },
     {
       "problem_number": 35,
@@ -313,7 +347,8 @@
       "difficulty": "Easy",
       "category": "Linked List",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/merge-two-sorted-linked-lists?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/merge-two-sorted-linked-lists?list=neetcode150",
+      "leetcode_number": 21
     },
     {
       "problem_number": 36,
@@ -322,7 +357,8 @@
       "difficulty": "Easy",
       "category": "Linked List",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/linked-list-cycle-detection?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/linked-list-cycle-detection?list=neetcode150",
+      "leetcode_number": 141
     },
     {
       "problem_number": 37,
@@ -331,7 +367,8 @@
       "difficulty": "Medium",
       "category": "Linked List",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/reorder-linked-list?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/reorder-linked-list?list=neetcode150",
+      "leetcode_number": 143
     },
     {
       "problem_number": 38,
@@ -340,7 +377,8 @@
       "difficulty": "Medium",
       "category": "Linked List",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/remove-node-from-end-of-linked-list?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/remove-node-from-end-of-linked-list?list=neetcode150",
+      "leetcode_number": 19
     },
     {
       "problem_number": 39,
@@ -349,7 +387,8 @@
       "difficulty": "Medium",
       "category": "Linked List",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/copy-linked-list-with-random-pointer?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/copy-linked-list-with-random-pointer?list=neetcode150",
+      "leetcode_number": 138
     },
     {
       "problem_number": 40,
@@ -358,7 +397,8 @@
       "difficulty": "Medium",
       "category": "Linked List",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/add-two-numbers?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/add-two-numbers?list=neetcode150",
+      "leetcode_number": 2
     },
     {
       "problem_number": 41,
@@ -367,7 +407,8 @@
       "difficulty": "Medium",
       "category": "Linked List",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/find-duplicate-integer?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/find-duplicate-integer?list=neetcode150",
+      "leetcode_number": 287
     },
     {
       "problem_number": 42,
@@ -376,7 +417,8 @@
       "difficulty": "Medium",
       "category": "Linked List",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/lru-cache?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/lru-cache?list=neetcode150",
+      "leetcode_number": 146
     },
     {
       "problem_number": 43,
@@ -385,7 +427,8 @@
       "difficulty": "Hard",
       "category": "Linked List",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/merge-k-sorted-linked-lists?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/merge-k-sorted-linked-lists?list=neetcode150",
+      "leetcode_number": 23
     },
     {
       "problem_number": 44,
@@ -394,7 +437,8 @@
       "difficulty": "Hard",
       "category": "Linked List",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/reverse-nodes-in-k-group?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/reverse-nodes-in-k-group?list=neetcode150",
+      "leetcode_number": 25
     },
     {
       "problem_number": 45,
@@ -403,7 +447,8 @@
       "difficulty": "Easy",
       "category": "Trees",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/invert-a-binary-tree?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/invert-a-binary-tree?list=neetcode150",
+      "leetcode_number": 226
     },
     {
       "problem_number": 46,
@@ -412,7 +457,8 @@
       "difficulty": "Easy",
       "category": "Trees",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/depth-of-binary-tree?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/depth-of-binary-tree?list=neetcode150",
+      "leetcode_number": 104
     },
     {
       "problem_number": 47,
@@ -421,7 +467,8 @@
       "difficulty": "Easy",
       "category": "Trees",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/binary-tree-diameter?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/binary-tree-diameter?list=neetcode150",
+      "leetcode_number": 543
     },
     {
       "problem_number": 48,
@@ -430,7 +477,8 @@
       "difficulty": "Easy",
       "category": "Trees",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/balanced-binary-tree?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/balanced-binary-tree?list=neetcode150",
+      "leetcode_number": 110
     },
     {
       "problem_number": 49,
@@ -439,7 +487,8 @@
       "difficulty": "Easy",
       "category": "Trees",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/same-binary-tree?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/same-binary-tree?list=neetcode150",
+      "leetcode_number": 100
     },
     {
       "problem_number": 50,
@@ -448,7 +497,8 @@
       "difficulty": "Easy",
       "category": "Trees",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/subtree-of-a-binary-tree?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/subtree-of-a-binary-tree?list=neetcode150",
+      "leetcode_number": 572
     },
     {
       "problem_number": 51,
@@ -457,7 +507,8 @@
       "difficulty": "Medium",
       "category": "Trees",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/lowest-common-ancestor-in-binary-search-tree?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/lowest-common-ancestor-in-binary-search-tree?list=neetcode150",
+      "leetcode_number": 235
     },
     {
       "problem_number": 52,
@@ -466,7 +517,8 @@
       "difficulty": "Medium",
       "category": "Trees",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/level-order-traversal-of-binary-tree?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/level-order-traversal-of-binary-tree?list=neetcode150",
+      "leetcode_number": 102
     },
     {
       "problem_number": 53,
@@ -475,7 +527,8 @@
       "difficulty": "Medium",
       "category": "Trees",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/binary-tree-right-side-view?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/binary-tree-right-side-view?list=neetcode150",
+      "leetcode_number": 199
     },
     {
       "problem_number": 54,
@@ -484,7 +537,8 @@
       "difficulty": "Medium",
       "category": "Trees",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/count-good-nodes-in-binary-tree?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/count-good-nodes-in-binary-tree?list=neetcode150",
+      "leetcode_number": 1448
     },
     {
       "problem_number": 55,
@@ -493,7 +547,8 @@
       "difficulty": "Medium",
       "category": "Trees",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/valid-binary-search-tree?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/valid-binary-search-tree?list=neetcode150",
+      "leetcode_number": 98
     },
     {
       "problem_number": 56,
@@ -502,7 +557,8 @@
       "difficulty": "Medium",
       "category": "Trees",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/kth-smallest-integer-in-bst?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/kth-smallest-integer-in-bst?list=neetcode150",
+      "leetcode_number": 230
     },
     {
       "problem_number": 57,
@@ -511,7 +567,8 @@
       "difficulty": "Medium",
       "category": "Trees",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/binary-tree-from-preorder-and-inorder-traversal?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/binary-tree-from-preorder-and-inorder-traversal?list=neetcode150",
+      "leetcode_number": 105
     },
     {
       "problem_number": 58,
@@ -520,7 +577,8 @@
       "difficulty": "Hard",
       "category": "Trees",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/binary-tree-maximum-path-sum?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/binary-tree-maximum-path-sum?list=neetcode150",
+      "leetcode_number": 124
     },
     {
       "problem_number": 59,
@@ -529,7 +587,8 @@
       "difficulty": "Hard",
       "category": "Trees",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/serialize-and-deserialize-binary-tree?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/serialize-and-deserialize-binary-tree?list=neetcode150",
+      "leetcode_number": 297
     },
     {
       "problem_number": 60,
@@ -538,7 +597,8 @@
       "difficulty": "Easy",
       "category": "Heap / Priority Queue",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/kth-largest-integer-in-a-stream?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/kth-largest-integer-in-a-stream?list=neetcode150",
+      "leetcode_number": 703
     },
     {
       "problem_number": 61,
@@ -547,7 +607,8 @@
       "difficulty": "Easy",
       "category": "Heap / Priority Queue",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/last-stone-weight?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/last-stone-weight?list=neetcode150",
+      "leetcode_number": 1046
     },
     {
       "problem_number": 62,
@@ -556,7 +617,8 @@
       "difficulty": "Medium",
       "category": "Heap / Priority Queue",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/k-closest-points-to-origin?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/k-closest-points-to-origin?list=neetcode150",
+      "leetcode_number": 973
     },
     {
       "problem_number": 63,
@@ -565,7 +627,8 @@
       "difficulty": "Medium",
       "category": "Heap / Priority Queue",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/kth-largest-element-in-an-array?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/kth-largest-element-in-an-array?list=neetcode150",
+      "leetcode_number": 215
     },
     {
       "problem_number": 64,
@@ -574,7 +637,8 @@
       "difficulty": "Medium",
       "category": "Heap / Priority Queue",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/task-scheduling?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/task-scheduling?list=neetcode150",
+      "leetcode_number": 621
     },
     {
       "problem_number": 65,
@@ -583,7 +647,8 @@
       "difficulty": "Medium",
       "category": "Heap / Priority Queue",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/design-twitter-feed?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/design-twitter-feed?list=neetcode150",
+      "leetcode_number": 355
     },
     {
       "problem_number": 66,
@@ -592,7 +657,8 @@
       "difficulty": "Hard",
       "category": "Heap / Priority Queue",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/find-median-in-a-data-stream?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/find-median-in-a-data-stream?list=neetcode150",
+      "leetcode_number": 295
     },
     {
       "problem_number": 67,
@@ -601,7 +667,8 @@
       "difficulty": "Medium",
       "category": "Backtracking",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/subsets?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/subsets?list=neetcode150",
+      "leetcode_number": 78
     },
     {
       "problem_number": 68,
@@ -610,7 +677,8 @@
       "difficulty": "Medium",
       "category": "Backtracking",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/combination-target-sum?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/combination-target-sum?list=neetcode150",
+      "leetcode_number": 39
     },
     {
       "problem_number": 69,
@@ -619,7 +687,8 @@
       "difficulty": "Medium",
       "category": "Backtracking",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/combination-target-sum-ii?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/combination-target-sum-ii?list=neetcode150",
+      "leetcode_number": 40
     },
     {
       "problem_number": 70,
@@ -628,7 +697,8 @@
       "difficulty": "Medium",
       "category": "Backtracking",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/permutations?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/permutations?list=neetcode150",
+      "leetcode_number": 46
     },
     {
       "problem_number": 71,
@@ -637,7 +707,8 @@
       "difficulty": "Medium",
       "category": "Backtracking",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/subsets-ii?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/subsets-ii?list=neetcode150",
+      "leetcode_number": 90
     },
     {
       "problem_number": 72,
@@ -646,7 +717,8 @@
       "difficulty": "Medium",
       "category": "Backtracking",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/generate-parentheses?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/generate-parentheses?list=neetcode150",
+      "leetcode_number": 22
     },
     {
       "problem_number": 73,
@@ -655,7 +727,8 @@
       "difficulty": "Medium",
       "category": "Backtracking",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/search-for-word?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/search-for-word?list=neetcode150",
+      "leetcode_number": 79
     },
     {
       "problem_number": 74,
@@ -664,7 +737,8 @@
       "difficulty": "Medium",
       "category": "Backtracking",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/palindrome-partitioning?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/palindrome-partitioning?list=neetcode150",
+      "leetcode_number": 131
     },
     {
       "problem_number": 75,
@@ -673,7 +747,8 @@
       "difficulty": "Medium",
       "category": "Backtracking",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/combinations-of-a-phone-number?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/combinations-of-a-phone-number?list=neetcode150",
+      "leetcode_number": 17
     },
     {
       "problem_number": 76,
@@ -682,7 +757,8 @@
       "difficulty": "Hard",
       "category": "Backtracking",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/n-queens?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/n-queens?list=neetcode150",
+      "leetcode_number": 51
     },
     {
       "problem_number": 77,
@@ -691,7 +767,8 @@
       "difficulty": "Medium",
       "category": "Tries",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/implement-prefix-tree?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/implement-prefix-tree?list=neetcode150",
+      "leetcode_number": 208
     },
     {
       "problem_number": 78,
@@ -700,7 +777,8 @@
       "difficulty": "Medium",
       "category": "Tries",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/design-word-search-data-structure?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/design-word-search-data-structure?list=neetcode150",
+      "leetcode_number": 211
     },
     {
       "problem_number": 79,
@@ -709,7 +787,8 @@
       "difficulty": "Hard",
       "category": "Tries",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/search-for-word-ii?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/search-for-word-ii?list=neetcode150",
+      "leetcode_number": 212
     },
     {
       "problem_number": 80,
@@ -718,7 +797,8 @@
       "difficulty": "Medium",
       "category": "Graphs",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/count-number-of-islands?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/count-number-of-islands?list=neetcode150",
+      "leetcode_number": 200
     },
     {
       "problem_number": 81,
@@ -727,7 +807,8 @@
       "difficulty": "Medium",
       "category": "Graphs",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/max-area-of-island?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/max-area-of-island?list=neetcode150",
+      "leetcode_number": 695
     },
     {
       "problem_number": 82,
@@ -736,7 +817,8 @@
       "difficulty": "Medium",
       "category": "Graphs",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/clone-graph?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/clone-graph?list=neetcode150",
+      "leetcode_number": 133
     },
     {
       "problem_number": 83,
@@ -745,7 +827,8 @@
       "difficulty": "Medium",
       "category": "Graphs",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/islands-and-treasure?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/islands-and-treasure?list=neetcode150",
+      "leetcode_number": 286
     },
     {
       "problem_number": 84,
@@ -754,7 +837,8 @@
       "difficulty": "Medium",
       "category": "Graphs",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/rotting-fruit?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/rotting-fruit?list=neetcode150",
+      "leetcode_number": 994
     },
     {
       "problem_number": 85,
@@ -763,7 +847,8 @@
       "difficulty": "Medium",
       "category": "Graphs",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/pacific-atlantic-water-flow?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/pacific-atlantic-water-flow?list=neetcode150",
+      "leetcode_number": 417
     },
     {
       "problem_number": 86,
@@ -772,7 +857,8 @@
       "difficulty": "Medium",
       "category": "Graphs",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/surrounded-regions?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/surrounded-regions?list=neetcode150",
+      "leetcode_number": 130
     },
     {
       "problem_number": 87,
@@ -781,7 +867,8 @@
       "difficulty": "Medium",
       "category": "Graphs",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/course-schedule?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/course-schedule?list=neetcode150",
+      "leetcode_number": 207
     },
     {
       "problem_number": 88,
@@ -790,7 +877,8 @@
       "difficulty": "Medium",
       "category": "Graphs",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/course-schedule-ii?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/course-schedule-ii?list=neetcode150",
+      "leetcode_number": 210
     },
     {
       "problem_number": 89,
@@ -799,7 +887,8 @@
       "difficulty": "Medium",
       "category": "Graphs",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/valid-tree?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/valid-tree?list=neetcode150",
+      "leetcode_number": 261
     },
     {
       "problem_number": 90,
@@ -808,7 +897,8 @@
       "difficulty": "Medium",
       "category": "Graphs",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/count-connected-components?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/count-connected-components?list=neetcode150",
+      "leetcode_number": 323
     },
     {
       "problem_number": 91,
@@ -817,7 +907,8 @@
       "difficulty": "Medium",
       "category": "Graphs",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/redundant-connection?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/redundant-connection?list=neetcode150",
+      "leetcode_number": 684
     },
     {
       "problem_number": 92,
@@ -826,7 +917,8 @@
       "difficulty": "Hard",
       "category": "Graphs",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/word-ladder?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/word-ladder?list=neetcode150",
+      "leetcode_number": 127
     },
     {
       "problem_number": 93,
@@ -835,7 +927,8 @@
       "difficulty": "Medium",
       "category": "Advanced Graphs",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/network-delay-time?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/network-delay-time?list=neetcode150",
+      "leetcode_number": 743
     },
     {
       "problem_number": 94,
@@ -844,7 +937,8 @@
       "difficulty": "Hard",
       "category": "Advanced Graphs",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/reconstruct-flight-path?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/reconstruct-flight-path?list=neetcode150",
+      "leetcode_number": 332
     },
     {
       "problem_number": 95,
@@ -853,7 +947,8 @@
       "difficulty": "Medium",
       "category": "Advanced Graphs",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/min-cost-to-connect-points?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/min-cost-to-connect-points?list=neetcode150",
+      "leetcode_number": 1584
     },
     {
       "problem_number": 96,
@@ -862,7 +957,8 @@
       "difficulty": "Hard",
       "category": "Advanced Graphs",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/swim-in-rising-water?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/swim-in-rising-water?list=neetcode150",
+      "leetcode_number": 778
     },
     {
       "problem_number": 97,
@@ -871,7 +967,8 @@
       "difficulty": "Hard",
       "category": "Advanced Graphs",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/foreign-dictionary?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/foreign-dictionary?list=neetcode150",
+      "leetcode_number": 269
     },
     {
       "problem_number": 98,
@@ -880,7 +977,8 @@
       "difficulty": "Medium",
       "category": "Advanced Graphs",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/cheapest-flight-path?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/cheapest-flight-path?list=neetcode150",
+      "leetcode_number": 787
     },
     {
       "problem_number": 99,
@@ -889,7 +987,8 @@
       "difficulty": "Easy",
       "category": "1-D Dynamic Programming",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/climbing-stairs?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/climbing-stairs?list=neetcode150",
+      "leetcode_number": 70
     },
     {
       "problem_number": 100,
@@ -898,7 +997,8 @@
       "difficulty": "Easy",
       "category": "1-D Dynamic Programming",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/min-cost-climbing-stairs?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/min-cost-climbing-stairs?list=neetcode150",
+      "leetcode_number": 746
     },
     {
       "problem_number": 101,
@@ -907,7 +1007,8 @@
       "difficulty": "Medium",
       "category": "1-D Dynamic Programming",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/house-robber?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/house-robber?list=neetcode150",
+      "leetcode_number": 198
     },
     {
       "problem_number": 102,
@@ -916,7 +1017,8 @@
       "difficulty": "Medium",
       "category": "1-D Dynamic Programming",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/house-robber-ii?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/house-robber-ii?list=neetcode150",
+      "leetcode_number": 213
     },
     {
       "problem_number": 103,
@@ -925,7 +1027,8 @@
       "difficulty": "Medium",
       "category": "1-D Dynamic Programming",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/longest-palindromic-substring?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/longest-palindromic-substring?list=neetcode150",
+      "leetcode_number": 5
     },
     {
       "problem_number": 104,
@@ -934,7 +1037,8 @@
       "difficulty": "Medium",
       "category": "1-D Dynamic Programming",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/palindromic-substrings?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/palindromic-substrings?list=neetcode150",
+      "leetcode_number": 647
     },
     {
       "problem_number": 105,
@@ -943,7 +1047,8 @@
       "difficulty": "Medium",
       "category": "1-D Dynamic Programming",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/decode-ways?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/decode-ways?list=neetcode150",
+      "leetcode_number": 91
     },
     {
       "problem_number": 106,
@@ -952,7 +1057,8 @@
       "difficulty": "Medium",
       "category": "1-D Dynamic Programming",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/coin-change?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/coin-change?list=neetcode150",
+      "leetcode_number": 322
     },
     {
       "problem_number": 107,
@@ -961,7 +1067,8 @@
       "difficulty": "Medium",
       "category": "1-D Dynamic Programming",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/maximum-product-subarray?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/maximum-product-subarray?list=neetcode150",
+      "leetcode_number": 152
     },
     {
       "problem_number": 108,
@@ -970,7 +1077,8 @@
       "difficulty": "Medium",
       "category": "1-D Dynamic Programming",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/word-break?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/word-break?list=neetcode150",
+      "leetcode_number": 139
     },
     {
       "problem_number": 109,
@@ -979,7 +1087,8 @@
       "difficulty": "Medium",
       "category": "1-D Dynamic Programming",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/longest-increasing-subsequence?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/longest-increasing-subsequence?list=neetcode150",
+      "leetcode_number": 300
     },
     {
       "problem_number": 110,
@@ -988,7 +1097,8 @@
       "difficulty": "Medium",
       "category": "1-D Dynamic Programming",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/partition-equal-subset-sum?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/partition-equal-subset-sum?list=neetcode150",
+      "leetcode_number": 416
     },
     {
       "problem_number": 111,
@@ -997,7 +1107,8 @@
       "difficulty": "Medium",
       "category": "2-D Dynamic Programming",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/count-paths?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/count-paths?list=neetcode150",
+      "leetcode_number": 62
     },
     {
       "problem_number": 112,
@@ -1006,7 +1117,8 @@
       "difficulty": "Medium",
       "category": "2-D Dynamic Programming",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/longest-common-subsequence?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/longest-common-subsequence?list=neetcode150",
+      "leetcode_number": 1143
     },
     {
       "problem_number": 113,
@@ -1015,7 +1127,8 @@
       "difficulty": "Medium",
       "category": "2-D Dynamic Programming",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/buy-and-sell-crypto-with-cooldown?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/buy-and-sell-crypto-with-cooldown?list=neetcode150",
+      "leetcode_number": 309
     },
     {
       "problem_number": 114,
@@ -1024,7 +1137,8 @@
       "difficulty": "Medium",
       "category": "2-D Dynamic Programming",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/coin-change-ii?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/coin-change-ii?list=neetcode150",
+      "leetcode_number": 518
     },
     {
       "problem_number": 115,
@@ -1033,7 +1147,8 @@
       "difficulty": "Medium",
       "category": "2-D Dynamic Programming",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/target-sum?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/target-sum?list=neetcode150",
+      "leetcode_number": 494
     },
     {
       "problem_number": 116,
@@ -1042,7 +1157,8 @@
       "difficulty": "Medium",
       "category": "2-D Dynamic Programming",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/interleaving-string?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/interleaving-string?list=neetcode150",
+      "leetcode_number": 97
     },
     {
       "problem_number": 117,
@@ -1051,7 +1167,8 @@
       "difficulty": "Hard",
       "category": "2-D Dynamic Programming",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/longest-increasing-path-in-matrix?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/longest-increasing-path-in-matrix?list=neetcode150",
+      "leetcode_number": 329
     },
     {
       "problem_number": 118,
@@ -1060,7 +1177,8 @@
       "difficulty": "Hard",
       "category": "2-D Dynamic Programming",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/count-subsequences?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/count-subsequences?list=neetcode150",
+      "leetcode_number": 115
     },
     {
       "problem_number": 119,
@@ -1069,7 +1187,8 @@
       "difficulty": "Medium",
       "category": "2-D Dynamic Programming",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/edit-distance?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/edit-distance?list=neetcode150",
+      "leetcode_number": 72
     },
     {
       "problem_number": 120,
@@ -1078,7 +1197,8 @@
       "difficulty": "Hard",
       "category": "2-D Dynamic Programming",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/burst-balloons?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/burst-balloons?list=neetcode150",
+      "leetcode_number": 312
     },
     {
       "problem_number": 121,
@@ -1087,7 +1207,8 @@
       "difficulty": "Hard",
       "category": "2-D Dynamic Programming",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/regular-expression-matching?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/regular-expression-matching?list=neetcode150",
+      "leetcode_number": 10
     },
     {
       "problem_number": 122,
@@ -1096,7 +1217,8 @@
       "difficulty": "Medium",
       "category": "Greedy",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/maximum-subarray?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/maximum-subarray?list=neetcode150",
+      "leetcode_number": 53
     },
     {
       "problem_number": 123,
@@ -1105,7 +1227,8 @@
       "difficulty": "Medium",
       "category": "Greedy",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/jump-game?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/jump-game?list=neetcode150",
+      "leetcode_number": 55
     },
     {
       "problem_number": 124,
@@ -1114,7 +1237,8 @@
       "difficulty": "Medium",
       "category": "Greedy",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/jump-game-ii?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/jump-game-ii?list=neetcode150",
+      "leetcode_number": 45
     },
     {
       "problem_number": 125,
@@ -1123,7 +1247,8 @@
       "difficulty": "Medium",
       "category": "Greedy",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/gas-station?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/gas-station?list=neetcode150",
+      "leetcode_number": 134
     },
     {
       "problem_number": 126,
@@ -1132,7 +1257,8 @@
       "difficulty": "Medium",
       "category": "Greedy",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/hand-of-straights?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/hand-of-straights?list=neetcode150",
+      "leetcode_number": 846
     },
     {
       "problem_number": 127,
@@ -1141,7 +1267,8 @@
       "difficulty": "Medium",
       "category": "Greedy",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/merge-triplets-to-form-target?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/merge-triplets-to-form-target?list=neetcode150",
+      "leetcode_number": 1899
     },
     {
       "problem_number": 128,
@@ -1150,7 +1277,8 @@
       "difficulty": "Medium",
       "category": "Greedy",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/partition-labels?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/partition-labels?list=neetcode150",
+      "leetcode_number": 763
     },
     {
       "problem_number": 129,
@@ -1159,7 +1287,8 @@
       "difficulty": "Medium",
       "category": "Greedy",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/valid-parenthesis-string?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/valid-parenthesis-string?list=neetcode150",
+      "leetcode_number": 678
     },
     {
       "problem_number": 130,
@@ -1168,7 +1297,8 @@
       "difficulty": "Medium",
       "category": "Intervals",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/insert-new-interval?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/insert-new-interval?list=neetcode150",
+      "leetcode_number": 57
     },
     {
       "problem_number": 131,
@@ -1177,7 +1307,8 @@
       "difficulty": "Medium",
       "category": "Intervals",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/merge-intervals?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/merge-intervals?list=neetcode150",
+      "leetcode_number": 56
     },
     {
       "problem_number": 132,
@@ -1186,7 +1317,8 @@
       "difficulty": "Medium",
       "category": "Intervals",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/non-overlapping-intervals?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/non-overlapping-intervals?list=neetcode150",
+      "leetcode_number": 435
     },
     {
       "problem_number": 133,
@@ -1195,7 +1327,8 @@
       "difficulty": "Easy",
       "category": "Intervals",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/meeting-schedule?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/meeting-schedule?list=neetcode150",
+      "leetcode_number": 252
     },
     {
       "problem_number": 134,
@@ -1204,7 +1337,8 @@
       "difficulty": "Medium",
       "category": "Intervals",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/meeting-schedule-ii?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/meeting-schedule-ii?list=neetcode150",
+      "leetcode_number": 253
     },
     {
       "problem_number": 135,
@@ -1213,7 +1347,8 @@
       "difficulty": "Hard",
       "category": "Intervals",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/minimum-interval-including-query?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/minimum-interval-including-query?list=neetcode150",
+      "leetcode_number": 1851
     },
     {
       "problem_number": 136,
@@ -1222,7 +1357,8 @@
       "difficulty": "Medium",
       "category": "Math & Geometry",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/rotate-matrix?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/rotate-matrix?list=neetcode150",
+      "leetcode_number": 48
     },
     {
       "problem_number": 137,
@@ -1231,7 +1367,8 @@
       "difficulty": "Medium",
       "category": "Math & Geometry",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/spiral-matrix?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/spiral-matrix?list=neetcode150",
+      "leetcode_number": 54
     },
     {
       "problem_number": 138,
@@ -1240,7 +1377,8 @@
       "difficulty": "Medium",
       "category": "Math & Geometry",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/set-zeroes-in-matrix?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/set-zeroes-in-matrix?list=neetcode150",
+      "leetcode_number": 73
     },
     {
       "problem_number": 139,
@@ -1249,7 +1387,8 @@
       "difficulty": "Easy",
       "category": "Math & Geometry",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/non-cyclical-number?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/non-cyclical-number?list=neetcode150",
+      "leetcode_number": 202
     },
     {
       "problem_number": 140,
@@ -1258,7 +1397,8 @@
       "difficulty": "Easy",
       "category": "Math & Geometry",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/plus-one?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/plus-one?list=neetcode150",
+      "leetcode_number": 66
     },
     {
       "problem_number": 141,
@@ -1267,7 +1407,8 @@
       "difficulty": "Medium",
       "category": "Math & Geometry",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/pow-x-n?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/pow-x-n?list=neetcode150",
+      "leetcode_number": 50
     },
     {
       "problem_number": 142,
@@ -1276,7 +1417,8 @@
       "difficulty": "Medium",
       "category": "Math & Geometry",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/multiply-strings?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/multiply-strings?list=neetcode150",
+      "leetcode_number": 43
     },
     {
       "problem_number": 143,
@@ -1285,7 +1427,8 @@
       "difficulty": "Medium",
       "category": "Math & Geometry",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/count-squares?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/count-squares?list=neetcode150",
+      "leetcode_number": 2013
     },
     {
       "problem_number": 144,
@@ -1294,7 +1437,8 @@
       "difficulty": "Easy",
       "category": "Bit Manipulation",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/single-number?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/single-number?list=neetcode150",
+      "leetcode_number": 136
     },
     {
       "problem_number": 145,
@@ -1303,7 +1447,8 @@
       "difficulty": "Easy",
       "category": "Bit Manipulation",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/number-of-one-bits?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/number-of-one-bits?list=neetcode150",
+      "leetcode_number": 191
     },
     {
       "problem_number": 146,
@@ -1312,7 +1457,8 @@
       "difficulty": "Easy",
       "category": "Bit Manipulation",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/counting-bits?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/counting-bits?list=neetcode150",
+      "leetcode_number": 338
     },
     {
       "problem_number": 147,
@@ -1321,7 +1467,8 @@
       "difficulty": "Easy",
       "category": "Bit Manipulation",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/reverse-bits?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/reverse-bits?list=neetcode150",
+      "leetcode_number": 190
     },
     {
       "problem_number": 148,
@@ -1330,7 +1477,8 @@
       "difficulty": "Easy",
       "category": "Bit Manipulation",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/missing-number?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/missing-number?list=neetcode150",
+      "leetcode_number": 268
     },
     {
       "problem_number": 149,
@@ -1339,7 +1487,8 @@
       "difficulty": "Medium",
       "category": "Bit Manipulation",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/sum-of-two-integers?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/sum-of-two-integers?list=neetcode150",
+      "leetcode_number": 371
     },
     {
       "problem_number": 150,
@@ -1348,7 +1497,8 @@
       "difficulty": "Medium",
       "category": "Bit Manipulation",
       "is_paid_only": false,
-      "neetcode_url": "https://neetcode.io/problems/reverse-integer?list=neetcode150"
+      "neetcode_url": "https://neetcode.io/problems/reverse-integer?list=neetcode150",
+      "leetcode_number": 7
     }
   ]
 }

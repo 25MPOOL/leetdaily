@@ -21,27 +21,14 @@
 
 ## Deploy
 
-Production deploys are triggered by pushing a `v*` tag or by manually running the `deploy` workflow:
+Production deploys are triggered by pushing a `v*` tag. The `deploy` workflow builds and pushes the container image, then runs `gcloud run jobs update` against the Cloud Run Job. Infra changes are applied separately by the `terraform-apply` workflow.
 
-1. Build and push a container image tagged with the release commit SHA.
-2. Run Terraform apply with that image reference.
-3. Verify the Cloud Run service revision update.
+1. If the release includes changes under `infra/terraform/**`, trigger `terraform-apply` first and confirm `Apply complete!` in the run log.
+2. Create an annotated `v*` tag on the release commit and push it to `origin`. The `deploy` workflow starts automatically on the tag push.
+3. Watch the `deploy` workflow: it builds the image tagged with the commit SHA, pushes it to Artifact Registry, and calls `gcloud run jobs update` to point the Cloud Run Job at the new image.
+4. Confirm Cloud Scheduler fires the Job on schedule (or trigger a one-shot execution with `gcloud run jobs execute <name> --region <region>`) and check Cloud Logging for a clean run.
 
-For manual recovery or bootstrap, run:
-
-```bash
-cd infra/terraform
-terraform init
-terraform plan
-terraform apply
-```
-
-Then:
-
-1. Verify `GET /healthz` returns `200 OK`.
-2. Send an authenticated `POST /run` smoke test.
-
-See [docs/release.md](docs/release.md) for versioning and tag creation guidance.
+See [docs/release.md](docs/release.md) for versioning, tag creation, and the infra-change ordering rule.
 
 ## Secret rotation
 

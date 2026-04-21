@@ -202,8 +202,8 @@ func writeProblemsJSON(t *testing.T, dir string) string {
 	path := filepath.Join(dir, "neetcode150.json")
 	writeJSON(t, path, map[string]any{
 		"problems": []map[string]any{
-			{"problem_number": 1, "title": "Two Sum", "slug": "two-sum", "difficulty": "Easy", "category": "Arrays & Hashing"},
-			{"problem_number": 2, "title": "Add Two Numbers", "slug": "add-two-numbers", "difficulty": "Medium", "category": "Linked List"},
+			{"problem_number": 1, "leetcode_number": 1, "title": "Two Sum", "slug": "two-sum", "difficulty": "Easy", "category": "Arrays & Hashing"},
+			{"problem_number": 2, "leetcode_number": 2, "title": "Add Two Numbers", "slug": "add-two-numbers", "difficulty": "Medium", "category": "Linked List"},
 		},
 	})
 	return path

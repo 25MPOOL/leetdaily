@@ -75,6 +75,10 @@ func (p Problem) Validate() error {
 		return fmt.Errorf("problem_number must be greater than 0: %d", p.ProblemNumber)
 	}
 
+	if p.LeetCodeNumber < 1 {
+		return fmt.Errorf("leetcode_number must be greater than 0: %d", p.LeetCodeNumber)
+	}
+
 	if strings.TrimSpace(p.Title) == "" {
 		return fmt.Errorf("title must not be empty")
 	}

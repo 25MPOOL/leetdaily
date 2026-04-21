@@ -26,9 +26,9 @@ func TestProblemSourceFetchProblemsSuccess(t *testing.T) {
 	path := filepath.Join(dir, "problems.json")
 	writeJSON(t, path, map[string]any{
 		"problems": []map[string]any{
-			{"problem_number": 1, "title": "Two Sum", "slug": "two-sum", "difficulty": "Easy", "category": "Arrays & Hashing"},
-			{"problem_number": 2, "title": "Add Two Numbers", "slug": "add-two-numbers", "difficulty": "Medium", "category": "Linked List"},
-			{"problem_number": 6, "title": "Encode and Decode Strings", "slug": "encode-and-decode-strings", "difficulty": "Medium", "category": "Arrays & Hashing", "is_paid_only": true, "neetcode_url": "https://neetcode.io/problems/string-encode-and-decode"},
+			{"problem_number": 1, "leetcode_number": 1, "title": "Two Sum", "slug": "two-sum", "difficulty": "Easy", "category": "Arrays & Hashing"},
+			{"problem_number": 2, "leetcode_number": 2, "title": "Add Two Numbers", "slug": "add-two-numbers", "difficulty": "Medium", "category": "Linked List"},
+			{"problem_number": 6, "leetcode_number": 271, "title": "Encode and Decode Strings", "slug": "encode-and-decode-strings", "difficulty": "Medium", "category": "Arrays & Hashing", "is_paid_only": true, "neetcode_url": "https://neetcode.io/problems/string-encode-and-decode"},
 		},
 	})
 
@@ -87,7 +87,7 @@ func TestProblemSourceFetchProblemsValidationFailure(t *testing.T) {
 	writeJSON(t, path, map[string]any{
 		"problems": []map[string]any{
 			// invalid difficulty
-			{"problem_number": 1, "title": "Bad Problem", "slug": "bad-problem", "difficulty": "Legendary", "category": "Unknown"},
+			{"problem_number": 1, "leetcode_number": 1, "title": "Bad Problem", "slug": "bad-problem", "difficulty": "Legendary", "category": "Unknown"},
 		},
 	})
 
@@ -105,7 +105,7 @@ func TestProblemSourceFetchProblemsPaidOnlyMissingNeetCodeURL(t *testing.T) {
 	writeJSON(t, path, map[string]any{
 		"problems": []map[string]any{
 			// paid_only but no neetcode_url
-			{"problem_number": 1, "title": "Paid Problem", "slug": "paid-problem", "difficulty": "Easy", "category": "Arrays & Hashing", "is_paid_only": true},
+			{"problem_number": 1, "leetcode_number": 1, "title": "Paid Problem", "slug": "paid-problem", "difficulty": "Easy", "category": "Arrays & Hashing", "is_paid_only": true},
 		},
 	})
 

@@ -12,9 +12,9 @@ func TestSelectNext(t *testing.T) {
 	cache := Cache{
 		UpdatedAt: &updatedAt,
 		Problems: []Problem{
-			{ProblemNumber: 1, Title: "Two Sum", Slug: "two-sum", Difficulty: DifficultyEasy},
-			{ProblemNumber: 3, Title: "Longest Substring", Slug: "longest-substring-without-repeating-characters", Difficulty: DifficultyMedium},
-			{ProblemNumber: 5, Title: "Longest Palindrome", Slug: "longest-palindromic-substring", Difficulty: DifficultyMedium},
+			{ProblemNumber: 1, LeetCodeNumber: 1, Title: "Two Sum", Slug: "two-sum", Difficulty: DifficultyEasy},
+			{ProblemNumber: 3, LeetCodeNumber: 3, Title: "Longest Substring", Slug: "longest-substring-without-repeating-characters", Difficulty: DifficultyMedium},
+			{ProblemNumber: 5, LeetCodeNumber: 5, Title: "Longest Palindrome", Slug: "longest-palindromic-substring", Difficulty: DifficultyMedium},
 		},
 	}
 
@@ -69,9 +69,9 @@ func TestSelectNextAtMost(t *testing.T) {
 	cache := Cache{
 		UpdatedAt: &updatedAt,
 		Problems: []Problem{
-			{ProblemNumber: 1, Title: "Two Sum", Slug: "two-sum", Difficulty: DifficultyEasy},
-			{ProblemNumber: 2, Title: "Add Two Numbers", Slug: "add-two-numbers", Difficulty: DifficultyMedium},
-			{ProblemNumber: 3, Title: "Median of Two Arrays", Slug: "median-of-two-sorted-arrays", Difficulty: DifficultyHard},
+			{ProblemNumber: 1, LeetCodeNumber: 1, Title: "Two Sum", Slug: "two-sum", Difficulty: DifficultyEasy},
+			{ProblemNumber: 2, LeetCodeNumber: 2, Title: "Add Two Numbers", Slug: "add-two-numbers", Difficulty: DifficultyMedium},
+			{ProblemNumber: 3, LeetCodeNumber: 4, Title: "Median of Two Arrays", Slug: "median-of-two-sorted-arrays", Difficulty: DifficultyHard},
 		},
 	}
 

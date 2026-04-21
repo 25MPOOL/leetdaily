@@ -15,16 +15,18 @@ func TestCacheValidateAndByNumber(t *testing.T) {
 		UpdatedAt: &updatedAt,
 		Problems: []Problem{
 			{
-				ProblemNumber: 1,
-				Title:         "Two Sum",
-				Slug:          "two-sum",
-				Difficulty:    DifficultyEasy,
+				ProblemNumber:  1,
+				LeetCodeNumber: 1,
+				Title:          "Two Sum",
+				Slug:           "two-sum",
+				Difficulty:     DifficultyEasy,
 			},
 			{
-				ProblemNumber: 2,
-				Title:         "Add Two Numbers",
-				Slug:          "add-two-numbers",
-				Difficulty:    DifficultyMedium,
+				ProblemNumber:  2,
+				LeetCodeNumber: 2,
+				Title:          "Add Two Numbers",
+				Slug:           "add-two-numbers",
+				Difficulty:     DifficultyMedium,
 			},
 		},
 	}
@@ -56,10 +58,11 @@ func TestCacheValidateRejectsInvalidValues(t *testing.T) {
 			cache: Cache{
 				Problems: []Problem{
 					{
-						ProblemNumber: 1,
-						Title:         "Two Sum",
-						Slug:          "two-sum",
-						Difficulty:    DifficultyEasy,
+						ProblemNumber:  1,
+						LeetCodeNumber: 1,
+						Title:          "Two Sum",
+						Slug:           "two-sum",
+						Difficulty:     DifficultyEasy,
 					},
 				},
 			},
@@ -70,16 +73,18 @@ func TestCacheValidateRejectsInvalidValues(t *testing.T) {
 				UpdatedAt: &updatedAt,
 				Problems: []Problem{
 					{
-						ProblemNumber: 1,
-						Title:         "Two Sum",
-						Slug:          "two-sum",
-						Difficulty:    DifficultyEasy,
+						ProblemNumber:  1,
+						LeetCodeNumber: 1,
+						Title:          "Two Sum",
+						Slug:           "two-sum",
+						Difficulty:     DifficultyEasy,
 					},
 					{
-						ProblemNumber: 1,
-						Title:         "Another Problem",
-						Slug:          "another-problem",
-						Difficulty:    DifficultyMedium,
+						ProblemNumber:  1,
+						LeetCodeNumber: 100,
+						Title:          "Another Problem",
+						Slug:           "another-problem",
+						Difficulty:     DifficultyMedium,
 					},
 				},
 			},
@@ -90,10 +95,41 @@ func TestCacheValidateRejectsInvalidValues(t *testing.T) {
 				UpdatedAt: &updatedAt,
 				Problems: []Problem{
 					{
-						ProblemNumber: 3,
-						Title:         "Bad Problem",
-						Slug:          "bad-problem",
-						Difficulty:    "Legendary",
+						ProblemNumber:  3,
+						LeetCodeNumber: 3,
+						Title:          "Bad Problem",
+						Slug:           "bad-problem",
+						Difficulty:     "Legendary",
+					},
+				},
+			},
+		},
+		{
+			name: "zero leetcode number",
+			cache: Cache{
+				UpdatedAt: &updatedAt,
+				Problems: []Problem{
+					{
+						ProblemNumber:  1,
+						LeetCodeNumber: 0,
+						Title:          "Two Sum",
+						Slug:           "two-sum",
+						Difficulty:     DifficultyEasy,
+					},
+				},
+			},
+		},
+		{
+			name: "negative leetcode number",
+			cache: Cache{
+				UpdatedAt: &updatedAt,
+				Problems: []Problem{
+					{
+						ProblemNumber:  1,
+						LeetCodeNumber: -1,
+						Title:          "Two Sum",
+						Slug:           "two-sum",
+						Difficulty:     DifficultyEasy,
 					},
 				},
 			},
@@ -117,8 +153,8 @@ func TestSelectNextReturnsNextProblem(t *testing.T) {
 	cache := Cache{
 		UpdatedAt: timePointer(time.Date(2026, 3, 20, 5, 0, 0, 0, time.UTC)),
 		Problems: []Problem{
-			{ProblemNumber: 10, Title: "First", Slug: "first", Difficulty: DifficultyEasy},
-			{ProblemNumber: 11, Title: "Second", Slug: "second", Difficulty: DifficultyMedium},
+			{ProblemNumber: 10, LeetCodeNumber: 10, Title: "First", Slug: "first", Difficulty: DifficultyEasy},
+			{ProblemNumber: 11, LeetCodeNumber: 11, Title: "Second", Slug: "second", Difficulty: DifficultyMedium},
 		},
 	}
 
@@ -138,9 +174,9 @@ func TestSelectNextAtMostFiltersHard(t *testing.T) {
 	cache := Cache{
 		UpdatedAt: timePointer(time.Date(2026, 3, 20, 5, 0, 0, 0, time.UTC)),
 		Problems: []Problem{
-			{ProblemNumber: 1, Title: "Easy", Slug: "easy", Difficulty: DifficultyEasy},
-			{ProblemNumber: 2, Title: "Medium", Slug: "medium", Difficulty: DifficultyMedium},
-			{ProblemNumber: 3, Title: "Hard", Slug: "hard", Difficulty: DifficultyHard},
+			{ProblemNumber: 1, LeetCodeNumber: 1, Title: "Easy", Slug: "easy", Difficulty: DifficultyEasy},
+			{ProblemNumber: 2, LeetCodeNumber: 2, Title: "Medium", Slug: "medium", Difficulty: DifficultyMedium},
+			{ProblemNumber: 3, LeetCodeNumber: 3, Title: "Hard", Slug: "hard", Difficulty: DifficultyHard},
 		},
 	}
 
@@ -179,8 +215,8 @@ func TestSelectNextAtMostFiltersHard(t *testing.T) {
 		hardThenEasy := Cache{
 			UpdatedAt: timePointer(time.Date(2026, 3, 20, 5, 0, 0, 0, time.UTC)),
 			Problems: []Problem{
-				{ProblemNumber: 5, Title: "Hard", Slug: "hard", Difficulty: DifficultyHard},
-				{ProblemNumber: 6, Title: "Easy", Slug: "easy2", Difficulty: DifficultyEasy},
+				{ProblemNumber: 5, LeetCodeNumber: 5, Title: "Hard", Slug: "hard", Difficulty: DifficultyHard},
+				{ProblemNumber: 6, LeetCodeNumber: 6, Title: "Easy", Slug: "easy2", Difficulty: DifficultyEasy},
 			},
 		}
 		p, err := SelectNextAtMost(hardThenEasy, 5, DifficultyMedium)
@@ -201,9 +237,9 @@ func TestRefreshBehaviors(t *testing.T) {
 	current := Cache{
 		UpdatedAt: timePointer(time.Date(2026, 3, 20, 5, 0, 0, 0, time.UTC)),
 		Problems: []Problem{
-			{ProblemNumber: 1, Title: "One", Slug: "one", Difficulty: DifficultyEasy},
-			{ProblemNumber: 2, Title: "Two", Slug: "two", Difficulty: DifficultyMedium},
-			{ProblemNumber: 3, Title: "Three", Slug: "three", Difficulty: DifficultyHard},
+			{ProblemNumber: 1, LeetCodeNumber: 1, Title: "One", Slug: "one", Difficulty: DifficultyEasy},
+			{ProblemNumber: 2, LeetCodeNumber: 2, Title: "Two", Slug: "two", Difficulty: DifficultyMedium},
+			{ProblemNumber: 3, LeetCodeNumber: 3, Title: "Three", Slug: "three", Difficulty: DifficultyHard},
 		},
 	}
 
@@ -227,8 +263,8 @@ func TestRefreshBehaviors(t *testing.T) {
 
 		cache, refreshed, err := Refresh(context.Background(), now, current, 3, 2, DifficultyMedium, stubFetcher{
 			problems: []Problem{
-				{ProblemNumber: 3, Title: "Three", Slug: "three", Difficulty: DifficultyHard},
-				{ProblemNumber: 4, Title: "Four", Slug: "four", Difficulty: DifficultyEasy},
+				{ProblemNumber: 3, LeetCodeNumber: 3, Title: "Three", Slug: "three", Difficulty: DifficultyHard},
+				{ProblemNumber: 4, LeetCodeNumber: 4, Title: "Four", Slug: "four", Difficulty: DifficultyEasy},
 			},
 		})
 		if err != nil {
@@ -277,11 +313,11 @@ func TestCategoryProgress(t *testing.T) {
 	cache := Cache{
 		UpdatedAt: updatedAt,
 		Problems: []Problem{
-			{ProblemNumber: 1, Title: "A", Slug: "a", Difficulty: DifficultyEasy, Category: "Arrays & Hashing"},
-			{ProblemNumber: 2, Title: "B", Slug: "b", Difficulty: DifficultyMedium, Category: "Arrays & Hashing"},
-			{ProblemNumber: 3, Title: "C", Slug: "c", Difficulty: DifficultyHard, Category: "Arrays & Hashing"},
-			{ProblemNumber: 4, Title: "D", Slug: "d", Difficulty: DifficultyEasy, Category: "Two Pointers"},
-			{ProblemNumber: 5, Title: "E", Slug: "e", Difficulty: DifficultyMedium, Category: "Two Pointers"},
+			{ProblemNumber: 1, LeetCodeNumber: 1, Title: "A", Slug: "a", Difficulty: DifficultyEasy, Category: "Arrays & Hashing"},
+			{ProblemNumber: 2, LeetCodeNumber: 2, Title: "B", Slug: "b", Difficulty: DifficultyMedium, Category: "Arrays & Hashing"},
+			{ProblemNumber: 3, LeetCodeNumber: 3, Title: "C", Slug: "c", Difficulty: DifficultyHard, Category: "Arrays & Hashing"},
+			{ProblemNumber: 4, LeetCodeNumber: 4, Title: "D", Slug: "d", Difficulty: DifficultyEasy, Category: "Two Pointers"},
+			{ProblemNumber: 5, LeetCodeNumber: 5, Title: "E", Slug: "e", Difficulty: DifficultyMedium, Category: "Two Pointers"},
 		},
 	}
 
@@ -322,7 +358,7 @@ func TestCategoryProgress(t *testing.T) {
 		},
 		{
 			name:          "empty category returns zero",
-			problem:       Problem{ProblemNumber: 1, Title: "X", Slug: "x", Difficulty: DifficultyEasy, Category: ""},
+			problem:       Problem{ProblemNumber: 1, LeetCodeNumber: 1, Title: "X", Slug: "x", Difficulty: DifficultyEasy, Category: ""},
 			maxDifficulty: DifficultyMedium,
 			wantPos:       0,
 			wantTotal:     0,

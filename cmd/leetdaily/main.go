@@ -10,9 +10,7 @@ import (
 
 	"log/slog"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/nkoji21/leetdaily/internal/app"
-	"github.com/nkoji21/leetdaily/internal/bot"
 	"github.com/nkoji21/leetdaily/internal/discord"
 	"github.com/nkoji21/leetdaily/internal/httpruntime"
 	"github.com/nkoji21/leetdaily/internal/job"
@@ -89,33 +87,10 @@ func buildDependencies(ctx context.Context, cfg runtimecfg.Config, logger *slog.
 		return app.Dependencies{}, fmt.Errorf("build HTTP runtime: %w", err)
 	}
 
-	deps := app.Dependencies{
+	return app.Dependencies{
 		HTTPRunner: httpRunner,
 		JobRunner:  job.NewDateRunner(jobRunner, location),
-	}
-
-	if cfg.Mode == runtimecfg.ModeBot {
-		session, err := discordgo.New("Bot " + cfg.DiscordBotToken)
-		if err != nil {
-			return app.Dependencies{}, fmt.Errorf("create Discord session: %w", err)
-		}
-
-		botRunner, err := bot.New(bot.Config{
-			Session:    session,
-			Job:        jobRunner,
-			Repository: repository,
-			AppID:      cfg.DiscordApplicationID,
-			Location:   location,
-			HTTPAddr:   cfg.HTTPAddr(),
-			Logger:     logger.With("component", "bot"),
-		})
-		if err != nil {
-			return app.Dependencies{}, fmt.Errorf("build bot runtime: %w", err)
-		}
-		deps.BotRunner = botRunner
-	}
-
-	return deps, nil
+	}, nil
 }
 
 func loadRuntimeLocation(ctx context.Context, repository storage.Repository) (*time.Location, error) {

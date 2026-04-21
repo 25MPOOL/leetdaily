@@ -22,7 +22,7 @@ variable "environment" {
 }
 
 variable "service_name" {
-  description = "Cloud Run service name"
+  description = "Cloud Run job name"
   type        = string
   default     = "leetdaily"
 }
@@ -62,9 +62,10 @@ variable "problems_object" {
   default     = "problems.json"
 }
 
-variable "discord_application_id" {
-  description = "Discord application ID for slash command registration"
-  type        = string
+variable "cloud_run_timeout_seconds" {
+  description = "Cloud Run request timeout in seconds"
+  type        = number
+  default     = 900
 }
 
 variable "cloud_run_cpu" {

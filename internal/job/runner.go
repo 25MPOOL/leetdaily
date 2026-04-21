@@ -27,7 +27,6 @@ type Repository interface {
 type ForumPoster interface {
 	EnsureDifficultyTags(context.Context, string) (map[problemcache.Difficulty]string, error)
 	CreateForumThread(context.Context, discord.ForumThreadParams) (discord.Thread, error)
-	AddReaction(context.Context, string, string, string) error
 }
 
 type Notifier interface {
@@ -256,22 +255,11 @@ func (gr *guildRun) post(ctx context.Context, problem problemcache.Problem, cach
 			Body:           formatThreadBody(problem, cache, maxDifficulty),
 		})
 		if postErr == nil {
-			if reactionErr := gr.runner.poster.AddReaction(ctx, thread.ID, thread.MessageID, "done_4:1461518237329133761"); reactionErr != nil {
-				gr.runner.notifier.NotifyFailure(ctx, gr.guild.GuildID, fmt.Errorf("add reaction: %w", reactionErr)) //nolint:errcheck
-			}
-
 			now := gr.runner.now()
 			gr.guildState.LastPostedProblemNumber = intPointer(problem.ProblemNumber)
 			gr.guildState.LastPostedAt = &now
 			gr.guildState.LastPostedThreadID = &thread.ID
 			gr.guildState.NextProblemNumber = problem.ProblemNumber + 1
-			if gr.guildState.PostedThreads == nil {
-				gr.guildState.PostedThreads = map[int]state.PostedThread{}
-			}
-			gr.guildState.PostedThreads[problem.ProblemNumber] = state.PostedThread{
-				ThreadID:  thread.ID,
-				MessageID: thread.MessageID,
-			}
 			gr.guildState.Job = state.JobState{
 				TargetDate:    &gr.targetDate,
 				Status:        state.JobStatusPosted,

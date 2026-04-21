@@ -1,11 +1,11 @@
-output "cloud_run_service_name" {
-  value       = google_cloud_run_v2_service.leetdaily.name
-  description = "Provisioned Cloud Run service name"
+output "cloud_run_job_name" {
+  value       = google_cloud_run_v2_job.leetdaily.name
+  description = "Provisioned Cloud Run job name"
 }
 
-output "cloud_run_service_uri" {
-  value       = google_cloud_run_v2_service.leetdaily.uri
-  description = "Cloud Run service URI"
+output "cloud_run_job_run_uri" {
+  value       = "https://run.googleapis.com/v2/projects/${var.project_id}/locations/${var.region}/jobs/${google_cloud_run_v2_job.leetdaily.name}:run"
+  description = "Cloud Run job run API URI"
 }
 
 output "runtime_service_account_email" {
@@ -15,7 +15,7 @@ output "runtime_service_account_email" {
 
 output "scheduler_service_account_email" {
   value       = google_service_account.scheduler_invoker.email
-  description = "Service account used by Cloud Scheduler OIDC"
+  description = "Service account used by Cloud Scheduler OAuth token"
 }
 
 output "bucket_name" {

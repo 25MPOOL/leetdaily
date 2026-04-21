@@ -16,7 +16,6 @@ env:
     -backend-config=bucket=${{ vars.TF_STATE_BUCKET }}
     -backend-config=prefix=prod/infra/terraform
   TF_VAR_discord_token_secret_id: ${{ vars.LEETDAILY_DISCORD_TOKEN_SECRET_ID }}
-  TF_VAR_discord_application_id: ${{ vars.DISCORD_APPLICATION_ID }}
   TF_VAR_project_id: ${{ vars.GCP_PROJECT_ID }}
   TF_VAR_region: asia-northeast1
 

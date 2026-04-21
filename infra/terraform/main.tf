@@ -36,15 +36,24 @@ import {
   id = "projects/${var.project_id}/locations/${var.region}/jobs/${var.service_name}-daily-run"
 }
 
-import {
-  to = google_cloud_run_v2_service.leetdaily
-  id = "projects/${var.project_id}/locations/${var.region}/services/${var.service_name}"
+removed {
+  from = google_cloud_run_v2_service.leetdaily
+  lifecycle {
+    destroy = true
+  }
+}
+
+removed {
+  from = google_cloud_run_v2_service_iam_member.scheduler_invoker
+  lifecycle {
+    destroy = true
+  }
 }
 
 locals {
-  service_name      = var.service_name
-  bucket_name       = coalesce(var.bucket_name, "${var.project_id}-${var.service_name}-data")
-  scheduler_run_url = "${google_cloud_run_v2_service.leetdaily.uri}/run"
+  service_name          = var.service_name
+  bucket_name           = coalesce(var.bucket_name, "${var.project_id}-${var.service_name}-data")
+  scheduler_job_run_url = "https://run.googleapis.com/v2/projects/${var.project_id}/locations/${var.region}/jobs/${google_cloud_run_v2_job.leetdaily.name}:run"
   common_labels = {
     app         = "leetdaily"
     environment = var.environment
@@ -76,107 +85,87 @@ resource "google_storage_bucket_iam_member" "runtime_bucket_admin" {
   member = "serviceAccount:${google_service_account.leetdaily_runtime.email}"
 }
 
-resource "google_cloud_run_v2_service" "leetdaily" {
+resource "google_cloud_run_v2_job" "leetdaily" {
   name                = local.service_name
   location            = var.region
   labels              = local.common_labels
   deletion_protection = false
-  ingress             = "INGRESS_TRAFFIC_INTERNAL_ONLY"
 
   template {
-    service_account = google_service_account.leetdaily_runtime.email
+    template {
+      service_account = google_service_account.leetdaily_runtime.email
+      timeout         = "${var.cloud_run_timeout_seconds}s"
+      max_retries     = 0
 
-    scaling {
-      min_instance_count = 1
-      max_instance_count = 1
-    }
+      containers {
+        image = "gcr.io/cloudrun/placeholder"
 
-    containers {
-      image = "gcr.io/cloudrun/placeholder"
+        env {
+          name  = "LEETDAILY_RUNTIME"
+          value = "job"
+        }
 
-      env {
-        name  = "LEETDAILY_RUNTIME"
-        value = "bot"
-      }
+        env {
+          name  = "LEETDAILY_DATA_DIR"
+          value = "/"
+        }
 
-      env {
-        name  = "LEETDAILY_DATA_DIR"
-        value = "/"
-      }
+        env {
+          name  = "GCS_BUCKET"
+          value = google_storage_bucket.leetdaily_data.name
+        }
 
-      env {
-        name  = "GCS_BUCKET"
-        value = google_storage_bucket.leetdaily_data.name
-      }
+        env {
+          name  = "CONFIG_OBJECT"
+          value = var.config_object
+        }
 
-      env {
-        name  = "CONFIG_OBJECT"
-        value = var.config_object
-      }
+        env {
+          name  = "GUILDS_OBJECT"
+          value = var.guilds_object
+        }
 
-      env {
-        name  = "GUILDS_OBJECT"
-        value = var.guilds_object
-      }
+        env {
+          name  = "STATE_OBJECT"
+          value = var.state_object
+        }
 
-      env {
-        name  = "STATE_OBJECT"
-        value = var.state_object
-      }
+        env {
+          name  = "PROBLEMS_OBJECT"
+          value = var.problems_object
+        }
 
-      env {
-        name  = "PROBLEMS_OBJECT"
-        value = var.problems_object
-      }
-
-      env {
-        name  = "DISCORD_APPLICATION_ID"
-        value = var.discord_application_id
-      }
-
-      env {
-        name = "DISCORD_BOT_TOKEN"
-        value_source {
-          secret_key_ref {
-            secret  = var.discord_token_secret_id
-            version = "latest"
+        env {
+          name = "DISCORD_BOT_TOKEN"
+          value_source {
+            secret_key_ref {
+              secret  = var.discord_token_secret_id
+              version = "latest"
+            }
           }
         }
-      }
 
-      resources {
-        limits = {
-          cpu    = var.cloud_run_cpu
-          memory = var.cloud_run_memory
+        resources {
+          limits = {
+            cpu    = var.cloud_run_cpu
+            memory = var.cloud_run_memory
+          }
         }
-        cpu_idle = false
-      }
-
-      startup_probe {
-        http_get { path = "/healthz" }
-        initial_delay_seconds = 0
-        period_seconds        = 5
-        failure_threshold     = 12
-      }
-
-      liveness_probe {
-        http_get { path = "/healthz" }
-        period_seconds = 30
       }
     }
   }
 
   lifecycle {
     ignore_changes = [
-      template[0].containers[0].image,
+      template[0].template[0].containers[0].image,
     ]
   }
 }
 
-resource "google_cloud_run_v2_service_iam_member" "scheduler_invoker" {
+resource "google_cloud_run_v2_job_iam_member" "scheduler_invoker" {
   project  = var.project_id
   location = var.region
-  name     = google_cloud_run_v2_service.leetdaily.name
+  name     = google_cloud_run_v2_job.leetdaily.name
   role     = "roles/run.invoker"
   member   = "serviceAccount:${google_service_account.scheduler_invoker.email}"
 }
@@ -200,9 +189,9 @@ resource "google_cloud_scheduler_job" "daily_run" {
 
   http_target {
     http_method = "POST"
-    uri         = local.scheduler_run_url
+    uri         = local.scheduler_job_run_url
 
-    oidc_token {
+    oauth_token {
       service_account_email = google_service_account.scheduler_invoker.email
     }
   }

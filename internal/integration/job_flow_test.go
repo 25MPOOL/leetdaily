@@ -240,15 +240,7 @@ func newFakeDiscordServer(t *testing.T) (*httptest.Server, *fakeDiscord) {
 				http.Error(w, "boom", http.StatusInternalServerError)
 				return
 			}
-			threadID := fmt.Sprintf("45678901234567890%d", state.threadCalls)
-			_ = json.NewEncoder(w).Encode(map[string]any{
-				"id": threadID,
-				"message": map[string]any{
-					"id": fmt.Sprintf("56789012345678901%d", state.threadCalls),
-				},
-			})
-		case r.Method == http.MethodPut && strings.Contains(r.URL.Path, "/reactions/"):
-			w.WriteHeader(http.StatusNoContent)
+			_ = json.NewEncoder(w).Encode(map[string]any{"id": fmt.Sprintf("45678901234567890%d", state.threadCalls)})
 		case r.Method == http.MethodPost && r.URL.Path == "/channels/345678901234567890/messages":
 			state.mu.Lock()
 			state.notificationCalls++

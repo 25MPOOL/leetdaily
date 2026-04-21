@@ -22,7 +22,7 @@ variable "environment" {
 }
 
 variable "service_name" {
-  description = "Cloud Run service name"
+  description = "Cloud Run job name"
   type        = string
   default     = "leetdaily"
 }

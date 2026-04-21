@@ -15,7 +15,7 @@ output "runtime_service_account_email" {
 
 output "scheduler_service_account_email" {
   value       = google_service_account.scheduler_invoker.email
-  description = "Service account used by Cloud Scheduler OIDC"
+  description = "Service account used by Cloud Scheduler OAuth token"
 }
 
 output "bucket_name" {

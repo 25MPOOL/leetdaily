@@ -21,13 +21,14 @@ type Cache struct {
 }
 
 type Problem struct {
-	ProblemNumber int        `json:"problem_number"`
-	Title         string     `json:"title"`
-	Slug          string     `json:"slug"`
-	Difficulty    Difficulty `json:"difficulty"`
-	Category      string     `json:"category"`
-	IsPaidOnly    bool       `json:"is_paid_only"`
-	NeetCodeURL   string     `json:"neetcode_url"`
+	ProblemNumber  int        `json:"problem_number"`
+	LeetCodeNumber int        `json:"leetcode_number"`
+	Title          string     `json:"title"`
+	Slug           string     `json:"slug"`
+	Difficulty     Difficulty `json:"difficulty"`
+	Category       string     `json:"category"`
+	IsPaidOnly     bool       `json:"is_paid_only"`
+	NeetCodeURL    string     `json:"neetcode_url"`
 }
 
 func (c Cache) Validate() error {

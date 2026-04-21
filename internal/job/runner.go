@@ -365,7 +365,7 @@ func isStale(startedAt *time.Time, now time.Time) bool {
 }
 
 func formatThreadTitle(problem problemcache.Problem) string {
-	return fmt.Sprintf("#N%d %s", problem.ProblemNumber, problem.Title)
+	return fmt.Sprintf("#N%d %s [%d]", problem.ProblemNumber, problem.Title, problem.LeetCodeNumber)
 }
 
 func formatThreadBody(problem problemcache.Problem, cache problemcache.Cache, maxDifficulty problemcache.Difficulty) string {

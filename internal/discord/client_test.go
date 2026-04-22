@@ -123,7 +123,10 @@ func TestCreateForumThreadAndSendNotification(t *testing.T) {
 		case "/channels/forum-1/threads":
 			body, _ := io.ReadAll(r.Body)
 			_ = json.Unmarshal(body, &threadPayload)
-			_ = json.NewEncoder(w).Encode(map[string]any{"id": "thread-1"})
+			_ = json.NewEncoder(w).Encode(map[string]any{
+				"id":      "thread-1",
+				"message": map[string]any{"id": "msg-1"},
+			})
 		case "/channels/111111111111111111/messages":
 			body, _ := io.ReadAll(r.Body)
 			_ = json.Unmarshal(body, &notificationPayload)
@@ -150,6 +153,9 @@ func TestCreateForumThreadAndSendNotification(t *testing.T) {
 	}
 	if thread.ID != "thread-1" {
 		t.Fatalf("thread.ID = %q, want %q", thread.ID, "thread-1")
+	}
+	if thread.MessageID != "msg-1" {
+		t.Fatalf("thread.MessageID = %q, want %q", thread.MessageID, "msg-1")
 	}
 
 	notifier, err := NewNotifier(client, "111111111111111111")

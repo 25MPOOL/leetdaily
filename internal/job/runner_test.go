@@ -370,9 +370,10 @@ func (s stubFetcher) FetchProblems(context.Context) ([]problemcache.Problem, err
 }
 
 type stubPoster struct {
-	tags       map[problemcache.Difficulty]string
-	threadID   string
-	threadErrs []error
+	tags          map[problemcache.Difficulty]string
+	threadID      string
+	threadErrs    []error
+	reactionCalls int
 }
 
 func (s *stubPoster) EnsureDifficultyTags(context.Context, string) (map[problemcache.Difficulty]string, error) {
@@ -385,7 +386,12 @@ func (s *stubPoster) CreateForumThread(context.Context, discord.ForumThreadParam
 		s.threadErrs = s.threadErrs[1:]
 		return discord.Thread{}, err
 	}
-	return discord.Thread{ID: s.threadID}, nil
+	return discord.Thread{ID: s.threadID, MessageID: "111111111111111111"}, nil
+}
+
+func (s *stubPoster) AddReaction(context.Context, string, string, string) error {
+	s.reactionCalls++
+	return nil
 }
 
 type stubNotifier struct {

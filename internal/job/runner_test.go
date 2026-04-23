@@ -298,6 +298,50 @@ func TestRunnerContinuesWithStaleCacheWhenRefillFallbackOccurs(t *testing.T) {
 	}
 }
 
+func TestRunnerPostsHardProblem(t *testing.T) {
+	t.Parallel()
+
+	targetDate := mustDate(t, "2026-03-20")
+	repository := &stubRepository{
+		config: testConfig(),
+		state: state.State{
+			GuildStates: map[string]state.GuildState{
+				"123456789012345678": {
+					NextProblemNumber: 3,
+				},
+			},
+		},
+		cache: testCache(),
+	}
+	poster := &stubPoster{
+		tags: map[problemcache.Difficulty]string{
+			problemcache.DifficultyEasy:   "easy-1",
+			problemcache.DifficultyMedium: "medium-1",
+			problemcache.DifficultyHard:   "hard-1",
+		},
+		threadID: "thread-hard",
+	}
+
+	runner := newRunnerForTest(t, repository, stubFetcher{}, poster, &stubNotifier{})
+	if err := runner.Run(context.Background(), targetDate); err != nil {
+		t.Fatalf("Run() error = %v", err)
+	}
+
+	got := repository.state.GuildStates["123456789012345678"]
+	if got.Job.Status != state.JobStatusPosted {
+		t.Fatalf("Job.Status = %q, want %q", got.Job.Status, state.JobStatusPosted)
+	}
+	if got.LastPostedProblemNumber == nil || *got.LastPostedProblemNumber != 3 {
+		t.Fatalf("LastPostedProblemNumber = %v, want 3 (hard problem)", got.LastPostedProblemNumber)
+	}
+	if got.NextProblemNumber != 4 {
+		t.Fatalf("NextProblemNumber = %d, want 4", got.NextProblemNumber)
+	}
+	if got.LastPostedThreadID == nil || *got.LastPostedThreadID != "thread-hard" {
+		t.Fatalf("LastPostedThreadID = %v, want thread-hard", got.LastPostedThreadID)
+	}
+}
+
 func newRunnerForTest(t *testing.T, repository *stubRepository, fetcher stubFetcher, poster *stubPoster, notifier *stubNotifier) *Runner {
 	t.Helper()
 

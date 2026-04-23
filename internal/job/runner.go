@@ -189,9 +189,7 @@ func (gr *guildRun) execute(ctx context.Context, cache problemcache.Cache, cache
 		gr.stateVersion = newVersion
 	}
 
-	// DifficultyMedium is the intentional cap: Hard problems are excluded by design.
-	// To make this configurable, add a MaxDifficulty field to config.Guild.
-	refreshedCache, refreshed, refreshErr := problemcache.Refresh(ctx, gr.runner.now(), cache, gr.guildState.NextProblemNumber, gr.cfg.ProblemCache.RefillThreshold, problemcache.DifficultyMedium, gr.runner.fetcher)
+	refreshedCache, refreshed, refreshErr := problemcache.Refresh(ctx, gr.runner.now(), cache, gr.guildState.NextProblemNumber, gr.cfg.ProblemCache.RefillThreshold, problemcache.DifficultyHard, gr.runner.fetcher)
 	if refreshErr != nil {
 		notifyErr := gr.runner.notifier.NotifyFailure(ctx, gr.guild.GuildID, refreshErr)
 		if !errors.Is(refreshErr, problemcache.ErrRefillUsedStaleCache) {
@@ -212,7 +210,7 @@ func (gr *guildRun) execute(ctx context.Context, cache problemcache.Cache, cache
 		cacheVersion = newVersion
 	}
 
-	problem, err := problemcache.SelectNextAtMost(cache, gr.guildState.NextProblemNumber, problemcache.DifficultyMedium) // same cap as Refresh above
+	problem, err := problemcache.SelectNextAtMost(cache, gr.guildState.NextProblemNumber, problemcache.DifficultyHard)
 	if err != nil {
 		notifyErr := gr.runner.notifier.NotifyFailure(ctx, gr.guild.GuildID, err)
 		if notifyErr != nil {
@@ -221,7 +219,7 @@ func (gr *guildRun) execute(ctx context.Context, cache problemcache.Cache, cache
 		return gr.stateVersion, cacheVersion, cache, err
 	}
 
-	newStateVersion, err := gr.post(ctx, problem, cache, problemcache.DifficultyMedium)
+	newStateVersion, err := gr.post(ctx, problem, cache, problemcache.DifficultyHard)
 	gr.stateVersion = newStateVersion
 	return gr.stateVersion, cacheVersion, cache, err
 }

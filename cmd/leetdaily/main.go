@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -57,7 +58,12 @@ func buildDependencies(ctx context.Context, cfg runtimecfg.Config, logger *slog.
 		return app.Dependencies{}, fmt.Errorf("build repository: %w", err)
 	}
 
-	discordClient, err := discord.NewClient(nil, cfg.DiscordBotToken)
+	retryClient := discord.NewRetryHTTPClient(http.DefaultClient, discord.RetryOptions{
+		MaxRetries:  3,
+		InitialWait: 1 * time.Second,
+		MaxWait:     30 * time.Second,
+	})
+	discordClient, err := discord.NewClient(retryClient, cfg.DiscordBotToken)
 	if err != nil {
 		return app.Dependencies{}, fmt.Errorf("build Discord client: %w", err)
 	}

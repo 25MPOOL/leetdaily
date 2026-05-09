@@ -184,7 +184,33 @@ resource "google_cloud_scheduler_job" "daily_run" {
   paused      = false
 
   retry_config {
-    retry_count = 0
+    retry_count          = 2
+    min_backoff_duration = "300s"
+    max_backoff_duration = "600s"
+  }
+
+  http_target {
+    http_method = "POST"
+    uri         = local.scheduler_job_run_url
+
+    oauth_token {
+      service_account_email = google_service_account.scheduler_invoker.email
+    }
+  }
+}
+
+resource "google_cloud_scheduler_job" "daily_run_retry" {
+  name        = "${var.service_name}-daily-run-retry"
+  description = "Second-chance trigger for LeetDaily daily posting job"
+  region      = var.region
+  schedule    = "0 6 * * *"
+  time_zone   = "Asia/Tokyo"
+  paused      = false
+
+  retry_config {
+    retry_count          = 2
+    min_backoff_duration = "300s"
+    max_backoff_duration = "600s"
   }
 
   http_target {

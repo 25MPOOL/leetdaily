@@ -49,7 +49,7 @@ func NewRetryHTTPClient(inner HTTPClient, opts RetryOptions) *RetryHTTPClient {
 
 func (r *RetryHTTPClient) Do(req *http.Request) (*http.Response, error) {
 	var resp *http.Response
-	var err error
+	var lastErr error
 
 	for attempt := 0; attempt <= r.maxRetries; attempt++ {
 		if attempt > 0 {
@@ -67,10 +67,16 @@ func (r *RetryHTTPClient) Do(req *http.Request) (*http.Response, error) {
 			}
 		}
 
+		var err error
 		resp, err = r.inner.Do(req)
 		if err != nil {
-			return nil, err
+			if req.Context().Err() != nil {
+				return nil, req.Context().Err()
+			}
+			lastErr = err
+			continue
 		}
+		lastErr = nil
 
 		if resp.StatusCode < 500 {
 			return resp, nil
@@ -80,6 +86,10 @@ func (r *RetryHTTPClient) Do(req *http.Request) (*http.Response, error) {
 			io.Copy(io.Discard, resp.Body) //nolint:errcheck
 			resp.Body.Close()
 		}
+	}
+
+	if lastErr != nil {
+		return nil, lastErr
 	}
 
 	return resp, nil

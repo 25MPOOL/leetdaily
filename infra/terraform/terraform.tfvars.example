@@ -9,3 +9,4 @@ config_object           = "config.json"
 guilds_object           = "guilds.json"
 state_object            = "state.json"
 problems_object         = "problems.json"
+scheduler_paused       = true

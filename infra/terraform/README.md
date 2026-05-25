@@ -6,7 +6,10 @@ This directory provisions the MVP production stack for LeetDaily:
 - runtime and scheduler service accounts
 - GCS bucket for `config/guilds/state/problems`
 - Secret Manager access for the Discord bot token
-- Cloud Scheduler job that executes the Cloud Run job at `05:00` JST
+- Cloud Scheduler jobs that execute the Cloud Run job at `05:00` and `06:00` JST
+
+The scheduler jobs default to `paused` so the bot does not run until operations are resumed.
+Set `scheduler_paused = false` and apply Terraform to resume daily posting.
 
 ## Usage
 

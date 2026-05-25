@@ -79,3 +79,9 @@ variable "cloud_run_memory" {
   type        = string
   default     = "512Mi"
 }
+
+variable "scheduler_paused" {
+  description = "Pause Cloud Scheduler triggers for LeetDaily job execution"
+  type        = bool
+  default     = true
+}
